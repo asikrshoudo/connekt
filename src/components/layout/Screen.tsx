@@ -1,17 +1,17 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors } from '../../app/theme/colors';
+import { useColors } from '../../core/theme/ThemeProvider';
 
-type Props = { children: ReactNode };
-
-export function Screen({ children }: Props) {
+export function Screen({ children }: { children: ReactNode }) {
   const insets = useSafeAreaInsets();
+  const colors = useColors();
   return (
     <View
       style={[
         styles.root,
         {
+          backgroundColor: colors.background,
           paddingTop: insets.top,
           paddingBottom: insets.bottom,
           paddingLeft: insets.left,
@@ -25,5 +25,5 @@ export function Screen({ children }: Props) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.background },
+  root: { flex: 1 },
 });

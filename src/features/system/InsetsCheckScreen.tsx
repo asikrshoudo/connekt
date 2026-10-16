@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors } from '../../app/theme/colors';
 import { Screen } from '../../components/layout/Screen';
+import { AppText } from '../../components/ui/AppText';
+import { spacing } from '../../core/theme/spacing';
 
 // Temporary screen to verify edge-to-edge on a real device.
 export function InsetsCheckScreen() {
@@ -9,17 +10,15 @@ export function InsetsCheckScreen() {
   return (
     <Screen>
       <View style={styles.body}>
-        <Text style={styles.title}>Connekt</Text>
-        <Text style={styles.line}>Edge-to-edge check</Text>
-        <Text style={styles.line}>top {insets.top} / bottom {insets.bottom}</Text>
-        <Text style={styles.line}>left {insets.left} / right {insets.right}</Text>
+        <AppText variant="largeTitle">Connekt</AppText>
+        <AppText tone="secondary">Edge-to-edge check</AppText>
+        <AppText tone="secondary">top {insets.top} / bottom {insets.bottom}</AppText>
+        <AppText tone="secondary">left {insets.left} / right {insets.right}</AppText>
       </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  body: { flex: 1, justifyContent: 'center', paddingHorizontal: 24, gap: 8 },
-  title: { color: colors.textPrimary, fontSize: 34, fontWeight: '700' },
-  line: { color: colors.textSecondary, fontSize: 16 },
+  body: { flex: 1, justifyContent: 'center', paddingHorizontal: spacing.xl, gap: spacing.sm },
 });
