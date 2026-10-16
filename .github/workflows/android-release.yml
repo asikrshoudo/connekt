@@ -20,60 +20,67 @@ jobs:
     timeout-minutes: 40
     env:
       CI: '1'
+      GH_REPO: ${{ github.repository }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Read version
-        id: version
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          VERSION=$(node -p "require('./app.json').expo.version")
-          TAG="v$VERSION"
-          echo "name=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "Release $TAG already exists. Run ./bump-version.sh to publish a new version."
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - uses: actions/setup-node@v4
-        if: steps.version.outputs.exists == 'false'
         with:
           node-version: '24'
           cache: npm
 
       - uses: actions/setup-java@v4
-        if: steps.version.outputs.exists == 'false'
         with:
           distribution: temurin
           java-version: '17'
 
       - uses: gradle/actions/setup-gradle@v4
-        if: steps.version.outputs.exists == 'false'
+
+      - name: Pick next version
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT=$(gh release list --limit 1000 --json tagName --jq length)
+          N=$((COUNT + 1))
+          while true; do
+            MAJOR=$(( (N - 1) / 9 ))
+            PATCH=$(( (N - 1) % 9 + 1 ))
+            VERSION="${MAJOR}.0.${PATCH}"
+            gh release view "v$VERSION" >/dev/null 2>&1 || break
+            N=$((N + 1))
+          done
+          echo "name=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Apply version to app.json
+        env:
+          VERSION: ${{ steps.version.outputs.name }}
+          CODE: ${{ github.run_number }}
+        run: |
+          node -e '
+          const fs = require("fs");
+          const j = JSON.parse(fs.readFileSync("app.json", "utf8"));
+          j.expo.version = process.env.VERSION;
+          j.expo.android = { ...j.expo.android, versionCode: Number(process.env.CODE) };
+          fs.writeFileSync("app.json", JSON.stringify(j, null, 2) + "\n");
+          '
 
       - name: Install dependencies
-        if: steps.version.outputs.exists == 'false'
         run: npm ci
 
       - name: Type check
-        if: steps.version.outputs.exists == 'false'
         run: npx tsc --noEmit
 
       - name: Generate native Android project
-        if: steps.version.outputs.exists == 'false'
         run: npx expo prebuild --platform android --no-install
 
       - name: Build release APK
-        if: steps.version.outputs.exists == 'false'
         working-directory: android
         run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a
 
       - name: Sign APK
         id: apk
-        if: steps.version.outputs.exists == 'false'
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -95,7 +102,6 @@ jobs:
           echo "path=$DEST" >> "$GITHUB_OUTPUT"
 
       - name: Publish GitHub Release
-        if: steps.version.outputs.exists == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
