@@ -2,7 +2,7 @@
   "expo": {
     "name": "Connekt",
     "slug": "connekt",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,8 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.thekami.connekt"
+      "package": "com.thekami.connekt",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
