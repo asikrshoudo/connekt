@@ -1,0 +1,106 @@
+name: android-release
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      CI: '1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(node -p "require('./app.json').expo.version")
+          TAG="v$VERSION"
+          echo "name=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release $TAG already exists. Run ./bump-version.sh to publish a new version."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.version.outputs.exists == 'false'
+        with:
+          node-version: '24'
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        if: steps.version.outputs.exists == 'false'
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        if: steps.version.outputs.exists == 'false'
+
+      - name: Install dependencies
+        if: steps.version.outputs.exists == 'false'
+        run: npm ci
+
+      - name: Type check
+        if: steps.version.outputs.exists == 'false'
+        run: npx tsc --noEmit
+
+      - name: Generate native Android project
+        if: steps.version.outputs.exists == 'false'
+        run: npx expo prebuild --platform android --no-install
+
+      - name: Build release APK
+        if: steps.version.outputs.exists == 'false'
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a
+
+      - name: Sign APK
+        id: apk
+        if: steps.version.outputs.exists == 'false'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/connekt.jks"
+          SRC=$(find android/app/build/outputs/apk/release -name '*.apk' | head -n1)
+          [ -n "$SRC" ] || { echo "No release APK found" >&2; exit 1; }
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -n1)
+          DEST="connekt-${{ steps.version.outputs.tag }}.apk"
+          "${BT}apksigner" sign \
+            --ks "$RUNNER_TEMP/connekt.jks" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass env:KEYSTORE_PASSWORD \
+            --key-pass env:KEY_PASSWORD \
+            --out "$DEST" "$SRC"
+          "${BT}apksigner" verify --print-certs "$DEST"
+          echo "path=$DEST" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release
+        if: steps.version.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" "${{ steps.apk.outputs.path }}" \
+            --target "$GITHUB_SHA" \
+            --latest \
+            --title "Connekt ${{ steps.version.outputs.tag }}" \
+            --notes "Development build at ${GITHUB_SHA::7}. UI-first prototype, no real messaging yet."
