@@ -16,6 +16,7 @@ export const darkColors = {
   unread: '#0A84FF',
   disabled: '#48484F',
   tabBar: '#1A1A1E',
+  tabIndicator: 'rgba(255,255,255,0.12)',
 } as const;
 
 export type ColorTokens = { [K in keyof typeof darkColors]: string };
