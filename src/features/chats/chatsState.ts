@@ -12,7 +12,16 @@ export type ChatsAction =
   | { type: 'pin'; id: string }
   | { type: 'unpin'; id: string }
   | { type: 'markRead'; id: string }
-  | { type: 'send'; conversationId: string; messageId: string; text: string; sentAt: number };
+  | {
+      type: 'send';
+      conversationId: string;
+      messageId: string;
+      text: string;
+      sentAt: number;
+      replyToId?: string;
+    }
+  | { type: 'react'; conversationId: string; messageId: string; emoji: string }
+  | { type: 'deleteMessage'; conversationId: string; messageId: string };
 
 export type ChatListItem = {
   conversation: Conversation;
@@ -56,6 +65,7 @@ export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState
         text: action.text,
         sentAt: action.sentAt,
         direction: 'outgoing',
+        ...(action.replyToId ? { replyToId: action.replyToId } : {}),
       };
       return {
         ...state,
@@ -68,6 +78,40 @@ export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState
           ...state.messages,
           [action.conversationId]: [...(state.messages[action.conversationId] ?? []), message],
         },
+      };
+    }
+    case 'react': {
+      const list = state.messages[action.conversationId];
+      if (!list) return state;
+      return {
+        ...state,
+        messages: {
+          ...state.messages,
+          [action.conversationId]: list.map((m) =>
+            m.id !== action.messageId
+              ? m
+              : { ...m, reaction: m.reaction === action.emoji ? undefined : action.emoji },
+          ),
+        },
+      };
+    }
+    case 'deleteMessage': {
+      const list = state.messages[action.conversationId];
+      if (!list) return state;
+      const remaining = list.filter((m) => m.id !== action.messageId);
+      const last = remaining[remaining.length - 1];
+      return {
+        ...state,
+        messages: { ...state.messages, [action.conversationId]: remaining },
+        conversations: state.conversations.map((c) =>
+          c.id === action.conversationId
+            ? {
+                ...c,
+                lastMessage: last ? last.text : '',
+                lastMessageAt: last ? last.sentAt : c.lastMessageAt,
+              }
+            : c,
+        ),
       };
     }
   }

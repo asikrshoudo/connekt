@@ -1,17 +1,24 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AppText } from '../../components/ui/AppText';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { typography } from '../../core/theme/typography';
+import type { ReplyPreview } from './types';
 
-type Props = { onSend: (text: string) => void };
+type Props = {
+  onSend: (text: string) => void;
+  replyPreview: ReplyPreview | null;
+  onCancelReply: () => void;
+};
 
-export function MessageComposer({ onSend }: Props) {
+export function MessageComposer({ onSend, replyPreview, onCancelReply }: Props) {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
   const [text, setText] = useState('');
   const [keyboardOpen, setKeyboardOpen] = useState(false);
 
@@ -23,6 +30,10 @@ export function MessageComposer({ onSend }: Props) {
       hide.remove();
     };
   }, []);
+
+  useEffect(() => {
+    if (replyPreview) inputRef.current?.focus();
+  }, [replyPreview]);
 
   const canSend = text.trim().length > 0;
 
@@ -39,10 +50,32 @@ export function MessageComposer({ onSend }: Props) {
         { paddingBottom: keyboardOpen ? spacing.sm : insets.bottom + spacing.sm },
       ]}
     >
+      {replyPreview ? (
+        <View style={[styles.replyBar, { backgroundColor: colors.surface }]}>
+          <View style={[styles.replyAccent, { backgroundColor: colors.accent }]} />
+          <View style={styles.replyText}>
+            <AppText variant="footnote" style={[styles.replyAuthor, { color: colors.accent }]}>
+              {`Replying to ${replyPreview.author || 'message'}`}
+            </AppText>
+            <AppText variant="footnote" tone="secondary" numberOfLines={1}>
+              {replyPreview.text}
+            </AppText>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Cancel reply"
+            hitSlop={10}
+            onPress={onCancelReply}
+          >
+            <Ionicons name="close" size={20} color={colors.textMuted} />
+          </Pressable>
+        </View>
+      ) : null}
       <View
         style={[styles.pill, { backgroundColor: colors.surface, borderColor: colors.inputBorder }]}
       >
         <TextInput
+          ref={inputRef}
           value={text}
           onChangeText={setText}
           placeholder="Message"
@@ -75,6 +108,18 @@ export function MessageComposer({ onSend }: Props) {
 
 const styles = StyleSheet.create({
   bar: { paddingHorizontal: spacing.md, paddingTop: spacing.sm },
+  replyBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: 12,
+  },
+  replyAccent: { width: 3, alignSelf: 'stretch', borderRadius: 2 },
+  replyText: { flex: 1, gap: 1 },
+  replyAuthor: { fontWeight: '600' },
   pill: {
     flexDirection: 'row',
     alignItems: 'flex-end',

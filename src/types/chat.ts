@@ -12,4 +12,6 @@ export type Message = {
   text: string;
   sentAt: number;
   direction: 'incoming' | 'outgoing';
+  reaction?: string;
+  replyToId?: string;
 };

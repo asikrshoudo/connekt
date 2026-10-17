@@ -25,7 +25,9 @@ type ChatsContextValue = {
   pin: (id: string) => void;
   unpin: (id: string) => void;
   markRead: (id: string) => void;
-  send: (conversationId: string, text: string) => void;
+  send: (conversationId: string, text: string, replyToId?: string) => void;
+  react: (conversationId: string, messageId: string, emoji: string) => void;
+  deleteMessage: (conversationId: string, messageId: string) => void;
   getConversation: (id: string) => Conversation | undefined;
   getMessages: (id: string) => Message[];
 };
@@ -56,16 +58,27 @@ export function ChatsProvider({
   const pin = useCallback((id: string) => dispatch({ type: 'pin', id }), []);
   const unpin = useCallback((id: string) => dispatch({ type: 'unpin', id }), []);
   const markRead = useCallback((id: string) => dispatch({ type: 'markRead', id }), []);
-  const send = useCallback((conversationId: string, text: string) => {
+  const send = useCallback((conversationId: string, text: string, replyToId?: string) => {
     counter.current += 1;
     dispatch({
       type: 'send',
       conversationId,
       text,
+      replyToId,
       messageId: `local-${Date.now()}-${counter.current}`,
       sentAt: Date.now(),
     });
   }, []);
+  const react = useCallback(
+    (conversationId: string, messageId: string, emoji: string) =>
+      dispatch({ type: 'react', conversationId, messageId, emoji }),
+    [],
+  );
+  const deleteMessage = useCallback(
+    (conversationId: string, messageId: string) =>
+      dispatch({ type: 'deleteMessage', conversationId, messageId }),
+    [],
+  );
 
   const value = useMemo<ChatsContextValue>(
     () => ({
@@ -76,10 +89,12 @@ export function ChatsProvider({
       unpin,
       markRead,
       send,
+      react,
+      deleteMessage,
       getConversation: (id) => state.conversations.find((c) => c.id === id),
       getMessages: (id) => state.messages[id] ?? NO_MESSAGES,
     }),
-    [state, isSample, pin, unpin, markRead, send],
+    [state, isSample, pin, unpin, markRead, send, react, deleteMessage],
   );
 
   return <ChatsContext.Provider value={value}>{children}</ChatsContext.Provider>;

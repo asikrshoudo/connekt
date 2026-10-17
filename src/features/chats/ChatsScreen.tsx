@@ -4,21 +4,25 @@ import { useState } from 'react';
 import { FlatList } from 'react-native';
 import { ActionSheet } from '../../components/feedback/ActionSheet';
 import { EmptyState } from '../../components/feedback/EmptyState';
+import type { MenuItem } from '../../components/feedback/MenuCard';
 import { TabScreen } from '../../components/layout/TabScreen';
 import { TAB_BAR_CLEARANCE } from '../../components/navigation/tabBarMetrics';
 import type { RootStackParamList } from '../../core/navigation/types';
+import { ChatPopover } from './ChatPopover';
 import { MAX_PINNED } from './chatsState';
 import { ConversationRow } from './ConversationRow';
 import { useChats } from './ChatsProvider';
 import { SampleDataNotice } from './SampleDataNotice';
 
+type MenuState = { id: string; point: { x: number; y: number } };
+
 export function ChatsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { items, isSample, canPinMore, pin, unpin } = useChats();
-  const [menuId, setMenuId] = useState<string | null>(null);
+  const { items, isSample, canPinMore, pin, unpin, markRead } = useChats();
+  const [menu, setMenu] = useState<MenuState | null>(null);
   const [showLimit, setShowLimit] = useState(false);
 
-  const menuItem = items.find((item) => item.conversation.id === menuId);
+  const menuItem = menu ? items.find((item) => item.conversation.id === menu.id) : undefined;
 
   const togglePin = (id: string, pinned: boolean) => {
     if (pinned) {
@@ -29,6 +33,29 @@ export function ChatsScreen() {
       setShowLimit(true);
     }
   };
+
+  const menuItems: MenuItem[] = [];
+  if (menuItem) {
+    const { conversation, pinned } = menuItem;
+    menuItems.push({
+      label: pinned ? 'Unpin' : 'Pin',
+      icon: pinned ? 'pin-outline' : 'pin',
+      onPress: () => {
+        setMenu(null);
+        togglePin(conversation.id, pinned);
+      },
+    });
+    if (conversation.unreadCount > 0) {
+      menuItems.push({
+        label: 'Mark as read',
+        icon: 'checkmark-done-outline',
+        onPress: () => {
+          setMenu(null);
+          markRead(conversation.id);
+        },
+      });
+    }
+  }
 
   return (
     <TabScreen title="Chats" padForTabBar={false}>
@@ -46,29 +73,17 @@ export function ChatsScreen() {
             onPress={() =>
               navigation.navigate('Conversation', { conversationId: item.conversation.id })
             }
-            onLongPress={() => setMenuId(item.conversation.id)}
+            onLongPress={(point) => setMenu({ id: item.conversation.id, point })}
             onTogglePin={() => togglePin(item.conversation.id, item.pinned)}
           />
         )}
       />
 
-      <ActionSheet
-        visible={menuItem !== undefined}
-        title={menuItem?.conversation.name}
-        actions={
-          menuItem
-            ? [
-                {
-                  label: menuItem.pinned ? 'Unpin' : 'Pin',
-                  onPress: () => {
-                    setMenuId(null);
-                    togglePin(menuItem.conversation.id, menuItem.pinned);
-                  },
-                },
-              ]
-            : []
-        }
-        onClose={() => setMenuId(null)}
+      <ChatPopover
+        visible={menu !== null && menuItems.length > 0}
+        point={menu?.point ?? { x: 0, y: 0 }}
+        items={menuItems}
+        onClose={() => setMenu(null)}
       />
 
       <ActionSheet

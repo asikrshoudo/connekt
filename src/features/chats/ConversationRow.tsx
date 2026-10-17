@@ -11,7 +11,7 @@ import type { ChatListItem } from './chatsState';
 type Props = {
   item: ChatListItem;
   onPress: () => void;
-  onLongPress: () => void;
+  onLongPress: (point: { x: number; y: number }) => void;
   onTogglePin: () => void;
 };
 
@@ -40,7 +40,7 @@ export function ConversationRow({ item, onPress, onLongPress, onTogglePin }: Pro
         if (event.nativeEvent.actionName === 'togglePin') onTogglePin();
       }}
       onPress={onPress}
-      onLongPress={onLongPress}
+      onLongPress={(event) => onLongPress({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY })}
       style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surface }]}
     >
       <Avatar name={conversation.name} />

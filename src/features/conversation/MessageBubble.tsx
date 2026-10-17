@@ -1,83 +1,86 @@
-import { StyleSheet, View } from 'react-native';
-import Animated, { Easing, Keyframe } from 'react-native-reanimated';
+import { useRef, type ComponentRef } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AppText } from '../../components/ui/AppText';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 import type { Message } from '../../types/chat';
 import { formatClockTime } from '../../utils/dates';
-import { countEmoji } from '../../utils/emoji';
-
-// A message newer than this plays the entrance animation when it first appears.
-const FRESH_MS = 1000;
-const MAX_BIG_EMOJI = 3;
-const EMOJI_SIZE: Record<number, number> = { 1: 56, 2: 44, 3: 36 };
-
-const popIn = new Keyframe({
-  from: { opacity: 0, transform: [{ translateY: 36 }, { scale: 0.86 }] },
-  to: {
-    opacity: 1,
-    transform: [{ translateY: 0 }, { scale: 1 }],
-    easing: Easing.out(Easing.exp),
-  },
-}).duration(340);
+import type { ReplyRef } from './buildTimeline';
+import { MessageBody } from './MessageBody';
+import type { MessageMenuTarget, ReplyPreview } from './types';
 
 type Props = {
   message: Message;
+  reply: ReplyRef | null;
+  contactName: string;
   groupedWithPrevious: boolean;
   showTime: boolean;
+  onLongPress: (target: MessageMenuTarget) => void;
 };
 
-export function MessageBubble({ message, groupedWithPrevious, showTime }: Props) {
+function toPreview(reply: ReplyRef | null, contactName: string): ReplyPreview | null {
+  if (!reply) return null;
+  if ('missing' in reply) return { author: '', text: 'Original message unavailable' };
+  return {
+    author: reply.direction === 'outgoing' ? 'You' : contactName,
+    text: reply.text,
+  };
+}
+
+export function MessageBubble({
+  message,
+  reply,
+  contactName,
+  groupedWithPrevious,
+  showTime,
+  onLongPress,
+}: Props) {
   const colors = useColors();
+  const ref = useRef<ComponentRef<typeof View>>(null);
   const outgoing = message.direction === 'outgoing';
-  const emojiCount = countEmoji(message.text);
-  const emojiOnly = emojiCount >= 1 && emojiCount <= MAX_BIG_EMOJI;
-  const fresh = Date.now() - message.sentAt < FRESH_MS;
-  const emojiSize = EMOJI_SIZE[emojiCount] ?? 36;
+  const preview = toPreview(reply, contactName);
+
+  const handleLongPress = () => {
+    ref.current?.measureInWindow((x, y, width, height) => {
+      onLongPress({ message, rect: { x, y, width, height }, reply: preview });
+    });
+  };
 
   return (
-    <Animated.View
-      entering={fresh ? popIn : undefined}
+    <View
       style={[
         styles.row,
         outgoing ? styles.rowOutgoing : styles.rowIncoming,
-        {
-          marginTop: groupedWithPrevious ? 2 : spacing.md,
-          transformOrigin: outgoing ? 'right bottom' : 'left bottom',
-        },
+        { marginTop: groupedWithPrevious ? 2 : spacing.md },
       ]}
     >
-      {emojiOnly ? (
-        <AppText
-          style={{
-            fontSize: emojiSize,
-            lineHeight: emojiSize * 1.3,
-            includeFontPadding: false,
-          }}
-        >
-          {message.text}
-        </AppText>
-      ) : (
+      <Pressable
+        ref={ref}
+        collapsable={false}
+        onLongPress={handleLongPress}
+        delayLongPress={250}
+        accessibilityLabel={`${outgoing ? 'You' : contactName}: ${message.text}`}
+        accessibilityHint="Double tap and hold for options"
+        style={styles.pressable}
+      >
+        <MessageBody message={message} reply={preview} />
+      </Pressable>
+      {message.reaction ? (
         <View
           style={[
-            styles.bubble,
-            { backgroundColor: outgoing ? colors.bubbleOutgoing : colors.bubbleIncoming },
+            styles.reaction,
+            { backgroundColor: colors.surfaceElevated, borderColor: colors.background },
           ]}
         >
-          <AppText
-            variant="callout"
-            style={{ color: outgoing ? colors.onAccent : colors.textPrimary }}
-          >
-            {message.text}
-          </AppText>
+          <Text style={styles.reactionEmoji}>{message.reaction}</Text>
         </View>
-      )}
+      ) : null}
       {showTime ? (
         <AppText variant="caption" tone="muted" style={styles.time}>
           {formatClockTime(message.sentAt)}
         </AppText>
       ) : null}
-    </Animated.View>
+    </View>
   );
 }
 
@@ -85,11 +88,17 @@ const styles = StyleSheet.create({
   row: { paddingHorizontal: spacing.lg },
   rowOutgoing: { alignItems: 'flex-end' },
   rowIncoming: { alignItems: 'flex-start' },
-  bubble: {
-    maxWidth: '78%',
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: 20,
+  pressable: { maxWidth: '78%' },
+  reaction: {
+    marginTop: -8,
+    marginHorizontal: spacing.sm,
+    height: 24,
+    paddingHorizontal: 6,
+    borderRadius: 12,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  reactionEmoji: { fontSize: 13, lineHeight: 16, includeFontPadding: false },
   time: { marginTop: spacing.xs, marginHorizontal: spacing.xs },
 });
