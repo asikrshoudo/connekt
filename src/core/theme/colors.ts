@@ -18,6 +18,7 @@ export const darkColors = {
   tabBar: '#1A1A1E',
   tabIndicator: 'rgba(255,255,255,0.12)',
   scrim: 'rgba(0,0,0,0.5)',
+  inputBorder: 'rgba(255,255,255,0.18)',
 } as const;
 
 export type ColorTokens = { [K in keyof typeof darkColors]: string };

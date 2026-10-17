@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
@@ -35,59 +36,61 @@ export function MessageComposer({ onSend }: Props) {
     <View
       style={[
         styles.bar,
-        {
-          borderTopColor: colors.border,
-          paddingBottom: keyboardOpen ? spacing.sm : insets.bottom + spacing.sm,
-        },
+        { paddingBottom: keyboardOpen ? spacing.sm : insets.bottom + spacing.sm },
       ]}
     >
-      <TextInput
-        value={text}
-        onChangeText={setText}
-        placeholder="Message"
-        placeholderTextColor={colors.textMuted}
-        accessibilityLabel="Message"
-        multiline
-        style={[
-          styles.input,
-          typography.callout,
-          { backgroundColor: colors.surface, color: colors.textPrimary },
-        ]}
-      />
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Send"
-        accessibilityState={{ disabled: !canSend }}
-        disabled={!canSend}
-        onPress={send}
-        style={[
-          styles.send,
-          { backgroundColor: canSend ? colors.bubbleOutgoing : colors.disabled },
-        ]}
+      <View
+        style={[styles.pill, { backgroundColor: colors.surface, borderColor: colors.inputBorder }]}
       >
-        <Ionicons name="arrow-up" size={22} color={colors.onAccent} />
-      </Pressable>
+        <TextInput
+          value={text}
+          onChangeText={setText}
+          placeholder="Message"
+          placeholderTextColor={colors.textMuted}
+          accessibilityLabel="Message"
+          multiline
+          style={[styles.input, typography.callout, { color: colors.textPrimary }]}
+        />
+        {canSend ? (
+          <Animated.View
+            entering={ZoomIn.duration(160)}
+            exiting={ZoomOut.duration(120)}
+            style={styles.sendWrap}
+          >
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Send"
+              hitSlop={8}
+              onPress={send}
+              style={[styles.send, { backgroundColor: colors.bubbleOutgoing }]}
+            >
+              <Ionicons name="arrow-up" size={20} color={colors.onAccent} />
+            </Pressable>
+          </Animated.View>
+        ) : null}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  bar: {
+  bar: { paddingHorizontal: spacing.md, paddingTop: spacing.sm },
+  pill: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    minHeight: 44,
+    borderRadius: 22,
+    borderWidth: 1,
   },
   input: {
     flex: 1,
-    minHeight: 40,
+    minHeight: 42,
     maxHeight: 120,
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: 20,
+    paddingLeft: 16,
+    paddingRight: 8,
+    paddingVertical: 10,
     textAlignVertical: 'center',
   },
-  send: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  sendWrap: { margin: 5 },
+  send: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
 });

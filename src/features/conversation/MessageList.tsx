@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { FlatList } from 'react-native';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 import { spacing } from '../../core/theme/spacing';
 import type { TimelineRow } from './buildTimeline';
 import { DateSeparator } from './DateSeparator';
@@ -11,16 +11,18 @@ type Props = {
 };
 
 // Rows are newest first; `inverted` puts the newest message at the bottom.
+// itemLayoutAnimation slides the older messages up smoothly when a new one arrives.
 export function MessageList({ rows, footer }: Props) {
   return (
-    <FlatList
+    <Animated.FlatList
       data={rows}
       inverted
-      keyExtractor={(row) => row.id}
+      keyExtractor={(row: TimelineRow) => row.id}
       keyboardShouldPersistTaps="handled"
       contentContainerStyle={{ paddingVertical: spacing.md }}
+      itemLayoutAnimation={LinearTransition.springify().damping(22).stiffness(240)}
       ListFooterComponent={footer}
-      renderItem={({ item }) =>
+      renderItem={({ item }: { item: TimelineRow }) =>
         item.type === 'separator' ? (
           <DateSeparator label={item.label} />
         ) : (
