@@ -5,6 +5,7 @@ import { AppText } from '../../components/ui/AppText';
 import { UnreadBadge } from '../../components/ui/UnreadBadge';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
+import { isGroup } from '../../utils/conversation';
 import { formatChatTime } from '../../utils/formatChatTime';
 import type { ChatListItem } from './chatsState';
 
@@ -43,7 +44,7 @@ export function ConversationRow({ item, onPress, onLongPress, onTogglePin }: Pro
       onLongPress={(event) => onLongPress({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY })}
       style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surface }]}
     >
-      <Avatar name={conversation.name} />
+      <Avatar name={conversation.name} group={isGroup(conversation)} />
       <View style={[styles.body, { borderBottomColor: colors.border }]}>
         <View style={styles.topLine}>
           <AppText variant="headline" numberOfLines={1} style={styles.name}>

@@ -13,6 +13,7 @@ type Props = {
   message: Message;
   reply: ReplyRef | null;
   contactName: string;
+  showSender: boolean;
   groupedWithPrevious: boolean;
   showTime: boolean;
   onLongPress: (target: MessageMenuTarget) => void;
@@ -23,7 +24,7 @@ function toPreview(reply: ReplyRef | null, contactName: string): ReplyPreview | 
   if (!reply) return null;
   if ('missing' in reply) return { author: '', text: 'Original message unavailable' };
   return {
-    author: reply.direction === 'outgoing' ? 'You' : contactName,
+    author: reply.direction === 'outgoing' ? 'You' : (reply.author ?? contactName),
     text: reply.text,
   };
 }
@@ -32,6 +33,7 @@ export function MessageBubble({
   message,
   reply,
   contactName,
+  showSender,
   groupedWithPrevious,
   showTime,
   onLongPress,
@@ -56,13 +58,18 @@ export function MessageBubble({
         { marginTop: groupedWithPrevious ? 2 : spacing.md },
       ]}
     >
+      {showSender && !outgoing && message.senderName ? (
+        <AppText variant="footnote" tone="secondary" style={styles.sender}>
+          {message.senderName}
+        </AppText>
+      ) : null}
       <Pressable
         ref={ref}
         collapsable={false}
         onPress={message.attachment ? () => onOpen(message) : undefined}
         onLongPress={handleLongPress}
         delayLongPress={250}
-        accessibilityLabel={`${outgoing ? 'You' : contactName}: ${message.text}`}
+        accessibilityLabel={`${outgoing ? 'You' : (message.senderName ?? contactName)}: ${message.text}`}
         accessibilityHint="Double tap and hold for options"
         style={styles.pressable}
       >
@@ -92,6 +99,7 @@ const styles = StyleSheet.create({
   rowOutgoing: { alignItems: 'flex-end' },
   rowIncoming: { alignItems: 'flex-start' },
   pressable: { maxWidth: '78%' },
+  sender: { marginBottom: 2, marginHorizontal: spacing.sm },
   reaction: {
     marginTop: -8,
     marginHorizontal: spacing.sm,

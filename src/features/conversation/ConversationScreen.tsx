@@ -10,6 +10,7 @@ import { Screen } from '../../components/layout/Screen';
 import type { RootStackParamList } from '../../core/navigation/types';
 import { usePermissionGate } from '../../core/permissions/usePermissionGate';
 import type { Attachment, Message } from '../../types/chat';
+import { isGroup } from '../../utils/conversation';
 import { messagePreview } from '../../utils/messagePreview';
 import { useChats } from '../chats/ChatsProvider';
 import { SampleDataNotice } from '../chats/SampleDataNotice';
@@ -38,6 +39,8 @@ export function ConversationScreen({ route, navigation }: Props) {
   const messages = getMessages(conversationId);
   const rows = useMemo(() => buildTimeline(messages), [messages]);
   const blocked = isBlocked(conversationId);
+  const group = conversation ? isGroup(conversation) : false;
+  const memberCount = (conversation?.members?.length ?? 0) + 1;
 
   const { ensure, gate } = usePermissionGate();
   const recorder = useVoiceRecorder();
@@ -78,7 +81,7 @@ export function ConversationScreen({ route, navigation }: Props) {
     const { message } = menu;
     setReplyTo({
       id: message.id,
-      author: message.direction === 'outgoing' ? 'You' : contactName,
+      author: message.direction === 'outgoing' ? 'You' : (message.senderName ?? contactName),
       text: messagePreview(message),
     });
     closeMenu();
@@ -186,7 +189,11 @@ export function ConversationScreen({ route, navigation }: Props) {
           <ConversationHeader
             name={conversation.name}
             onBack={() => navigation.goBack()}
-            onProfile={() => navigation.navigate('ContactProfile', { conversationId })}
+            group={group}
+            subtitle={group ? `${memberCount} members` : undefined}
+            onProfile={
+              group ? undefined : () => navigation.navigate('ContactProfile', { conversationId })
+            }
           />
           <KeyboardAvoidingView behavior="padding" style={styles.flex}>
             {rows.length === 0 ? (
@@ -195,6 +202,7 @@ export function ConversationScreen({ route, navigation }: Props) {
               <MessageList
                 rows={rows}
                 contactName={contactName}
+                showSenders={group}
                 onMessageLongPress={setMenu}
                 onMessageOpen={handleOpen}
                 footer={

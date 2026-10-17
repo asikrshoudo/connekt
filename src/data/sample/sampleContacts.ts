@@ -1,5 +1,6 @@
 // SAMPLE DATA ONLY. These are not real people.
 import type { Contact } from '../../types/contact';
+import { isGroup } from '../../utils/conversation';
 import { sampleConversations } from './sampleConversations';
 
 const extra: Contact[] = [
@@ -11,6 +12,6 @@ const extra: Contact[] = [
 ];
 
 export const sampleContacts: Contact[] = [
-  ...sampleConversations.map(({ id, name }) => ({ id, name })),
+  ...sampleConversations.filter((c) => !isGroup(c)).map(({ id, name }) => ({ id, name })),
   ...extra,
 ].sort((a, b) => a.name.localeCompare(b.name));

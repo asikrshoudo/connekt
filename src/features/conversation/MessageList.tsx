@@ -10,6 +10,7 @@ import type { MessageMenuTarget } from './types';
 type Props = {
   rows: TimelineRow[];
   contactName: string;
+  showSenders: boolean;
   onMessageLongPress: (target: MessageMenuTarget) => void;
   onMessageOpen: (message: Message) => void;
   footer?: ReactElement;
@@ -19,6 +20,7 @@ type Props = {
 export function MessageList({
   rows,
   contactName,
+  showSenders,
   onMessageLongPress,
   onMessageOpen,
   footer,
@@ -39,6 +41,7 @@ export function MessageList({
             message={item.message}
             reply={item.reply}
             contactName={contactName}
+            showSender={showSenders && !item.groupedWithPrevious}
             groupedWithPrevious={item.groupedWithPrevious}
             showTime={item.showTime}
             onLongPress={onMessageLongPress}

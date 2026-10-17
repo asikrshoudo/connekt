@@ -1,9 +1,13 @@
+export type Member = { id: string; name: string };
+
 export type Conversation = {
   id: string;
   name: string;
   lastMessage: string;
   lastMessageAt: number;
   unreadCount: number;
+  // Present only for group chats.
+  members?: Member[];
 };
 
 export type Attachment =
@@ -24,4 +28,6 @@ export type Message = {
   reaction?: string;
   replyToId?: string;
   attachment?: Attachment;
+  // Name of the sender, used in group chats.
+  senderName?: string;
 };

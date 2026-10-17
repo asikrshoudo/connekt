@@ -4,7 +4,12 @@ import type { Message } from '../../types/chat';
 const DAY = 60 * 24;
 const ago = (minutes: number) => Date.now() - minutes * 60_000;
 
-type Seed = [direction: Message['direction'], text: string, minutesAgo: number];
+type Seed = [
+  direction: Message['direction'],
+  text: string,
+  minutesAgo: number,
+  sender?: string,
+];
 
 // Each list must go from oldest to newest.
 const seeds: Record<string, Seed[]> = {
@@ -41,17 +46,26 @@ const seeds: Record<string, Seed[]> = {
     ['incoming', 'Okay', DAY * 12],
   ],
   'sample-8': [['incoming', 'Happy birthday!', DAY * 40]],
+  'sample-group-1': [
+    ['incoming', 'Anyone up for a hike on Saturday?', 60 * 5 + 10, 'Maya Chen'],
+    ['incoming', 'I am in! What time?', 60 * 5, 'Tanvir Hasan'],
+    ['incoming', 'Early, before it gets hot.', 60 * 4 + 50, 'Maya Chen'],
+    ['outgoing', 'Count me in too', 60 * 4 + 30],
+    ['incoming', 'Great, I will bring snacks', 60 * 3, 'Ayaan Rahman'],
+    ['incoming', 'Meet at 7 at the main gate?', 60 * 2 + 55, 'Ayaan Rahman'],
+  ],
 };
 
 export const sampleMessages: Record<string, Message[]> = Object.fromEntries(
   Object.entries(seeds).map(([conversationId, items]) => [
     conversationId,
-    items.map(([direction, text, minutesAgo], index) => ({
+    items.map(([direction, text, minutesAgo, sender], index) => ({
       id: `${conversationId}-m${index}`,
       conversationId,
       text,
       sentAt: ago(minutesAgo),
       direction,
+      ...(sender ? { senderName: sender } : {}),
     })),
   ]),
 );

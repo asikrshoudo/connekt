@@ -1,17 +1,18 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, View } from 'react-native';
 import { avatarPalette } from '../../core/theme/avatarPalette';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { getInitials } from '../../utils/initials';
 import { AppText } from './AppText';
 
-type Props = { name: string; size?: number };
+type Props = { name: string; size?: number; group?: boolean };
 
 function pickColor(name: string): string {
   const sum = [...name].reduce((total, char) => total + char.charCodeAt(0), 0);
   return avatarPalette[sum % avatarPalette.length] ?? avatarPalette[0];
 }
 
-export function Avatar({ name, size = 52 }: Props) {
+export function Avatar({ name, size = 52, group = false }: Props) {
   const colors = useColors();
   return (
     <View
@@ -20,12 +21,16 @@ export function Avatar({ name, size = 52 }: Props) {
         { width: size, height: size, borderRadius: size / 2, backgroundColor: pickColor(name) },
       ]}
     >
-      <AppText
-        variant="headline"
-        style={{ color: colors.onAccent, fontSize: size * 0.38, lineHeight: size * 0.46 }}
-      >
-        {getInitials(name)}
-      </AppText>
+      {group ? (
+        <Ionicons name="people" size={size * 0.5} color={colors.onAccent} />
+      ) : (
+        <AppText
+          variant="headline"
+          style={{ color: colors.onAccent, fontSize: size * 0.38, lineHeight: size * 0.46 }}
+        >
+          {getInitials(name)}
+        </AppText>
+      )}
     </View>
   );
 }

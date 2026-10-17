@@ -5,7 +5,9 @@ import { messagePreview } from '../../utils/messagePreview';
 
 const GROUP_WINDOW_MS = 5 * 60_000;
 
-export type ReplyRef = { direction: Message['direction']; text: string } | { missing: true };
+export type ReplyRef =
+  | { direction: Message['direction']; text: string; author?: string }
+  | { missing: true };
 
 export type TimelineRow =
   | { type: 'separator'; id: string; label: string }
@@ -56,7 +58,11 @@ export function buildTimeline(messages: Message[]): TimelineRow[] {
     if (message.replyToId) {
       const original = byId.get(message.replyToId);
       reply = original
-        ? { direction: original.direction, text: messagePreview(original) }
+        ? {
+            direction: original.direction,
+            text: messagePreview(original),
+            author: original.senderName,
+          }
         : { missing: true };
     }
 
