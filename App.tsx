@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ErrorBoundary } from './src/core/ErrorBoundary';
 import { AppNavigation } from './src/core/navigation/AppNavigation';
 import { PermissionsProvider } from './src/core/permissions/PermissionsProvider';
 import { ThemeProvider } from './src/core/theme/ThemeProvider';
@@ -18,6 +19,7 @@ export default function App() {
     <SafeAreaProvider>
       <KeyboardProvider>
         <ThemeProvider>
+          <ErrorBoundary>
           <PermissionsProvider>
             <ChatsProvider
               initialConversations={sampleConversations}
@@ -34,6 +36,7 @@ export default function App() {
               </ContactsProvider>
             </ChatsProvider>
           </PermissionsProvider>
+          </ErrorBoundary>
         </ThemeProvider>
       </KeyboardProvider>
     </SafeAreaProvider>

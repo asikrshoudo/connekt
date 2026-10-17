@@ -5,7 +5,7 @@ export const darkColors = {
   border: 'rgba(255,255,255,0.08)',
   textPrimary: '#F5F5F7',
   textSecondary: '#A1A1A8',
-  textMuted: '#7C7C84',
+  textMuted: '#8A8A92',
   accent: '#0A84FF',
   onAccent: '#FFFFFF',
   destructive: '#FF453A',

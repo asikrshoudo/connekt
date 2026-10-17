@@ -2,7 +2,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BlurTargetView } from 'expo-blur';
 import * as Clipboard from 'expo-clipboard';
 import { useEffect, useMemo, useRef, useState, type ComponentRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { ActionSheet } from '../../components/feedback/ActionSheet';
 import { EmptyState } from '../../components/feedback/EmptyState';
@@ -56,6 +56,16 @@ export function ConversationScreen({ route, navigation }: Props) {
   useEffect(() => {
     markRead(conversationId);
   }, [conversationId, markRead]);
+
+  // Back closes the message menu first instead of leaving the chat.
+  useEffect(() => {
+    if (!menu) return undefined;
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      setMenu(null);
+      return true;
+    });
+    return () => subscription.remove();
+  }, [menu]);
 
   if (!conversation) {
     return (
