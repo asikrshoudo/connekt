@@ -191,9 +191,10 @@ export function ConversationScreen({ route, navigation }: Props) {
             onBack={() => navigation.goBack()}
             group={group}
             subtitle={group ? `${memberCount} members` : undefined}
-            onProfile={
-              group ? undefined : () => navigation.navigate('ContactProfile', { conversationId })
-            }
+            onProfile={() => {
+              if (group) navigation.navigate('GroupInfo', { conversationId });
+              else navigation.navigate('ContactProfile', { conversationId });
+            }}
           />
           <KeyboardAvoidingView behavior="padding" style={styles.flex}>
             {rows.length === 0 ? (

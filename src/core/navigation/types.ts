@@ -9,4 +9,6 @@ export type RootStackParamList = {
   ContactProfile: { conversationId: string };
   Requests: undefined;
   RequestDetail: { requestId: string };
+  NewGroup: undefined;
+  GroupInfo: { conversationId: string };
 };

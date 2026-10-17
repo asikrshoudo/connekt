@@ -8,9 +8,16 @@ type Props = {
   onPress: () => void;
   variant?: 'filled' | 'subtle';
   size?: 'small' | 'large';
+  disabled?: boolean;
 };
 
-export function PillButton({ label, onPress, variant = 'filled', size = 'small' }: Props) {
+export function PillButton({
+  label,
+  onPress,
+  variant = 'filled',
+  size = 'small',
+  disabled = false,
+}: Props) {
   const colors = useColors();
   const filled = variant === 'filled';
   return (
@@ -18,11 +25,14 @@ export function PillButton({ label, onPress, variant = 'filled', size = 'small' 
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
+      disabled={disabled}
+      accessibilityState={{ disabled }}
       style={({ pressed }) => [
         styles.base,
         size === 'large' ? styles.large : styles.small,
         { backgroundColor: filled ? colors.bubbleOutgoing : colors.surfaceElevated },
         pressed && { opacity: 0.8 },
+        disabled && { opacity: 0.4 },
       ]}
     >
       <AppText

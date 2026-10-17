@@ -1,8 +1,10 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ConversationScreen } from '../../features/conversation/ConversationScreen';
 import { ContactProfileScreen } from '../../features/contacts/ContactProfileScreen';
+import { GroupInfoScreen } from '../../features/groups/GroupInfoScreen';
 import { MediaViewerScreen } from '../../features/media/MediaViewerScreen';
 import { NewChatScreen } from '../../features/newchat/NewChatScreen';
+import { NewGroupScreen } from '../../features/newchat/NewGroupScreen';
 import { ScanScreen } from '../../features/scan/ScanScreen';
 import { AddContactScreen } from '../../features/settings/AddContactScreen';
 import { RequestDetailScreen } from '../../features/requests/RequestDetailScreen';
@@ -30,6 +32,8 @@ export function RootNavigator() {
       <Stack.Screen name="ContactProfile" component={ContactProfileScreen} />
       <Stack.Screen name="Requests" component={RequestsScreen} />
       <Stack.Screen name="RequestDetail" component={RequestDetailScreen} />
+      <Stack.Screen name="NewGroup" component={NewGroupScreen} />
+      <Stack.Screen name="GroupInfo" component={GroupInfoScreen} />
     </Stack.Navigator>
   );
 }

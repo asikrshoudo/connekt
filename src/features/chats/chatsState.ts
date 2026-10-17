@@ -1,4 +1,4 @@
-import type { Attachment, Conversation, Message } from '../../types/chat';
+import type { Attachment, Conversation, Member, Message } from '../../types/chat';
 import type { MessageRequest } from '../../types/request';
 import { messagePreview } from '../../utils/messagePreview';
 
@@ -32,7 +32,9 @@ export type ChatsAction =
   | { type: 'declineRequest'; id: string }
   | { type: 'blockRequest'; id: string }
   | { type: 'block'; id: string }
-  | { type: 'unblock'; id: string };
+  | { type: 'unblock'; id: string }
+  | { type: 'createGroup'; id: string; name: string; members: Member[]; now: number }
+  | { type: 'leaveGroup'; id: string };
 
 export type ChatListItem = {
   conversation: Conversation;
@@ -168,6 +170,30 @@ export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState
       return { ...state, blockedIds: [...state.blockedIds, action.id] };
     case 'unblock':
       return { ...state, blockedIds: state.blockedIds.filter((id) => id !== action.id) };
+    case 'createGroup': {
+      const conversation: Conversation = {
+        id: action.id,
+        name: action.name,
+        lastMessage: '',
+        lastMessageAt: action.now,
+        unreadCount: 0,
+        members: action.members,
+      };
+      return {
+        ...state,
+        conversations: [...state.conversations, conversation],
+        messages: { ...state.messages, [action.id]: [] },
+      };
+    }
+    case 'leaveGroup':
+      return {
+        ...state,
+        conversations: state.conversations.filter((c) => c.id !== action.id),
+        pinnedIds: state.pinnedIds.filter((id) => id !== action.id),
+        messages: Object.fromEntries(
+          Object.entries(state.messages).filter(([id]) => id !== action.id),
+        ),
+      };
     case 'deleteMessage': {
       const list = state.messages[action.conversationId];
       if (!list) return state;

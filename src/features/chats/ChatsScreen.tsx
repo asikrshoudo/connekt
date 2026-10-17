@@ -72,6 +72,14 @@ export function ChatsScreen() {
       },
     },
     {
+      label: 'New group',
+      icon: 'people-outline',
+      onPress: () => {
+        setPlusPoint(null);
+        navigation.navigate('NewGroup');
+      },
+    },
+    {
       label: 'Add contact',
       icon: 'person-add-outline',
       onPress: () => {

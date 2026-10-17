@@ -7,7 +7,7 @@ import {
   useRef,
   type ReactNode,
 } from 'react';
-import type { Conversation, Message, OutgoingContent } from '../../types/chat';
+import type { Conversation, Member, Message, OutgoingContent } from '../../types/chat';
 import type { MessageRequest } from '../../types/request';
 import {
   chatsReducer,
@@ -30,6 +30,8 @@ type ChatsContextValue = {
   react: (conversationId: string, messageId: string, emoji: string) => void;
   deleteMessage: (conversationId: string, messageId: string) => void;
   startChat: (id: string, name: string) => void;
+  createGroup: (name: string, members: Member[]) => string;
+  leaveGroup: (id: string) => void;
   requests: MessageRequest[];
   isBlocked: (id: string) => boolean;
   acceptRequest: (id: string) => void;
@@ -103,6 +105,14 @@ export function ChatsProvider({
   const block = useCallback((id: string) => dispatch({ type: 'block', id }), []);
   const unblock = useCallback((id: string) => dispatch({ type: 'unblock', id }), []);
 
+  const createGroup = useCallback((name: string, members: Member[]) => {
+    counter.current += 1;
+    const id = 'group-' + Date.now() + '-' + counter.current;
+    dispatch({ type: 'createGroup', id, name, members, now: Date.now() });
+    return id;
+  }, []);
+  const leaveGroup = useCallback((id: string) => dispatch({ type: 'leaveGroup', id }), []);
+
   const value = useMemo<ChatsContextValue>(
     () => ({
       items: selectChatList(state),
@@ -122,6 +132,8 @@ export function ChatsProvider({
       blockRequest,
       block,
       unblock,
+      createGroup,
+      leaveGroup,
       getConversation: (id) => state.conversations.find((c) => c.id === id),
       getMessages: (id) => state.messages[id] ?? NO_MESSAGES,
     }),
@@ -140,6 +152,8 @@ export function ChatsProvider({
       blockRequest,
       block,
       unblock,
+      createGroup,
+      leaveGroup,
     ],
   );
 

@@ -15,6 +15,7 @@ import type { Contact } from '../../types/contact';
 import { useChats } from '../chats/ChatsProvider';
 import { SampleDataNotice } from '../chats/SampleDataNotice';
 import { useContacts } from '../contacts/ContactsProvider';
+import { NewGroupRow } from './NewGroupRow';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewChat'>;
 
@@ -46,6 +47,7 @@ export function NewChatScreen({ navigation }: Props) {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           contentContainerStyle={styles.list}
+          ListHeaderComponent={<NewGroupRow onPress={() => navigation.navigate('NewGroup')} />}
           ListEmptyComponent={
             <EmptyState title="No contacts found" message="Try a different name." />
           }
