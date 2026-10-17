@@ -1,12 +1,16 @@
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Constants from 'expo-constants';
-import { Linking, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { TabScreen } from '../../components/layout/TabScreen';
 import { TAB_BAR_CLEARANCE } from '../../components/navigation/tabBarMetrics';
 import { SettingsRow } from '../../components/ui/SettingsRow';
 import { SettingsSection } from '../../components/ui/SettingsSection';
+import type { RootStackParamList } from '../../core/navigation/types';
 import { spacing } from '../../core/theme/spacing';
 
 export function SettingsScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const version = Constants.expoConfig?.version ?? 'Unknown';
 
   return (
@@ -16,12 +20,12 @@ export function SettingsScreen() {
       >
         <SettingsSection
           title="General"
-          footer="Opens Android settings, where you can review what Connekt can access."
+          footer="Review and allow what Connekt can access on your phone."
         >
           <SettingsRow
             icon="shield-checkmark-outline"
             label="Permissions"
-            onPress={() => void Linking.openSettings()}
+            onPress={() => navigation.navigate('Permissions')}
           />
         </SettingsSection>
 

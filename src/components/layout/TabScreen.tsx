@@ -10,13 +10,15 @@ type Props = {
   children: ReactNode;
   // Set to false for scrolling lists that handle their own bottom padding.
   padForTabBar?: boolean;
+  headerRight?: ReactNode;
 };
 
-export function TabScreen({ title, children, padForTabBar = true }: Props) {
+export function TabScreen({ title, children, padForTabBar = true, headerRight }: Props) {
   return (
     <Screen>
       <View style={styles.header}>
         <AppText variant="largeTitle">{title}</AppText>
+        {headerRight}
       </View>
       <View style={[styles.content, padForTabBar && styles.clearance]}>{children}</View>
     </Screen>
@@ -25,6 +27,9 @@ export function TabScreen({ title, children, padForTabBar = true }: Props) {
 
 const styles = StyleSheet.create({
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
     paddingBottom: spacing.sm,

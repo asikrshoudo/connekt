@@ -28,6 +28,7 @@ type ChatsContextValue = {
   send: (conversationId: string, text: string, replyToId?: string) => void;
   react: (conversationId: string, messageId: string, emoji: string) => void;
   deleteMessage: (conversationId: string, messageId: string) => void;
+  startChat: (id: string, name: string) => void;
   getConversation: (id: string) => Conversation | undefined;
   getMessages: (id: string) => Message[];
 };
@@ -80,6 +81,11 @@ export function ChatsProvider({
     [],
   );
 
+  const startChat = useCallback(
+    (id: string, name: string) => dispatch({ type: 'startChat', id, name, now: Date.now() }),
+    [],
+  );
+
   const value = useMemo<ChatsContextValue>(
     () => ({
       items: selectChatList(state),
@@ -91,10 +97,11 @@ export function ChatsProvider({
       send,
       react,
       deleteMessage,
+      startChat,
       getConversation: (id) => state.conversations.find((c) => c.id === id),
       getMessages: (id) => state.messages[id] ?? NO_MESSAGES,
     }),
-    [state, isSample, pin, unpin, markRead, send, react, deleteMessage],
+    [state, isSample, pin, unpin, markRead, send, react, deleteMessage, startChat],
   );
 
   return <ChatsContext.Provider value={value}>{children}</ChatsContext.Provider>;

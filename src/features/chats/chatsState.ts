@@ -21,7 +21,8 @@ export type ChatsAction =
       replyToId?: string;
     }
   | { type: 'react'; conversationId: string; messageId: string; emoji: string }
-  | { type: 'deleteMessage'; conversationId: string; messageId: string };
+  | { type: 'deleteMessage'; conversationId: string; messageId: string }
+  | { type: 'startChat'; id: string; name: string; now: number };
 
 export type ChatListItem = {
   conversation: Conversation;
@@ -93,6 +94,21 @@ export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState
               : { ...m, reaction: m.reaction === action.emoji ? undefined : action.emoji },
           ),
         },
+      };
+    }
+    case 'startChat': {
+      if (state.conversations.some((c) => c.id === action.id)) return state;
+      const conversation: Conversation = {
+        id: action.id,
+        name: action.name,
+        lastMessage: '',
+        lastMessageAt: action.now,
+        unreadCount: 0,
+      };
+      return {
+        ...state,
+        conversations: [...state.conversations, conversation],
+        messages: { ...state.messages, [action.id]: [] },
       };
     }
     case 'deleteMessage': {

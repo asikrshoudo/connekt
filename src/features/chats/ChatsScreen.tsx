@@ -1,25 +1,29 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useState } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { ActionSheet } from '../../components/feedback/ActionSheet';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import type { MenuItem } from '../../components/feedback/MenuCard';
 import { TabScreen } from '../../components/layout/TabScreen';
 import { TAB_BAR_CLEARANCE } from '../../components/navigation/tabBarMetrics';
+import { HeaderIconButton } from '../../components/ui/HeaderIconButton';
 import type { RootStackParamList } from '../../core/navigation/types';
+import { spacing } from '../../core/theme/spacing';
 import { ChatPopover } from './ChatPopover';
 import { MAX_PINNED } from './chatsState';
 import { ConversationRow } from './ConversationRow';
 import { useChats } from './ChatsProvider';
 import { SampleDataNotice } from './SampleDataNotice';
 
-type MenuState = { id: string; point: { x: number; y: number } };
+type Point = { x: number; y: number };
+type MenuState = { id: string; point: Point };
 
 export function ChatsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { items, isSample, canPinMore, pin, unpin, markRead } = useChats();
   const [menu, setMenu] = useState<MenuState | null>(null);
+  const [plusPoint, setPlusPoint] = useState<Point | null>(null);
   const [showLimit, setShowLimit] = useState(false);
 
   const menuItem = menu ? items.find((item) => item.conversation.id === menu.id) : undefined;
@@ -57,8 +61,46 @@ export function ChatsScreen() {
     }
   }
 
+  const plusItems: MenuItem[] = [
+    {
+      label: 'New chat',
+      icon: 'chatbubble-outline',
+      onPress: () => {
+        setPlusPoint(null);
+        navigation.navigate('NewChat');
+      },
+    },
+    {
+      label: 'Add contact',
+      icon: 'person-add-outline',
+      onPress: () => {
+        setPlusPoint(null);
+        navigation.navigate('AddContact');
+      },
+    },
+  ];
+
   return (
-    <TabScreen title="Chats" padForTabBar={false}>
+    <TabScreen
+      title="Chats"
+      padForTabBar={false}
+      headerRight={
+        <View style={styles.actions}>
+          <HeaderIconButton
+            icon="scan-outline"
+            label="Scan QR code"
+            onPress={() => navigation.navigate('Scan')}
+          />
+          <HeaderIconButton
+            icon="add"
+            label="New chat or contact"
+            onPress={(event) =>
+              setPlusPoint({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY })
+            }
+          />
+        </View>
+      }
+    >
       <FlatList
         data={items}
         keyExtractor={(item) => item.conversation.id}
@@ -86,6 +128,13 @@ export function ChatsScreen() {
         onClose={() => setMenu(null)}
       />
 
+      <ChatPopover
+        visible={plusPoint !== null}
+        point={plusPoint ?? { x: 0, y: 0 }}
+        items={plusItems}
+        onClose={() => setPlusPoint(null)}
+      />
+
       <ActionSheet
         visible={showLimit}
         title="Pin limit reached"
@@ -97,3 +146,7 @@ export function ChatsScreen() {
     </TabScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  actions: { flexDirection: 'row', gap: spacing.sm },
+});
