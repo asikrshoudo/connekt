@@ -1,6 +1,6 @@
 import { DarkTheme, NavigationContainer } from '@react-navigation/native';
 import { useColors } from '../theme/ThemeProvider';
-import { RootTabs } from './RootTabs';
+import { RootNavigator } from './RootNavigator';
 
 export function AppNavigation() {
   const colors = useColors();
@@ -18,7 +18,7 @@ export function AppNavigation() {
 
   return (
     <NavigationContainer theme={theme}>
-      <RootTabs />
+      <RootNavigator />
     </NavigationContainer>
   );
 }

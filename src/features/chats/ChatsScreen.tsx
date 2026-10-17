@@ -1,15 +1,19 @@
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { FlatList } from 'react-native';
 import { ActionSheet } from '../../components/feedback/ActionSheet';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { TabScreen } from '../../components/layout/TabScreen';
 import { TAB_BAR_CLEARANCE } from '../../components/navigation/tabBarMetrics';
+import type { RootStackParamList } from '../../core/navigation/types';
 import { MAX_PINNED } from './chatsState';
 import { ConversationRow } from './ConversationRow';
 import { useChats } from './ChatsProvider';
 import { SampleDataNotice } from './SampleDataNotice';
 
 export function ChatsScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { items, isSample, canPinMore, pin, unpin } = useChats();
   const [menuId, setMenuId] = useState<string | null>(null);
   const [showLimit, setShowLimit] = useState(false);
@@ -39,7 +43,9 @@ export function ChatsScreen() {
         renderItem={({ item }) => (
           <ConversationRow
             item={item}
-            onPress={() => undefined}
+            onPress={() =>
+              navigation.navigate('Conversation', { conversationId: item.conversation.id })
+            }
             onLongPress={() => setMenuId(item.conversation.id)}
             onTogglePin={() => togglePin(item.conversation.id, item.pinned)}
           />

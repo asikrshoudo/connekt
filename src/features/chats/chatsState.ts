@@ -1,13 +1,18 @@
-import type { Conversation } from '../../types/chat';
+import type { Conversation, Message } from '../../types/chat';
 
 export const MAX_PINNED = 3;
 
 export type ChatsState = {
   conversations: Conversation[];
   pinnedIds: string[];
+  messages: Record<string, Message[]>;
 };
 
-export type ChatsAction = { type: 'pin'; id: string } | { type: 'unpin'; id: string };
+export type ChatsAction =
+  | { type: 'pin'; id: string }
+  | { type: 'unpin'; id: string }
+  | { type: 'markRead'; id: string }
+  | { type: 'send'; conversationId: string; messageId: string; text: string; sentAt: number };
 
 export type ChatListItem = {
   conversation: Conversation;
@@ -17,9 +22,10 @@ export type ChatListItem = {
 export function createInitialState(
   conversations: Conversation[],
   pinnedIds: string[],
+  messages: Record<string, Message[]>,
 ): ChatsState {
   const known = pinnedIds.filter((id) => conversations.some((c) => c.id === id));
-  return { conversations, pinnedIds: known.slice(0, MAX_PINNED) };
+  return { conversations, pinnedIds: known.slice(0, MAX_PINNED), messages };
 }
 
 export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState {
@@ -32,6 +38,38 @@ export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState
     }
     case 'unpin':
       return { ...state, pinnedIds: state.pinnedIds.filter((id) => id !== action.id) };
+    case 'markRead': {
+      const target = state.conversations.find((c) => c.id === action.id);
+      if (!target || target.unreadCount === 0) return state;
+      return {
+        ...state,
+        conversations: state.conversations.map((c) =>
+          c.id === action.id ? { ...c, unreadCount: 0 } : c,
+        ),
+      };
+    }
+    case 'send': {
+      if (!state.conversations.some((c) => c.id === action.conversationId)) return state;
+      const message: Message = {
+        id: action.messageId,
+        conversationId: action.conversationId,
+        text: action.text,
+        sentAt: action.sentAt,
+        direction: 'outgoing',
+      };
+      return {
+        ...state,
+        conversations: state.conversations.map((c) =>
+          c.id === action.conversationId
+            ? { ...c, lastMessage: action.text, lastMessageAt: action.sentAt }
+            : c,
+        ),
+        messages: {
+          ...state.messages,
+          [action.conversationId]: [...(state.messages[action.conversationId] ?? []), message],
+        },
+      };
+    }
   }
 }
 

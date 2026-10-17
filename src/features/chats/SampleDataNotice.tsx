@@ -4,12 +4,14 @@ import { radius } from '../../core/theme/radius';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 
-export function SampleDataNotice() {
+type Props = { message?: string };
+
+export function SampleDataNotice({ message = 'Sample data. These are not real messages.' }: Props) {
   const colors = useColors();
   return (
     <View style={[styles.box, { backgroundColor: colors.surface }]}>
       <AppText variant="footnote" tone="muted">
-        Sample data. These are not real messages.
+        {message}
       </AppText>
     </View>
   );

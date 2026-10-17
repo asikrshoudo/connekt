@@ -3,7 +3,13 @@ import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColors } from '../../core/theme/ThemeProvider';
 
-export function Screen({ children }: { children: ReactNode }) {
+type Props = {
+  children: ReactNode;
+  // Set to false when the screen handles the bottom inset itself (e.g. a composer).
+  padBottom?: boolean;
+};
+
+export function Screen({ children, padBottom = true }: Props) {
   const insets = useSafeAreaInsets();
   const colors = useColors();
   return (
@@ -13,7 +19,7 @@ export function Screen({ children }: { children: ReactNode }) {
         {
           backgroundColor: colors.background,
           paddingTop: insets.top,
-          paddingBottom: insets.bottom,
+          paddingBottom: padBottom ? insets.bottom : 0,
           paddingLeft: insets.left,
           paddingRight: insets.right,
         },
