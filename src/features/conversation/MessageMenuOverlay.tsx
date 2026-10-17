@@ -3,7 +3,12 @@ import type { ComponentRef, RefObject } from 'react';
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MENU_ROW_HEIGHT, MENU_WIDTH, MenuCard } from '../../components/feedback/MenuCard';
+import {
+  MENU_ROW_HEIGHT,
+  MENU_WIDTH,
+  MenuCard,
+  type MenuItem,
+} from '../../components/feedback/MenuCard';
 import { popIn } from '../../components/feedback/popKeyframe';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { MessageBody } from './MessageBody';
@@ -12,7 +17,6 @@ import type { MessageMenuTarget } from './types';
 
 const MARGIN = 12;
 const GAP = 10;
-const MENU_ITEMS = 3;
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), Math.max(min, max));
@@ -43,7 +47,11 @@ export function MessageMenuOverlay({
   const { message, rect, reply } = target;
   const alignRight = message.direction === 'outgoing';
 
-  const menuHeight = MENU_ROW_HEIGHT * MENU_ITEMS;
+  const hasText = message.text.length > 0;
+  const menuItems: MenuItem[] = [{ label: 'Reply', icon: 'arrow-undo-outline', onPress: onReply }];
+  if (hasText) menuItems.push({ label: 'Copy', icon: 'copy-outline', onPress: onCopy });
+  menuItems.push({ label: 'Delete', icon: 'trash-outline', onPress: onDelete, destructive: true });
+  const menuHeight = MENU_ROW_HEIGHT * menuItems.length;
   const minTop = insets.top + MARGIN + REACTION_BAR_HEIGHT + GAP;
   const maxBottom = screenHeight - insets.bottom - MARGIN - menuHeight - GAP;
   const previewHeight = Math.min(rect.height, Math.max(60, maxBottom - minTop));
@@ -114,13 +122,7 @@ export function MessageMenuOverlay({
           },
         ]}
       >
-        <MenuCard
-          items={[
-            { label: 'Reply', icon: 'arrow-undo-outline', onPress: onReply },
-            { label: 'Copy', icon: 'copy-outline', onPress: onCopy },
-            { label: 'Delete', icon: 'trash-outline', onPress: onDelete, destructive: true },
-          ]}
-        />
+        <MenuCard items={menuItems} />
       </Animated.View>
     </Animated.View>
   );

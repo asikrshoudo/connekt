@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ConversationScreen } from '../../features/conversation/ConversationScreen';
+import { MediaViewerScreen } from '../../features/media/MediaViewerScreen';
 import { NewChatScreen } from '../../features/newchat/NewChatScreen';
 import { ScanScreen } from '../../features/scan/ScanScreen';
 import { AddContactScreen } from '../../features/settings/AddContactScreen';
@@ -22,6 +23,7 @@ export function RootNavigator() {
       <Stack.Screen name="Scan" component={ScanScreen} />
       <Stack.Screen name="NewChat" component={NewChatScreen} />
       <Stack.Screen name="AddContact" component={AddContactScreen} />
+      <Stack.Screen name="MediaViewer" component={MediaViewerScreen} />
     </Stack.Navigator>
   );
 }

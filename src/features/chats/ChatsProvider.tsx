@@ -7,7 +7,7 @@ import {
   useRef,
   type ReactNode,
 } from 'react';
-import type { Conversation, Message } from '../../types/chat';
+import type { Conversation, Message, OutgoingContent } from '../../types/chat';
 import {
   chatsReducer,
   createInitialState,
@@ -25,7 +25,7 @@ type ChatsContextValue = {
   pin: (id: string) => void;
   unpin: (id: string) => void;
   markRead: (id: string) => void;
-  send: (conversationId: string, text: string, replyToId?: string) => void;
+  send: (conversationId: string, content: OutgoingContent, replyToId?: string) => void;
   react: (conversationId: string, messageId: string, emoji: string) => void;
   deleteMessage: (conversationId: string, messageId: string) => void;
   startChat: (id: string, name: string) => void;
@@ -59,12 +59,13 @@ export function ChatsProvider({
   const pin = useCallback((id: string) => dispatch({ type: 'pin', id }), []);
   const unpin = useCallback((id: string) => dispatch({ type: 'unpin', id }), []);
   const markRead = useCallback((id: string) => dispatch({ type: 'markRead', id }), []);
-  const send = useCallback((conversationId: string, text: string, replyToId?: string) => {
+  const send = useCallback((conversationId: string, content: OutgoingContent, replyToId?: string) => {
     counter.current += 1;
     dispatch({
       type: 'send',
       conversationId,
-      text,
+      text: content.text,
+      attachment: content.attachment,
       replyToId,
       messageId: `local-${Date.now()}-${counter.current}`,
       sentAt: Date.now(),

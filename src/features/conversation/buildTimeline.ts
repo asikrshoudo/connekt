@@ -1,6 +1,7 @@
 import type { Message } from '../../types/chat';
 import { dayDifference } from '../../utils/dates';
 import { formatDayLabel } from '../../utils/formatDayLabel';
+import { messagePreview } from '../../utils/messagePreview';
 
 const GROUP_WINDOW_MS = 5 * 60_000;
 
@@ -55,7 +56,7 @@ export function buildTimeline(messages: Message[]): TimelineRow[] {
     if (message.replyToId) {
       const original = byId.get(message.replyToId);
       reply = original
-        ? { direction: original.direction, text: original.text }
+        ? { direction: original.direction, text: messagePreview(original) }
         : { missing: true };
     }
 

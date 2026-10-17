@@ -95,7 +95,10 @@ export function ChatsScreen() {
             icon="add"
             label="New chat or contact"
             onPress={(event) =>
-              setPlusPoint({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY })
+              setPlusPoint({
+                x: event.nativeEvent.pageX,
+                y: event.nativeEvent.pageY - event.nativeEvent.locationY + 40,
+              })
             }
           />
         </View>
@@ -130,6 +133,7 @@ export function ChatsScreen() {
 
       <ChatPopover
         visible={plusPoint !== null}
+        alignRight
         point={plusPoint ?? { x: 0, y: 0 }}
         items={plusItems}
         onClose={() => setPlusPoint(null)}

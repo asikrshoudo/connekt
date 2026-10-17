@@ -5,4 +5,5 @@ export type RootStackParamList = {
   Scan: undefined;
   NewChat: undefined;
   AddContact: undefined;
+  MediaViewer: { uri: string; kind: 'image' | 'video' };
 };

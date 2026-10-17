@@ -1,4 +1,5 @@
-import type { Conversation, Message } from '../../types/chat';
+import type { Attachment, Conversation, Message } from '../../types/chat';
+import { messagePreview } from '../../utils/messagePreview';
 
 export const MAX_PINNED = 3;
 
@@ -19,6 +20,7 @@ export type ChatsAction =
       text: string;
       sentAt: number;
       replyToId?: string;
+      attachment?: Attachment;
     }
   | { type: 'react'; conversationId: string; messageId: string; emoji: string }
   | { type: 'deleteMessage'; conversationId: string; messageId: string }
@@ -67,12 +69,13 @@ export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState
         sentAt: action.sentAt,
         direction: 'outgoing',
         ...(action.replyToId ? { replyToId: action.replyToId } : {}),
+        ...(action.attachment ? { attachment: action.attachment } : {}),
       };
       return {
         ...state,
         conversations: state.conversations.map((c) =>
           c.id === action.conversationId
-            ? { ...c, lastMessage: action.text, lastMessageAt: action.sentAt }
+            ? { ...c, lastMessage: messagePreview(message), lastMessageAt: action.sentAt }
             : c,
         ),
         messages: {
@@ -123,7 +126,7 @@ export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState
           c.id === action.conversationId
             ? {
                 ...c,
-                lastMessage: last ? last.text : '',
+                lastMessage: last ? messagePreview(last) : '',
                 lastMessageAt: last ? last.sentAt : c.lastMessageAt,
               }
             : c,

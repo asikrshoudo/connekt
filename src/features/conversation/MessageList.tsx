@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 import { FlatList } from 'react-native';
 import { spacing } from '../../core/theme/spacing';
+import type { Message } from '../../types/chat';
 import type { TimelineRow } from './buildTimeline';
 import { DateSeparator } from './DateSeparator';
 import { MessageBubble } from './MessageBubble';
@@ -10,11 +11,18 @@ type Props = {
   rows: TimelineRow[];
   contactName: string;
   onMessageLongPress: (target: MessageMenuTarget) => void;
+  onMessageOpen: (message: Message) => void;
   footer?: ReactElement;
 };
 
 // Rows are newest first; `inverted` puts the newest message at the bottom.
-export function MessageList({ rows, contactName, onMessageLongPress, footer }: Props) {
+export function MessageList({
+  rows,
+  contactName,
+  onMessageLongPress,
+  onMessageOpen,
+  footer,
+}: Props) {
   return (
     <FlatList
       data={rows}
@@ -34,6 +42,7 @@ export function MessageList({ rows, contactName, onMessageLongPress, footer }: P
             groupedWithPrevious={item.groupedWithPrevious}
             showTime={item.showTime}
             onLongPress={onMessageLongPress}
+            onOpen={onMessageOpen}
           />
         )
       }

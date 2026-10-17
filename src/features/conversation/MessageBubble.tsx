@@ -16,6 +16,7 @@ type Props = {
   groupedWithPrevious: boolean;
   showTime: boolean;
   onLongPress: (target: MessageMenuTarget) => void;
+  onOpen: (message: Message) => void;
 };
 
 function toPreview(reply: ReplyRef | null, contactName: string): ReplyPreview | null {
@@ -34,6 +35,7 @@ export function MessageBubble({
   groupedWithPrevious,
   showTime,
   onLongPress,
+  onOpen,
 }: Props) {
   const colors = useColors();
   const ref = useRef<ComponentRef<typeof View>>(null);
@@ -57,6 +59,7 @@ export function MessageBubble({
       <Pressable
         ref={ref}
         collapsable={false}
+        onPress={message.attachment ? () => onOpen(message) : undefined}
         onLongPress={handleLongPress}
         delayLongPress={250}
         accessibilityLabel={`${outgoing ? 'You' : contactName}: ${message.text}`}

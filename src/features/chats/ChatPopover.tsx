@@ -16,11 +16,12 @@ type Props = {
   visible: boolean;
   point: { x: number; y: number };
   items: MenuItem[];
+  alignRight?: boolean;
   onClose: () => void;
 };
 
 // A small menu that opens next to the finger. No blur and no dimming.
-export function ChatPopover({ visible, point, items, onClose }: Props) {
+export function ChatPopover({ visible, point, items, alignRight = false, onClose }: Props) {
   const insets = useSafeAreaInsets();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
@@ -29,10 +30,12 @@ export function ChatPopover({ visible, point, items, onClose }: Props) {
   const top = fitsBelow
     ? point.y + OFFSET
     : Math.max(insets.top + MARGIN, point.y - OFFSET - menuHeight);
-  const left = Math.min(
-    Math.max(point.x - MENU_WIDTH / 2, MARGIN),
-    Math.max(MARGIN, screenWidth - MARGIN - MENU_WIDTH),
-  );
+  const left = alignRight
+    ? screenWidth - MARGIN - MENU_WIDTH
+    : Math.min(
+        Math.max(point.x - MENU_WIDTH / 2, MARGIN),
+        Math.max(MARGIN, screenWidth - MARGIN - MENU_WIDTH),
+      );
 
   return (
     <Modal
@@ -52,7 +55,7 @@ export function ChatPopover({ visible, point, items, onClose }: Props) {
         entering={popIn}
         style={[
           styles.menu,
-          { top, left, transformOrigin: fitsBelow ? 'center top' : 'center bottom' },
+          { top, left, transformOrigin: alignRight ? 'right top' : fitsBelow ? 'center top' : 'center bottom' },
         ]}
       >
         <MenuCard items={items} />
