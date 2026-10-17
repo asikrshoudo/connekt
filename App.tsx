@@ -8,6 +8,7 @@ import { sampleCalls } from './src/data/sample/sampleCalls';
 import { sampleContacts } from './src/data/sample/sampleContacts';
 import { sampleConversations, samplePinnedIds } from './src/data/sample/sampleConversations';
 import { sampleMessages } from './src/data/sample/sampleMessages';
+import { sampleRequests } from './src/data/sample/sampleRequests';
 import { CallsProvider } from './src/features/calls/CallsProvider';
 import { ChatsProvider } from './src/features/chats/ChatsProvider';
 import { ContactsProvider } from './src/features/contacts/ContactsProvider';
@@ -22,6 +23,7 @@ export default function App() {
               initialConversations={sampleConversations}
               initialMessages={sampleMessages}
               initialPinnedIds={samplePinnedIds}
+              initialRequests={sampleRequests}
               isSample
             >
               <ContactsProvider initialContacts={sampleContacts} isSample>

@@ -6,4 +6,7 @@ export type RootStackParamList = {
   NewChat: undefined;
   AddContact: undefined;
   MediaViewer: { uri: string; kind: 'image' | 'video' };
+  ContactProfile: { conversationId: string };
+  Requests: undefined;
+  RequestDetail: { requestId: string };
 };

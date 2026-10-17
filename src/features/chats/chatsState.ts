@@ -1,4 +1,5 @@
 import type { Attachment, Conversation, Message } from '../../types/chat';
+import type { MessageRequest } from '../../types/request';
 import { messagePreview } from '../../utils/messagePreview';
 
 export const MAX_PINNED = 3;
@@ -7,6 +8,8 @@ export type ChatsState = {
   conversations: Conversation[];
   pinnedIds: string[];
   messages: Record<string, Message[]>;
+  requests: MessageRequest[];
+  blockedIds: string[];
 };
 
 export type ChatsAction =
@@ -24,7 +27,12 @@ export type ChatsAction =
     }
   | { type: 'react'; conversationId: string; messageId: string; emoji: string }
   | { type: 'deleteMessage'; conversationId: string; messageId: string }
-  | { type: 'startChat'; id: string; name: string; now: number };
+  | { type: 'startChat'; id: string; name: string; now: number }
+  | { type: 'acceptRequest'; id: string }
+  | { type: 'declineRequest'; id: string }
+  | { type: 'blockRequest'; id: string }
+  | { type: 'block'; id: string }
+  | { type: 'unblock'; id: string };
 
 export type ChatListItem = {
   conversation: Conversation;
@@ -35,9 +43,16 @@ export function createInitialState(
   conversations: Conversation[],
   pinnedIds: string[],
   messages: Record<string, Message[]>,
+  requests: MessageRequest[] = [],
 ): ChatsState {
   const known = pinnedIds.filter((id) => conversations.some((c) => c.id === id));
-  return { conversations, pinnedIds: known.slice(0, MAX_PINNED), messages };
+  return {
+    conversations,
+    pinnedIds: known.slice(0, MAX_PINNED),
+    messages,
+    requests,
+    blockedIds: [],
+  };
 }
 
 export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState {
@@ -114,6 +129,45 @@ export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState
         messages: { ...state.messages, [action.id]: [] },
       };
     }
+    case 'acceptRequest': {
+      const request = state.requests.find((r) => r.id === action.id);
+      if (!request) return state;
+      const conversation: Conversation = {
+        id: request.id,
+        name: request.name,
+        lastMessage: request.firstMessage,
+        lastMessageAt: request.receivedAt,
+        unreadCount: 1,
+      };
+      const first: Message = {
+        id: request.id + '-m0',
+        conversationId: request.id,
+        text: request.firstMessage,
+        sentAt: request.receivedAt,
+        direction: 'incoming',
+      };
+      return {
+        ...state,
+        requests: state.requests.filter((r) => r.id !== action.id),
+        conversations: [...state.conversations, conversation],
+        messages: { ...state.messages, [request.id]: [first] },
+      };
+    }
+    case 'declineRequest':
+      return { ...state, requests: state.requests.filter((r) => r.id !== action.id) };
+    case 'blockRequest':
+      return {
+        ...state,
+        requests: state.requests.filter((r) => r.id !== action.id),
+        blockedIds: state.blockedIds.includes(action.id)
+          ? state.blockedIds
+          : [...state.blockedIds, action.id],
+      };
+    case 'block':
+      if (state.blockedIds.includes(action.id)) return state;
+      return { ...state, blockedIds: [...state.blockedIds, action.id] };
+    case 'unblock':
+      return { ...state, blockedIds: state.blockedIds.filter((id) => id !== action.id) };
     case 'deleteMessage': {
       const list = state.messages[action.conversationId];
       if (!list) return state;

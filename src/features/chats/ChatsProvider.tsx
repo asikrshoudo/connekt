@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { Conversation, Message, OutgoingContent } from '../../types/chat';
+import type { MessageRequest } from '../../types/request';
 import {
   chatsReducer,
   createInitialState,
@@ -29,6 +30,13 @@ type ChatsContextValue = {
   react: (conversationId: string, messageId: string, emoji: string) => void;
   deleteMessage: (conversationId: string, messageId: string) => void;
   startChat: (id: string, name: string) => void;
+  requests: MessageRequest[];
+  isBlocked: (id: string) => boolean;
+  acceptRequest: (id: string) => void;
+  declineRequest: (id: string) => void;
+  blockRequest: (id: string) => void;
+  block: (id: string) => void;
+  unblock: (id: string) => void;
   getConversation: (id: string) => Conversation | undefined;
   getMessages: (id: string) => Message[];
 };
@@ -39,6 +47,7 @@ type ProviderProps = {
   initialConversations: Conversation[];
   initialMessages?: Record<string, Message[]>;
   initialPinnedIds?: string[];
+  initialRequests?: MessageRequest[];
   isSample?: boolean;
   children: ReactNode;
 };
@@ -47,12 +56,13 @@ export function ChatsProvider({
   initialConversations,
   initialMessages = {},
   initialPinnedIds = [],
+  initialRequests = [],
   isSample = false,
   children,
 }: ProviderProps) {
   const [state, dispatch] = useReducer(
     chatsReducer,
-    createInitialState(initialConversations, initialPinnedIds, initialMessages),
+    createInitialState(initialConversations, initialPinnedIds, initialMessages, initialRequests),
   );
   const counter = useRef(0);
 
@@ -87,6 +97,12 @@ export function ChatsProvider({
     [],
   );
 
+  const acceptRequest = useCallback((id: string) => dispatch({ type: 'acceptRequest', id }), []);
+  const declineRequest = useCallback((id: string) => dispatch({ type: 'declineRequest', id }), []);
+  const blockRequest = useCallback((id: string) => dispatch({ type: 'blockRequest', id }), []);
+  const block = useCallback((id: string) => dispatch({ type: 'block', id }), []);
+  const unblock = useCallback((id: string) => dispatch({ type: 'unblock', id }), []);
+
   const value = useMemo<ChatsContextValue>(
     () => ({
       items: selectChatList(state),
@@ -99,10 +115,32 @@ export function ChatsProvider({
       react,
       deleteMessage,
       startChat,
+      requests: state.requests,
+      isBlocked: (id) => state.blockedIds.includes(id),
+      acceptRequest,
+      declineRequest,
+      blockRequest,
+      block,
+      unblock,
       getConversation: (id) => state.conversations.find((c) => c.id === id),
       getMessages: (id) => state.messages[id] ?? NO_MESSAGES,
     }),
-    [state, isSample, pin, unpin, markRead, send, react, deleteMessage, startChat],
+    [
+      state,
+      isSample,
+      pin,
+      unpin,
+      markRead,
+      send,
+      react,
+      deleteMessage,
+      startChat,
+      acceptRequest,
+      declineRequest,
+      blockRequest,
+      block,
+      unblock,
+    ],
   );
 
   return <ChatsContext.Provider value={value}>{children}</ChatsContext.Provider>;

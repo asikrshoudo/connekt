@@ -12,9 +12,17 @@ type Props = {
   value?: string;
   onPress?: () => void;
   disabled?: boolean;
+  destructive?: boolean;
 };
 
-export function SettingsRow({ icon, label, value, onPress, disabled = false }: Props) {
+export function SettingsRow({
+  icon,
+  label,
+  value,
+  onPress,
+  disabled = false,
+  destructive = false,
+}: Props) {
   const colors = useColors();
   const interactive = onPress !== undefined && !disabled;
 
@@ -23,7 +31,10 @@ export function SettingsRow({ icon, label, value, onPress, disabled = false }: P
       <View style={[styles.iconBox, { backgroundColor: colors.surfaceElevated }]}>
         <Ionicons name={icon} size={18} color={disabled ? colors.textMuted : colors.textPrimary} />
       </View>
-      <AppText tone={disabled ? 'muted' : 'primary'} style={styles.label}>
+      <AppText
+        tone={disabled ? 'muted' : 'primary'}
+        style={[styles.label, destructive ? { color: colors.destructive } : null]}
+      >
         {label}
       </AppText>
       {value ? (

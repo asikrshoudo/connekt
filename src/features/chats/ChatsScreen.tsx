@@ -14,6 +14,7 @@ import { ChatPopover } from './ChatPopover';
 import { MAX_PINNED } from './chatsState';
 import { ConversationRow } from './ConversationRow';
 import { useChats } from './ChatsProvider';
+import { RequestsRow } from '../requests/RequestsRow';
 import { SampleDataNotice } from './SampleDataNotice';
 
 type Point = { x: number; y: number };
@@ -21,7 +22,7 @@ type MenuState = { id: string; point: Point };
 
 export function ChatsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { items, isSample, canPinMore, pin, unpin, markRead } = useChats();
+  const { items, isSample, canPinMore, pin, unpin, markRead, requests } = useChats();
   const [menu, setMenu] = useState<MenuState | null>(null);
   const [plusPoint, setPlusPoint] = useState<Point | null>(null);
   const [showLimit, setShowLimit] = useState(false);
@@ -108,7 +109,17 @@ export function ChatsScreen() {
         data={items}
         keyExtractor={(item) => item.conversation.id}
         contentContainerStyle={{ paddingBottom: TAB_BAR_CLEARANCE, flexGrow: 1 }}
-        ListHeaderComponent={isSample ? <SampleDataNotice /> : undefined}
+        ListHeaderComponent={
+          <>
+            {isSample ? <SampleDataNotice /> : null}
+            {requests.length > 0 ? (
+              <RequestsRow
+                count={requests.length}
+                onPress={() => navigation.navigate('Requests')}
+              />
+            ) : null}
+          </>
+        }
         ListEmptyComponent={
           <EmptyState title="No conversations yet" message="Your conversations will appear here." />
         }

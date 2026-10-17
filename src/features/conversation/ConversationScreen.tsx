@@ -15,6 +15,7 @@ import { useChats } from '../chats/ChatsProvider';
 import { SampleDataNotice } from '../chats/SampleDataNotice';
 import { getCurrentLocation, openInMaps, pickFile, pickFromLibrary, takePhoto } from './attachments';
 import { buildTimeline } from './buildTimeline';
+import { BlockedBar } from './BlockedBar';
 import { ConversationHeader } from './ConversationHeader';
 import { MessageComposer } from './MessageComposer';
 import { MessageList } from './MessageList';
@@ -30,12 +31,13 @@ type AttachAction = 'library' | 'camera' | 'file' | 'location';
 
 export function ConversationScreen({ route, navigation }: Props) {
   const { conversationId } = route.params;
-  const { getConversation, getMessages, isSample, markRead, send, react, deleteMessage } =
+  const { getConversation, getMessages, isSample, markRead, send, react, deleteMessage, isBlocked, unblock } =
     useChats();
   const conversation = getConversation(conversationId);
   const contactName = conversation?.name ?? '';
   const messages = getMessages(conversationId);
   const rows = useMemo(() => buildTimeline(messages), [messages]);
+  const blocked = isBlocked(conversationId);
 
   const { ensure, gate } = usePermissionGate();
   const recorder = useVoiceRecorder();
@@ -181,7 +183,11 @@ export function ConversationScreen({ route, navigation }: Props) {
     <View style={styles.flex}>
       <BlurTargetView ref={blurTargetRef} style={styles.flex}>
         <Screen padBottom={false}>
-          <ConversationHeader name={conversation.name} onBack={() => navigation.goBack()} />
+          <ConversationHeader
+            name={conversation.name}
+            onBack={() => navigation.goBack()}
+            onProfile={() => navigation.navigate('ContactProfile', { conversationId })}
+          />
           <KeyboardAvoidingView behavior="padding" style={styles.flex}>
             {rows.length === 0 ? (
               <EmptyState title="No messages yet" message="Say hello to start the conversation." />
@@ -198,6 +204,9 @@ export function ConversationScreen({ route, navigation }: Props) {
                 }
               />
             )}
+            {blocked ? (
+              <BlockedBar name={contactName} onUnblock={() => unblock(conversationId)} />
+            ) : (
             <MessageComposer
               onSendText={handleSendText}
               onAttach={() => setAttachOpen(true)}
@@ -209,6 +218,7 @@ export function ConversationScreen({ route, navigation }: Props) {
               replyPreview={replyTo ? { author: replyTo.author, text: replyTo.text } : null}
               onCancelReply={() => setReplyTo(null)}
             />
+            )}
           </KeyboardAvoidingView>
         </Screen>
       </BlurTargetView>
