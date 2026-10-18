@@ -11,7 +11,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0A0A0C",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -39,7 +39,15 @@
       "react-native-nfc-manager",
       "expo-audio",
       "expo-video",
-      "expo-build-properties"
+      "expo-build-properties",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0A0A0C",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200
+        }
+      ]
     ]
   }
 }
