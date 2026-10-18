@@ -38,7 +38,8 @@
       "expo-font",
       "react-native-nfc-manager",
       "expo-audio",
-      "expo-video"
+      "expo-video",
+      "expo-build-properties"
     ]
   }
 }
