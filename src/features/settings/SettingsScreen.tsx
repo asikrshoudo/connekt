@@ -9,11 +9,14 @@ import { SettingsSection } from '../../components/ui/SettingsSection';
 import type { RootStackParamList } from '../../core/navigation/types';
 import { useChats } from '../chats/ChatsProvider';
 import { ProfileCard } from '../profile/ProfileCard';
+import { themeNames } from '../../core/theme/palettes';
 import { spacing } from '../../core/theme/spacing';
+import { useThemeSettings } from '../../core/theme/ThemeProvider';
 
 export function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { archivedItems, blockedList } = useChats();
+  const { settings } = useThemeSettings();
   const version = Constants.expoConfig?.version ?? 'Unknown';
 
   return (
@@ -27,6 +30,12 @@ export function SettingsScreen() {
           title="General"
           footer="Review and allow what Connekt can access on your phone."
         >
+          <SettingsRow
+            icon="color-palette-outline"
+            label="Appearance"
+            value={themeNames[settings.themeId]}
+            onPress={() => navigation.navigate('Appearance')}
+          />
           <SettingsRow
             icon="shield-checkmark-outline"
             label="Permissions"

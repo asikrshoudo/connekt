@@ -4,14 +4,14 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RootStackParamList } from '../../core/navigation/types';
 import { spacing } from '../../core/theme/spacing';
-import { useColors } from '../../core/theme/ThemeProvider';
+import { DarkScope, useColors } from '../../core/theme/ThemeProvider';
 import { VideoPlayerView } from './VideoPlayerView';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MediaViewer'>;
 
 const VIEWER_BACKGROUND = '#000000';
 
-export function MediaViewerScreen({ route, navigation }: Props) {
+function MediaViewerContent({ route, navigation }: Props) {
   const { uri, kind } = route.params;
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -52,3 +52,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export function MediaViewerScreen(props: Props) {
+  return (
+    <DarkScope>
+      <MediaViewerContent {...props} />
+    </DarkScope>
+  );
+}

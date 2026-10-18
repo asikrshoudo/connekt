@@ -10,7 +10,7 @@ import {
   type MenuItem,
 } from '../../components/feedback/MenuCard';
 import { popIn } from '../../components/feedback/popKeyframe';
-import { useColors } from '../../core/theme/ThemeProvider';
+import { useColors, useThemeSettings } from '../../core/theme/ThemeProvider';
 import { MessageBody } from './MessageBody';
 import { REACTION_BAR_HEIGHT, REACTION_BAR_WIDTH, ReactionBar } from './ReactionBar';
 import type { MessageMenuTarget } from './types';
@@ -42,6 +42,7 @@ export function MessageMenuOverlay({
   onDelete,
 }: Props) {
   const colors = useColors();
+  const { isDark } = useThemeSettings();
   const insets = useSafeAreaInsets();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const { message, rect, reply } = target;
@@ -77,7 +78,7 @@ export function MessageMenuOverlay({
       <BlurView
         blurTarget={blurTarget}
         intensity={40}
-        tint="dark"
+        tint={isDark ? 'dark' : 'light'}
         experimentalBlurMethod="dimezisBlurView"
         style={StyleSheet.absoluteFill}
       />

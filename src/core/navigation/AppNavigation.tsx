@@ -1,13 +1,15 @@
-import { DarkTheme, NavigationContainer } from '@react-navigation/native';
-import { useColors } from '../theme/ThemeProvider';
+import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
+import { useColors, useThemeSettings } from '../theme/ThemeProvider';
 import { RootNavigator } from './RootNavigator';
 
 export function AppNavigation() {
   const colors = useColors();
+  const { isDark } = useThemeSettings();
+  const base = isDark ? DarkTheme : DefaultTheme;
   const theme = {
-    ...DarkTheme,
+    ...base,
     colors: {
-      ...DarkTheme.colors,
+      ...base.colors,
       primary: colors.accent,
       background: colors.background,
       card: colors.surface,

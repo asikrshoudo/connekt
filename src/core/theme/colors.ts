@@ -1,24 +1,46 @@
-export const darkColors = {
-  background: '#0A0A0C',
-  surface: '#151518',
-  surfaceElevated: '#1F1F23',
-  border: 'rgba(255,255,255,0.08)',
-  textPrimary: '#F5F5F7',
-  textSecondary: '#A1A1A8',
-  textMuted: '#8A8A92',
-  accent: '#0A84FF',
-  onAccent: '#FFFFFF',
-  destructive: '#FF453A',
-  success: '#30D158',
-  warning: '#FF9F0A',
-  bubbleOutgoing: '#0A6CDB',
-  bubbleIncoming: '#1F1F23',
-  unread: '#0A6CDB',
-  disabled: '#48484F',
-  tabBar: '#1A1A1E',
+export type ColorTokens = {
+  background: string;
+  surface: string;
+  surfaceElevated: string;
+  border: string;
+  textPrimary: string;
+  textSecondary: string;
+  textMuted: string;
+  accent: string;
+  onAccent: string;
+  destructive: string;
+  success: string;
+  warning: string;
+  bubbleOutgoing: string;
+  bubbleIncoming: string;
+  unread: string;
+  disabled: string;
+  tabBar: string;
+  tabIndicator: string;
+  scrim: string;
+  inputBorder: string;
+};
+
+// TheKami's Core, dark. Also the fallback before the saved theme loads.
+export const darkColors: ColorTokens = {
+  background: '#0a0a0a',
+  surface: '#171717',
+  surfaceElevated: '#262626',
+  border: 'rgba(255,255,255,0.10)',
+  textPrimary: '#fafafa',
+  textSecondary: '#a3a3a3',
+  textMuted: '#8f8f8f',
+  accent: '#5ea500',
+  onAccent: '#f7fee7',
+  destructive: '#f87171',
+  success: '#4ade80',
+  warning: '#fbbf24',
+  bubbleOutgoing: '#497d00',
+  bubbleIncoming: '#262626',
+  unread: '#497d00',
+  disabled: '#404040',
+  tabBar: '#171717',
   tabIndicator: 'rgba(255,255,255,0.12)',
   scrim: 'rgba(0,0,0,0.5)',
   inputBorder: 'rgba(255,255,255,0.18)',
-} as const;
-
-export type ColorTokens = { [K in keyof typeof darkColors]: string };
+};

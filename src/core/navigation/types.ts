@@ -15,4 +15,5 @@ export type RootStackParamList = {
   BlockedContacts: undefined;
   Profile: undefined;
   EditProfile: undefined;
+  Appearance: undefined;
 };

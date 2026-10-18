@@ -1,4 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AppearanceScreen } from '../../features/appearance/AppearanceScreen';
 import { ArchivedChatsScreen } from '../../features/chats/ArchivedChatsScreen';
 import { BlockedContactsScreen } from '../../features/contacts/BlockedContactsScreen';
 import { ConversationScreen } from '../../features/conversation/ConversationScreen';
@@ -42,6 +43,7 @@ export function RootNavigator() {
       <Stack.Screen name="BlockedContacts" component={BlockedContactsScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+      <Stack.Screen name="Appearance" component={AppearanceScreen} />
     </Stack.Navigator>
   );
 }

@@ -1,10 +1,10 @@
-import { StatusBar } from 'expo-status-bar';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ErrorBoundary } from './src/core/ErrorBoundary';
 import { AppNavigation } from './src/core/navigation/AppNavigation';
 import { PermissionsProvider } from './src/core/permissions/PermissionsProvider';
 import { ThemeProvider } from './src/core/theme/ThemeProvider';
+import { ThemedStatusBar } from './src/core/theme/ThemedStatusBar';
 import { sampleCalls } from './src/data/sample/sampleCalls';
 import { sampleContacts } from './src/data/sample/sampleContacts';
 import { sampleConversations, samplePinnedIds } from './src/data/sample/sampleConversations';
@@ -32,7 +32,7 @@ export default function App() {
             >
               <ContactsProvider initialContacts={sampleContacts} isSample>
                 <CallsProvider initialCalls={sampleCalls} isSample>
-                  <StatusBar style="light" />
+                  <ThemedStatusBar />
                   <AppNavigation />
                 </CallsProvider>
               </ContactsProvider>
