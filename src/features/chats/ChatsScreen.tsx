@@ -10,57 +10,69 @@ import { TAB_BAR_CLEARANCE } from '../../components/navigation/tabBarMetrics';
 import { HeaderIconButton } from '../../components/ui/HeaderIconButton';
 import type { RootStackParamList } from '../../core/navigation/types';
 import { spacing } from '../../core/theme/spacing';
+import { RequestsRow } from '../requests/RequestsRow';
+import { buildChatMenu } from './chatMenuItems';
 import { ChatPopover } from './ChatPopover';
-import { MAX_PINNED } from './chatsState';
+import { MAX_PINNED, type ChatListItem } from './chatsState';
 import { ConversationRow } from './ConversationRow';
 import { useChats } from './ChatsProvider';
-import { RequestsRow } from '../requests/RequestsRow';
 import { SampleDataNotice } from './SampleDataNotice';
 
 type Point = { x: number; y: number };
 type MenuState = { id: string; point: Point };
 
+const HOUR = 60 * 60 * 1000;
+const WEEK = 7 * 24 * HOUR;
+
 export function ChatsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { items, isSample, canPinMore, pin, unpin, markRead, requests } = useChats();
+  const chats = useChats();
+  const { items, isSample, requests, isBlocked } = chats;
+
   const [menu, setMenu] = useState<MenuState | null>(null);
   const [plusPoint, setPlusPoint] = useState<Point | null>(null);
   const [showLimit, setShowLimit] = useState(false);
+  const [muteId, setMuteId] = useState<string | null>(null);
+  const [blockId, setBlockId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const menuItem = menu ? items.find((item) => item.conversation.id === menu.id) : undefined;
+  const find = (id: string | null): ChatListItem | undefined =>
+    id ? items.find((item) => item.conversation.id === id) : undefined;
+
+  const menuItem = find(menu?.id ?? null);
+  const muteItem = find(muteId);
+  const blockItem = find(blockId);
+  const deleteItem = find(deleteId);
 
   const togglePin = (id: string, pinned: boolean) => {
-    if (pinned) {
-      unpin(id);
-    } else if (canPinMore) {
-      pin(id);
-    } else {
-      setShowLimit(true);
-    }
+    if (pinned) chats.unpin(id);
+    else if (chats.canPinMore) chats.pin(id);
+    else setShowLimit(true);
   };
 
-  const menuItems: MenuItem[] = [];
-  if (menuItem) {
-    const { conversation, pinned } = menuItem;
-    menuItems.push({
-      label: pinned ? 'Unpin' : 'Pin',
-      icon: pinned ? 'pin-outline' : 'pin',
-      onPress: () => {
-        setMenu(null);
-        togglePin(conversation.id, pinned);
-      },
+  const menuFor = (item: ChatListItem): MenuItem[] => {
+    const id = item.conversation.id;
+    const run = (action: () => void) => () => {
+      setMenu(null);
+      action();
+    };
+    return buildChatMenu(item, isBlocked(id), {
+      togglePin: run(() => togglePin(id, item.pinned)),
+      markRead: run(() => chats.markRead(id)),
+      mute: run(() => setMuteId(id)),
+      unmute: run(() => chats.unmute(id)),
+      archive: run(() => chats.archive(id)),
+      toggleRestrict: run(() => (item.restricted ? chats.unrestrict(id) : chats.restrict(id))),
+      askBlock: run(() => setBlockId(id)),
+      unblock: run(() => chats.unblock(id)),
+      askDelete: run(() => setDeleteId(id)),
     });
-    if (conversation.unreadCount > 0) {
-      menuItems.push({
-        label: 'Mark as read',
-        icon: 'checkmark-done-outline',
-        onPress: () => {
-          setMenu(null);
-          markRead(conversation.id);
-        },
-      });
-    }
-  }
+  };
+
+  const applyMute = (durationMs: number | null) => {
+    if (muteId) chats.mute(muteId, durationMs);
+    setMuteId(null);
+  };
 
   const plusItems: MenuItem[] = [
     {
@@ -144,18 +156,65 @@ export function ChatsScreen() {
       />
 
       <ChatPopover
-        visible={menu !== null && menuItems.length > 0}
+        visible={menuItem !== undefined}
         point={menu?.point ?? { x: 0, y: 0 }}
-        items={menuItems}
+        items={menuItem ? menuFor(menuItem) : []}
         onClose={() => setMenu(null)}
       />
 
       <ChatPopover
         visible={plusPoint !== null}
-        alignRight
         point={plusPoint ?? { x: 0, y: 0 }}
         items={plusItems}
+        alignRight
         onClose={() => setPlusPoint(null)}
+      />
+
+      <ActionSheet
+        visible={muteItem !== undefined}
+        title="Mute chat"
+        message="Notifications are not active yet. A muted chat shows a muted icon."
+        actions={[
+          { label: '8 hours', onPress: () => applyMute(8 * HOUR) },
+          { label: '1 week', onPress: () => applyMute(WEEK) },
+          { label: 'Always', onPress: () => applyMute(null) },
+        ]}
+        onClose={() => setMuteId(null)}
+      />
+
+      <ActionSheet
+        visible={blockItem !== undefined}
+        title={`Block ${blockItem?.conversation.name ?? ''}?`}
+        message="Blocking is saved on this device only for now."
+        actions={[
+          {
+            label: 'Block',
+            destructive: true,
+            onPress: () => {
+              if (blockId) chats.block(blockId);
+              setBlockId(null);
+            },
+          },
+        ]}
+        onClose={() => setBlockId(null)}
+      />
+
+      <ActionSheet
+        visible={deleteItem !== undefined}
+        title="Are you sure?"
+        message={`"${deleteItem?.conversation.name ?? ''}" and all its messages will be deleted from this device.`}
+        actions={[
+          {
+            label: 'Yes, delete',
+            destructive: true,
+            onPress: () => {
+              if (deleteId) chats.deleteChat(deleteId);
+              setDeleteId(null);
+            },
+          },
+        ]}
+        cancelLabel="Never mind"
+        onClose={() => setDeleteId(null)}
       />
 
       <ActionSheet

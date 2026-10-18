@@ -13,12 +13,12 @@ type Props = {
   item: ChatListItem;
   onPress: () => void;
   onLongPress: (point: { x: number; y: number }) => void;
-  onTogglePin: () => void;
+  onTogglePin?: () => void;
 };
 
 export function ConversationRow({ item, onPress, onLongPress, onTogglePin }: Props) {
   const colors = useColors();
-  const { conversation, pinned } = item;
+  const { conversation, pinned, muted, restricted } = item;
   const time = formatChatTime(conversation.lastMessageAt);
   const unread = conversation.unreadCount;
 
@@ -28,6 +28,8 @@ export function ConversationRow({ item, onPress, onLongPress, onTogglePin }: Pro
     conversation.lastMessage,
     time,
     pinned ? 'pinned' : null,
+    muted ? 'muted' : null,
+    restricted ? 'restricted' : null,
   ]
     .filter(Boolean)
     .join(', ');
@@ -36,9 +38,13 @@ export function ConversationRow({ item, onPress, onLongPress, onTogglePin }: Pro
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
-      accessibilityActions={[{ name: 'togglePin', label: pinned ? 'Unpin chat' : 'Pin chat' }]}
+      accessibilityActions={
+        onTogglePin
+          ? [{ name: 'togglePin', label: pinned ? 'Unpin chat' : 'Pin chat' }]
+          : undefined
+      }
       onAccessibilityAction={(event) => {
-        if (event.nativeEvent.actionName === 'togglePin') onTogglePin();
+        if (event.nativeEvent.actionName === 'togglePin') onTogglePin?.();
       }}
       onPress={onPress}
       onLongPress={(event) => onLongPress({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY })}
@@ -51,6 +57,10 @@ export function ConversationRow({ item, onPress, onLongPress, onTogglePin }: Pro
             {conversation.name}
           </AppText>
           {pinned ? <Ionicons name="pin" size={13} color={colors.textMuted} /> : null}
+          {muted ? (
+            <Ionicons name="notifications-off" size={13} color={colors.textMuted} />
+          ) : null}
+          {restricted ? <Ionicons name="eye-off" size={13} color={colors.textMuted} /> : null}
           <AppText variant="footnote" tone={unread > 0 ? 'primary' : 'muted'}>
             {time}
           </AppText>
@@ -59,7 +69,7 @@ export function ConversationRow({ item, onPress, onLongPress, onTogglePin }: Pro
           <AppText variant="callout" tone="secondary" numberOfLines={2} style={styles.preview}>
             {conversation.lastMessage}
           </AppText>
-          {unread > 0 ? <UnreadBadge count={unread} /> : null}
+          {unread > 0 ? <UnreadBadge count={unread} muted={muted || restricted} /> : null}
         </View>
       </View>
     </Pressable>

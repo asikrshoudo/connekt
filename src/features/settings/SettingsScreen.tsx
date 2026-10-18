@@ -7,10 +7,12 @@ import { TAB_BAR_CLEARANCE } from '../../components/navigation/tabBarMetrics';
 import { SettingsRow } from '../../components/ui/SettingsRow';
 import { SettingsSection } from '../../components/ui/SettingsSection';
 import type { RootStackParamList } from '../../core/navigation/types';
+import { useChats } from '../chats/ChatsProvider';
 import { spacing } from '../../core/theme/spacing';
 
 export function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { archivedItems, blockedList } = useChats();
   const version = Constants.expoConfig?.version ?? 'Unknown';
 
   return (
@@ -26,6 +28,18 @@ export function SettingsScreen() {
             icon="shield-checkmark-outline"
             label="Permissions"
             onPress={() => navigation.navigate('Permissions')}
+          />
+          <SettingsRow
+            icon="archive-outline"
+            label="Archived chats"
+            value={archivedItems.length > 0 ? String(archivedItems.length) : undefined}
+            onPress={() => navigation.navigate('ArchivedChats')}
+          />
+          <SettingsRow
+            icon="ban-outline"
+            label="Blocked contacts"
+            value={blockedList.length > 0 ? String(blockedList.length) : undefined}
+            onPress={() => navigation.navigate('BlockedContacts')}
           />
         </SettingsSection>
 

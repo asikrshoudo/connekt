@@ -3,10 +3,10 @@ import { radius } from '../../core/theme/radius';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { AppText } from './AppText';
 
-export function UnreadBadge({ count }: { count: number }) {
+export function UnreadBadge({ count, muted = false }: { count: number; muted?: boolean }) {
   const colors = useColors();
   return (
-    <View style={[styles.badge, { backgroundColor: colors.unread }]}>
+    <View style={[styles.badge, { backgroundColor: muted ? colors.disabled : colors.unread }]}>
       <AppText variant="caption" style={[styles.text, { color: colors.onAccent }]}>
         {count > 99 ? '99+' : String(count)}
       </AppText>

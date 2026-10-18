@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import type { Conversation } from '../../types/chat';
-import { chatsReducer, createInitialState, MAX_PINNED, selectChatList } from './chatsState';
+import {
+  chatsReducer,
+  createInitialState,
+  MAX_PINNED,
+  selectArchived,
+  selectBlocked,
+  selectChatList,
+} from './chatsState';
 
 const conversation = (id: string, lastMessageAt = 0): Conversation => ({
   id,
@@ -69,4 +76,42 @@ test('leaving a group removes it and its pin', () => {
   state = chatsReducer(state, { type: 'leaveGroup', id: 'g1' });
   assert.equal(state.conversations.length, 0);
   assert.equal(state.pinnedIds.length, 0);
+});
+
+test('archiving hides a chat from the list and unpins it', () => {
+  let state = createInitialState(four, ['a'], {});
+  state = chatsReducer(state, { type: 'archive', id: 'a' });
+  assert.equal(selectChatList(state).some((item) => item.conversation.id === 'a'), false);
+  assert.equal(state.pinnedIds.length, 0);
+  assert.equal(selectArchived(state).length, 1);
+});
+
+test('muting lasts until the chosen time', () => {
+  let state = createInitialState(four, [], {});
+  state = chatsReducer(state, { type: 'mute', id: 'a', until: 1000 });
+  const mutedAt = (now: number) =>
+    selectChatList(state, now).find((item) => item.conversation.id === 'a')?.muted;
+  assert.equal(mutedAt(500), true);
+  assert.equal(mutedAt(1500), false);
+});
+
+test('deleting a chat removes its messages and flags', () => {
+  let state = createInitialState(four, ['a'], { a: [] });
+  state = chatsReducer(state, { type: 'send', conversationId: 'a', messageId: 'm1', text: 'hi', sentAt: 1 });
+  state = chatsReducer(state, { type: 'restrict', id: 'a' });
+  state = chatsReducer(state, { type: 'deleteChat', id: 'a' });
+  assert.equal(state.conversations.some((c) => c.id === 'a'), false);
+  assert.equal(state.messages['a'], undefined);
+  assert.equal(state.pinnedIds.length, 0);
+  assert.equal(state.restrictedIds.length, 0);
+});
+
+test('blocking a request keeps the name for the blocked list', () => {
+  let state = createInitialState([], [], {}, [
+    { id: 'r1', name: 'Priya', firstMessage: 'hi', receivedAt: 1 },
+  ]);
+  state = chatsReducer(state, { type: 'blockRequest', id: 'r1' });
+  assert.deepEqual(selectBlocked(state), [{ id: 'r1', name: 'Priya' }]);
+  state = chatsReducer(state, { type: 'unblock', id: 'r1' });
+  assert.equal(selectBlocked(state).length, 0);
 });

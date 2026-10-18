@@ -1,4 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ArchivedChatsScreen } from '../../features/chats/ArchivedChatsScreen';
+import { BlockedContactsScreen } from '../../features/contacts/BlockedContactsScreen';
 import { ConversationScreen } from '../../features/conversation/ConversationScreen';
 import { ContactProfileScreen } from '../../features/contacts/ContactProfileScreen';
 import { GroupInfoScreen } from '../../features/groups/GroupInfoScreen';
@@ -34,6 +36,8 @@ export function RootNavigator() {
       <Stack.Screen name="RequestDetail" component={RequestDetailScreen} />
       <Stack.Screen name="NewGroup" component={NewGroupScreen} />
       <Stack.Screen name="GroupInfo" component={GroupInfoScreen} />
+      <Stack.Screen name="ArchivedChats" component={ArchivedChatsScreen} />
+      <Stack.Screen name="BlockedContacts" component={BlockedContactsScreen} />
     </Stack.Navigator>
   );
 }

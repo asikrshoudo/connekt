@@ -13,7 +13,10 @@ import {
   chatsReducer,
   createInitialState,
   MAX_PINNED,
+  selectArchived,
+  selectBlocked,
   selectChatList,
+  type BlockedEntry,
   type ChatListItem,
 } from './chatsState';
 
@@ -39,6 +42,15 @@ type ChatsContextValue = {
   blockRequest: (id: string) => void;
   block: (id: string) => void;
   unblock: (id: string) => void;
+  mute: (id: string, durationMs: number | null) => void;
+  unmute: (id: string) => void;
+  archive: (id: string) => void;
+  unarchive: (id: string) => void;
+  restrict: (id: string) => void;
+  unrestrict: (id: string) => void;
+  deleteChat: (id: string) => void;
+  archivedItems: ChatListItem[];
+  blockedList: BlockedEntry[];
   getConversation: (id: string) => Conversation | undefined;
   getMessages: (id: string) => Message[];
 };
@@ -113,6 +125,22 @@ export function ChatsProvider({
   }, []);
   const leaveGroup = useCallback((id: string) => dispatch({ type: 'leaveGroup', id }), []);
 
+  const mute = useCallback(
+    (id: string, durationMs: number | null) =>
+      dispatch({
+        type: 'mute',
+        id,
+        until: durationMs === null ? Number.MAX_SAFE_INTEGER : Date.now() + durationMs,
+      }),
+    [],
+  );
+  const unmute = useCallback((id: string) => dispatch({ type: 'unmute', id }), []);
+  const archive = useCallback((id: string) => dispatch({ type: 'archive', id }), []);
+  const unarchive = useCallback((id: string) => dispatch({ type: 'unarchive', id }), []);
+  const restrict = useCallback((id: string) => dispatch({ type: 'restrict', id }), []);
+  const unrestrict = useCallback((id: string) => dispatch({ type: 'unrestrict', id }), []);
+  const deleteChat = useCallback((id: string) => dispatch({ type: 'deleteChat', id }), []);
+
   const value = useMemo<ChatsContextValue>(
     () => ({
       items: selectChatList(state),
@@ -134,6 +162,15 @@ export function ChatsProvider({
       unblock,
       createGroup,
       leaveGroup,
+      mute,
+      unmute,
+      archive,
+      unarchive,
+      restrict,
+      unrestrict,
+      deleteChat,
+      archivedItems: selectArchived(state),
+      blockedList: selectBlocked(state),
       getConversation: (id) => state.conversations.find((c) => c.id === id),
       getMessages: (id) => state.messages[id] ?? NO_MESSAGES,
     }),
@@ -154,6 +191,13 @@ export function ChatsProvider({
       unblock,
       createGroup,
       leaveGroup,
+      mute,
+      unmute,
+      archive,
+      unarchive,
+      restrict,
+      unrestrict,
+      deleteChat,
     ],
   );
 
