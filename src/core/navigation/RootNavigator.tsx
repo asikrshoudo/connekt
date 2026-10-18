@@ -5,6 +5,8 @@ import { ConversationScreen } from '../../features/conversation/ConversationScre
 import { ContactProfileScreen } from '../../features/contacts/ContactProfileScreen';
 import { GroupInfoScreen } from '../../features/groups/GroupInfoScreen';
 import { MediaViewerScreen } from '../../features/media/MediaViewerScreen';
+import { EditProfileScreen } from '../../features/profile/EditProfileScreen';
+import { ProfileScreen } from '../../features/profile/ProfileScreen';
 import { NewChatScreen } from '../../features/newchat/NewChatScreen';
 import { NewGroupScreen } from '../../features/newchat/NewGroupScreen';
 import { ScanScreen } from '../../features/scan/ScanScreen';
@@ -38,6 +40,8 @@ export function RootNavigator() {
       <Stack.Screen name="GroupInfo" component={GroupInfoScreen} />
       <Stack.Screen name="ArchivedChats" component={ArchivedChatsScreen} />
       <Stack.Screen name="BlockedContacts" component={BlockedContactsScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
     </Stack.Navigator>
   );
 }

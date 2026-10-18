@@ -8,6 +8,7 @@ import { SettingsRow } from '../../components/ui/SettingsRow';
 import { SettingsSection } from '../../components/ui/SettingsSection';
 import type { RootStackParamList } from '../../core/navigation/types';
 import { useChats } from '../chats/ChatsProvider';
+import { ProfileCard } from '../profile/ProfileCard';
 import { spacing } from '../../core/theme/spacing';
 
 export function SettingsScreen() {
@@ -20,6 +21,8 @@ export function SettingsScreen() {
       <ScrollView
         contentContainerStyle={{ paddingTop: spacing.sm, paddingBottom: TAB_BAR_CLEARANCE }}
       >
+        <ProfileCard onPress={() => navigation.navigate('Profile')} />
+
         <SettingsSection
           title="General"
           footer="Review and allow what Connekt can access on your phone."

@@ -12,6 +12,7 @@ import { sampleMessages } from './src/data/sample/sampleMessages';
 import { sampleRequests } from './src/data/sample/sampleRequests';
 import { CallsProvider } from './src/features/calls/CallsProvider';
 import { ChatsProvider } from './src/features/chats/ChatsProvider';
+import { ProfileProvider } from './src/features/profile/ProfileProvider';
 import { ContactsProvider } from './src/features/contacts/ContactsProvider';
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
       <KeyboardProvider>
         <ThemeProvider>
           <ErrorBoundary>
+          <ProfileProvider>
           <PermissionsProvider>
             <ChatsProvider
               initialConversations={sampleConversations}
@@ -36,6 +38,7 @@ export default function App() {
               </ContactsProvider>
             </ChatsProvider>
           </PermissionsProvider>
+          </ProfileProvider>
           </ErrorBoundary>
         </ThemeProvider>
       </KeyboardProvider>

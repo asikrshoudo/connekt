@@ -1,19 +1,36 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 import { avatarPalette } from '../../core/theme/avatarPalette';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { getInitials } from '../../utils/initials';
 import { AppText } from './AppText';
 
-type Props = { name: string; size?: number; group?: boolean };
+type Props = { name: string; size?: number; group?: boolean; uri?: string | null };
 
 function pickColor(name: string): string {
   const sum = [...name].reduce((total, char) => total + char.charCodeAt(0), 0);
   return avatarPalette[sum % avatarPalette.length] ?? avatarPalette[0];
 }
 
-export function Avatar({ name, size = 52, group = false }: Props) {
+export function Avatar({ name, size = 52, group = false, uri }: Props) {
   const colors = useColors();
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [uri]);
+
+  if (uri && !failed) {
+    return (
+      <Image
+        source={{ uri }}
+        onError={() => setFailed(true)}
+        style={{ width: size, height: size, borderRadius: size / 2 }}
+      />
+    );
+  }
+
   return (
     <View
       style={[

@@ -13,4 +13,6 @@ export type RootStackParamList = {
   GroupInfo: { conversationId: string };
   ArchivedChats: undefined;
   BlockedContacts: undefined;
+  Profile: undefined;
+  EditProfile: undefined;
 };
