@@ -14,4 +14,4 @@ const extra: Contact[] = [
 export const sampleContacts: Contact[] = [
   ...sampleConversations.filter((c) => !isGroup(c)).map(({ id, name }) => ({ id, name })),
   ...extra,
-].sort((a, b) => a.name.localeCompare(b.name));
+].map((contact) => ({ ...contact, sample: true })).sort((a, b) => a.name.localeCompare(b.name));

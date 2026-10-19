@@ -16,4 +16,5 @@ export type RootStackParamList = {
   Profile: undefined;
   EditProfile: undefined;
   Appearance: undefined;
+  MyQr: undefined;
 };

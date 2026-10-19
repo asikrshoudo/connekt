@@ -4,7 +4,6 @@ import { CameraView } from 'expo-camera';
 import { useState } from 'react';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ActionSheet } from '../../components/feedback/ActionSheet';
 import { Screen } from '../../components/layout/Screen';
 import { ScreenHeader } from '../../components/layout/ScreenHeader';
 import { AppText } from '../../components/ui/AppText';
@@ -13,18 +12,20 @@ import type { RootStackParamList } from '../../core/navigation/types';
 import { usePermissions } from '../../core/permissions/PermissionsProvider';
 import { spacing } from '../../core/theme/spacing';
 import { DarkScope, useColors } from '../../core/theme/ThemeProvider';
+import { useContactCardHost } from '../contacts/ContactCardHost';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Scan'>;
-
-const MAX_PREVIEW = 120;
 
 function ScanCamera({ onBack }: { onBack: () => void }) {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const [scanned, setScanned] = useState<string | null>(null);
+  const { handle } = useContactCardHost();
+  const [paused, setPaused] = useState(false);
 
-  const preview =
-    scanned && scanned.length > MAX_PREVIEW ? `${scanned.slice(0, MAX_PREVIEW)}...` : scanned;
+  const onScanned = (data: string) => {
+    setPaused(true);
+    handle(data, () => setPaused(false));
+  };
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
@@ -32,11 +33,11 @@ function ScanCamera({ onBack }: { onBack: () => void }) {
         style={StyleSheet.absoluteFill}
         facing="back"
         barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-        onBarcodeScanned={scanned ? undefined : (result) => setScanned(result.data)}
+        onBarcodeScanned={paused ? undefined : (result) => onScanned(result.data)}
       />
       <View pointerEvents="none" style={styles.frameWrap}>
         <View style={[styles.frame, { borderColor: colors.textPrimary }]} />
-        <AppText style={styles.hint}>Point the camera at a QR code</AppText>
+        <AppText style={styles.hint}>Point the camera at a Connekt QR code</AppText>
       </View>
       <Pressable
         accessibilityRole="button"
@@ -46,15 +47,6 @@ function ScanCamera({ onBack }: { onBack: () => void }) {
       >
         <Ionicons name="chevron-back" size={26} color={colors.textPrimary} />
       </Pressable>
-
-      <ActionSheet
-        visible={scanned !== null}
-        title="QR code scanned"
-        message={`${preview ?? ''}\n\nAdding contacts needs an account, which Connekt does not have yet.`}
-        actions={[]}
-        cancelLabel="Scan again"
-        onClose={() => setScanned(null)}
-      />
     </View>
   );
 }

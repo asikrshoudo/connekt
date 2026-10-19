@@ -1,5 +1,6 @@
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { useColors, useThemeSettings } from '../theme/ThemeProvider';
+import { navigationRef } from './navigationRef';
 import { RootNavigator } from './RootNavigator';
 
 export function AppNavigation() {
@@ -19,7 +20,7 @@ export function AppNavigation() {
   };
 
   return (
-    <NavigationContainer theme={theme}>
+    <NavigationContainer ref={navigationRef} theme={theme}>
       <RootNavigator />
     </NavigationContainer>
   );

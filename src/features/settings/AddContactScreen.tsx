@@ -23,7 +23,11 @@ export function AddContactScreen({ navigation }: Props) {
             label="Scan QR code"
             onPress={() => navigation.navigate('Scan')}
           />
-          <SettingsRow icon="qr-code-outline" label="My QR code" value="Soon" disabled />
+          <SettingsRow
+            icon="qr-code-outline"
+            label="My QR code"
+            onPress={() => navigation.navigate('MyQr')}
+          />
           <SettingsRow icon="at-outline" label="Username" value="Soon" disabled />
           {nfc === 'unsupported' ? null : (
             <SettingsRow icon="radio-outline" label="Tap phones (NFC)" value="Soon" disabled />

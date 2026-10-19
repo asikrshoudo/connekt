@@ -40,7 +40,7 @@ export function NewChatScreen({ navigation }: Props) {
       <ScreenHeader title="New chat" onBack={() => navigation.goBack()} />
       <KeyboardAvoidingView behavior="padding" style={styles.flex}>
         <SearchField value={query} onChangeText={setQuery} placeholder="Search contacts" />
-        {isSample ? <SampleDataNotice message="Sample contacts. These are not real people." /> : null}
+        {isSample ? <SampleDataNotice message="Contacts marked Sample are not real people." /> : null}
         <FlatList
           data={visible}
           keyExtractor={(contact) => contact.id}
@@ -61,6 +61,11 @@ export function NewChatScreen({ navigation }: Props) {
               <Avatar name={item.name} size={44} />
               <View style={[styles.body, { borderBottomColor: colors.border }]}>
                 <AppText variant="headline">{item.name}</AppText>
+                {item.sample ? (
+                  <AppText variant="footnote" tone="muted">
+                    Sample contact
+                  </AppText>
+                ) : null}
               </View>
             </Pressable>
           )}

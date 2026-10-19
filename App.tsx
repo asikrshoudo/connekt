@@ -13,6 +13,7 @@ import { sampleRequests } from './src/data/sample/sampleRequests';
 import { CallsProvider } from './src/features/calls/CallsProvider';
 import { ChatsProvider } from './src/features/chats/ChatsProvider';
 import { ProfileProvider } from './src/features/profile/ProfileProvider';
+import { ContactCardHost } from './src/features/contacts/ContactCardHost';
 import { ContactsProvider } from './src/features/contacts/ContactsProvider';
 
 export default function App() {
@@ -33,7 +34,9 @@ export default function App() {
               <ContactsProvider initialContacts={sampleContacts} isSample>
                 <CallsProvider initialCalls={sampleCalls} isSample>
                   <ThemedStatusBar />
-                  <AppNavigation />
+                  <ContactCardHost>
+                    <AppNavigation />
+                  </ContactCardHost>
                 </CallsProvider>
               </ContactsProvider>
             </ChatsProvider>

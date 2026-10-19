@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AppearanceScreen } from '../../features/appearance/AppearanceScreen';
 import { ArchivedChatsScreen } from '../../features/chats/ArchivedChatsScreen';
 import { BlockedContactsScreen } from '../../features/contacts/BlockedContactsScreen';
+import { MyQrScreen } from '../../features/contacts/MyQrScreen';
 import { ConversationScreen } from '../../features/conversation/ConversationScreen';
 import { ContactProfileScreen } from '../../features/contacts/ContactProfileScreen';
 import { GroupInfoScreen } from '../../features/groups/GroupInfoScreen';
@@ -44,6 +45,7 @@ export function RootNavigator() {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       <Stack.Screen name="Appearance" component={AppearanceScreen} />
+      <Stack.Screen name="MyQr" component={MyQrScreen} />
     </Stack.Navigator>
   );
 }
