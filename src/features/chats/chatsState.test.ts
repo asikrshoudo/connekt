@@ -115,3 +115,60 @@ test('blocking a request keeps the name for the blocked list', () => {
   state = chatsReducer(state, { type: 'unblock', id: 'r1' });
   assert.equal(selectBlocked(state).length, 0);
 });
+
+const memberList = (ids: string[]) => ids.map((id) => ({ id, name: id.toUpperCase() }));
+
+test('a group can be renamed and its members changed', () => {
+  let state = createInitialState([], [], {});
+  state = chatsReducer(state, {
+    type: 'createGroup',
+    id: 'g',
+    name: 'Old',
+    members: memberList(['a', 'b']),
+    now: 1,
+  });
+  state = chatsReducer(state, {
+    type: 'updateGroup',
+    id: 'g',
+    name: '  New  ',
+    members: memberList(['a', 'b', 'c', 'c']),
+  });
+  assert.equal(state.conversations[0]?.name, 'New');
+  assert.equal(state.conversations[0]?.members?.length, 3);
+});
+
+test('a group cannot lose its name or drop below the minimum', () => {
+  let state = createInitialState([], [], {});
+  state = chatsReducer(state, {
+    type: 'createGroup',
+    id: 'g',
+    name: 'Keep',
+    members: memberList(['a', 'b']),
+    now: 1,
+  });
+  const tooFew = chatsReducer(state, {
+    type: 'updateGroup',
+    id: 'g',
+    name: 'Keep',
+    members: memberList(['a']),
+  });
+  assert.equal(tooFew.conversations[0]?.members?.length, 2);
+  const noName = chatsReducer(state, {
+    type: 'updateGroup',
+    id: 'g',
+    name: '   ',
+    members: memberList(['a', 'b']),
+  });
+  assert.equal(noName.conversations[0]?.name, 'Keep');
+});
+
+test('updating a one-to-one chat does nothing', () => {
+  const state = createInitialState([conversation('solo')], [], {});
+  const next = chatsReducer(state, {
+    type: 'updateGroup',
+    id: 'solo',
+    name: 'Group now',
+    members: memberList(['a', 'b']),
+  });
+  assert.equal(next.conversations[0]?.name, 'solo');
+});

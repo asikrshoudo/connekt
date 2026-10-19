@@ -49,6 +49,7 @@ type ChatsContextValue = {
   restrict: (id: string) => void;
   unrestrict: (id: string) => void;
   deleteChat: (id: string) => void;
+  updateGroup: (id: string, name: string, members: Member[]) => void;
   archivedItems: ChatListItem[];
   blockedList: BlockedEntry[];
   getConversation: (id: string) => Conversation | undefined;
@@ -140,6 +141,11 @@ export function ChatsProvider({
   const restrict = useCallback((id: string) => dispatch({ type: 'restrict', id }), []);
   const unrestrict = useCallback((id: string) => dispatch({ type: 'unrestrict', id }), []);
   const deleteChat = useCallback((id: string) => dispatch({ type: 'deleteChat', id }), []);
+  const updateGroup = useCallback(
+    (id: string, name: string, members: Member[]) =>
+      dispatch({ type: 'updateGroup', id, name, members }),
+    [],
+  );
 
   const value = useMemo<ChatsContextValue>(
     () => ({
@@ -169,6 +175,7 @@ export function ChatsProvider({
       restrict,
       unrestrict,
       deleteChat,
+      updateGroup,
       archivedItems: selectArchived(state),
       blockedList: selectBlocked(state),
       getConversation: (id) => state.conversations.find((c) => c.id === id),
@@ -198,6 +205,7 @@ export function ChatsProvider({
       restrict,
       unrestrict,
       deleteChat,
+      updateGroup,
     ],
   );
 

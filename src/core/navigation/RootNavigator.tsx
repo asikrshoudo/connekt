@@ -5,6 +5,7 @@ import { BlockedContactsScreen } from '../../features/contacts/BlockedContactsSc
 import { MyQrScreen } from '../../features/contacts/MyQrScreen';
 import { ConversationScreen } from '../../features/conversation/ConversationScreen';
 import { ContactProfileScreen } from '../../features/contacts/ContactProfileScreen';
+import { EditGroupScreen } from '../../features/groups/EditGroupScreen';
 import { GroupInfoScreen } from '../../features/groups/GroupInfoScreen';
 import { MediaViewerScreen } from '../../features/media/MediaViewerScreen';
 import { EditProfileScreen } from '../../features/profile/EditProfileScreen';
@@ -46,6 +47,7 @@ export function RootNavigator() {
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       <Stack.Screen name="Appearance" component={AppearanceScreen} />
       <Stack.Screen name="MyQr" component={MyQrScreen} />
+      <Stack.Screen name="EditGroup" component={EditGroupScreen} />
     </Stack.Navigator>
   );
 }

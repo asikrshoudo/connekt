@@ -17,4 +17,5 @@ export type RootStackParamList = {
   EditProfile: undefined;
   Appearance: undefined;
   MyQr: undefined;
+  EditGroup: { conversationId: string };
 };

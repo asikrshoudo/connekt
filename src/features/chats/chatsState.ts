@@ -3,6 +3,8 @@ import type { MessageRequest } from '../../types/request';
 import { messagePreview } from '../../utils/messagePreview';
 
 export const MAX_PINNED = 3;
+export const MIN_GROUP_MEMBERS = 2;
+export const MAX_GROUP_NAME = 40;
 
 export type ChatsState = {
   conversations: Conversation[];
@@ -45,7 +47,8 @@ export type ChatsAction =
   | { type: 'unarchive'; id: string }
   | { type: 'restrict'; id: string }
   | { type: 'unrestrict'; id: string }
-  | { type: 'deleteChat'; id: string };
+  | { type: 'deleteChat'; id: string }
+  | { type: 'updateGroup'; id: string; name: string; members: Member[] };
 
 export type ChatListItem = {
   conversation: Conversation;
@@ -263,6 +266,22 @@ export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState
           Object.entries(state.messages).filter(([id]) => id !== action.id),
         ),
       };
+    case 'updateGroup': {
+      const target = state.conversations.find((c) => c.id === action.id);
+      if (!target || target.members === undefined) return state;
+      const name = action.name.trim();
+      const members = action.members.filter(
+        (member, index, all) => all.findIndex((other) => other.id === member.id) === index,
+      );
+      if (name.length === 0 || name.length > MAX_GROUP_NAME) return state;
+      if (members.length < MIN_GROUP_MEMBERS) return state;
+      return {
+        ...state,
+        conversations: state.conversations.map((c) =>
+          c.id === action.id ? { ...c, name, members } : c,
+        ),
+      };
+    }
     case 'deleteMessage': {
       const list = state.messages[action.conversationId];
       if (!list) return state;

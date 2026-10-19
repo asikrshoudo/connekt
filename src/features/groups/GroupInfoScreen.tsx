@@ -85,6 +85,14 @@ export function GroupInfoScreen({ route, navigation }: Props) {
           )}
         </View>
 
+        <SettingsSection>
+          <SettingsRow
+            icon="create-outline"
+            label="Edit group"
+            onPress={() => navigation.navigate('EditGroup', { conversationId })}
+          />
+        </SettingsSection>
+
         <SettingsSection footer="Leaving removes this group from this device. No one is notified, because Connekt has no server yet.">
           <SettingsRow
             icon="exit-outline"
