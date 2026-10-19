@@ -47,6 +47,15 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 200
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "granularPermissions": [
+            "photo",
+            "video"
+          ]
+        }
       ]
     ],
     "scheme": "connekt"

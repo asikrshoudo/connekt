@@ -22,6 +22,7 @@ import {
   pickFromLibrary,
   takePhoto,
 } from './attachments';
+import { AttachPanel, type AttachAction } from './AttachPanel';
 import { buildTimeline } from './buildTimeline';
 import { BlockedBar } from './BlockedBar';
 import { ConversationHeader } from './ConversationHeader';
@@ -35,7 +36,6 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Conversation'>;
 
 type ReplyTarget = { id: string; author: string; text: string };
 type Notice = { title: string; message: string };
-type AttachAction = 'library' | 'camera' | 'file' | 'location';
 
 export function ConversationScreen({ route, navigation }: Props) {
   const { conversationId } = route.params;
@@ -56,7 +56,7 @@ export function ConversationScreen({ route, navigation }: Props) {
   const [menu, setMenu] = useState<MessageMenuTarget | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Message | null>(null);
   const [replyTo, setReplyTo] = useState<ReplyTarget | null>(null);
-  const [attachOpen, setAttachOpen] = useState(false);
+  const [attachAnchor, setAttachAnchor] = useState<number | null>(null);
   const [pendingLocation, setPendingLocation] = useState<Attachment | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
 
@@ -132,8 +132,8 @@ export function ConversationScreen({ route, navigation }: Props) {
 
   const handleAttachment = async (action: AttachAction) => {
     try {
-      if (action === 'library') {
-        sendAttachments(await pickFromLibrary());
+      if (action === 'photos' || action === 'videos') {
+        sendAttachments(await pickFromLibrary(action === 'photos' ? 'images' : 'videos'));
       } else if (action === 'file') {
         sendAttachments(await pickFile());
       } else if (action === 'camera') {
@@ -153,9 +153,23 @@ export function ConversationScreen({ route, navigation }: Props) {
     }
   };
 
-  // Close the sheet first so the system picker does not open on top of it.
+  const sendRecent = (items: Attachment[]) => {
+    setAttachAnchor(null);
+    sendAttachments(items);
+  };
+
+  // Asks for photo access first, then reopens the panel where it was.
+  const needMedia = () => {
+    const anchor = attachAnchor;
+    setAttachAnchor(null);
+    void ensure('media').then((granted) => {
+      if (granted) setAttachAnchor(anchor);
+    });
+  };
+
+  // Close the panel first so the system picker does not open on top of it.
   const runAttachment = (action: AttachAction) => {
-    setAttachOpen(false);
+    setAttachAnchor(null);
     setTimeout(() => void handleAttachment(action), 250);
   };
 
@@ -238,7 +252,7 @@ export function ConversationScreen({ route, navigation }: Props) {
             ) : (
             <MessageComposer
               onSendText={handleSendText}
-              onAttach={() => setAttachOpen(true)}
+              onAttach={(anchorY) => setAttachAnchor(anchorY)}
               recording={recorder.recording}
               elapsedMs={recorder.elapsedMs}
               onStartRecording={() => void startRecording()}
@@ -264,15 +278,13 @@ export function ConversationScreen({ route, navigation }: Props) {
         />
       ) : null}
 
-      <ActionSheet
-        visible={attachOpen}
-        actions={[
-          { label: 'Photo or video', onPress: () => runAttachment('library') },
-          { label: 'Camera', onPress: () => runAttachment('camera') },
-          { label: 'File', onPress: () => runAttachment('file') },
-          { label: 'Location', onPress: () => runAttachment('location') },
-        ]}
-        onClose={() => setAttachOpen(false)}
+      <AttachPanel
+        visible={attachAnchor !== null}
+        anchorY={attachAnchor ?? 0}
+        onChoose={runAttachment}
+        onSendMedia={sendRecent}
+        onNeedMedia={needMedia}
+        onClose={() => setAttachAnchor(null)}
       />
 
       <ActionSheet

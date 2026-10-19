@@ -1,7 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { FlatList } from 'react-native';
-import { ActionSheet } from '../../components/feedback/ActionSheet';
+import { ConfirmDialog } from '../../components/feedback/ConfirmDialog';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import type { MenuItem } from '../../components/feedback/MenuCard';
 import { Screen } from '../../components/layout/Screen';
@@ -76,22 +76,18 @@ export function ArchivedChatsScreen({ navigation }: Props) {
         onClose={() => setMenu(null)}
       />
 
-      <ActionSheet
+      <ConfirmDialog
         visible={deleteItem !== undefined}
         title="Are you sure?"
         message={`"${deleteItem?.conversation.name ?? ''}" and all its messages will be deleted from this device.`}
-        actions={[
-          {
-            label: 'Yes, delete',
-            destructive: true,
-            onPress: () => {
-              if (deleteId) deleteChat(deleteId);
-              setDeleteId(null);
-            },
-          },
-        ]}
+        confirmLabel="Yes, delete"
         cancelLabel="Never mind"
-        onClose={() => setDeleteId(null)}
+        destructive
+        onConfirm={() => {
+          if (deleteId) deleteChat(deleteId);
+          setDeleteId(null);
+        }}
+        onCancel={() => setDeleteId(null)}
       />
     </Screen>
   );

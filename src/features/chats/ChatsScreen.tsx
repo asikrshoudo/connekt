@@ -3,6 +3,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { ActionSheet } from '../../components/feedback/ActionSheet';
+import { ConfirmDialog } from '../../components/feedback/ConfirmDialog';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import type { MenuItem } from '../../components/feedback/MenuCard';
 import { TabScreen } from '../../components/layout/TabScreen';
@@ -199,22 +200,18 @@ export function ChatsScreen() {
         onClose={() => setBlockId(null)}
       />
 
-      <ActionSheet
+      <ConfirmDialog
         visible={deleteItem !== undefined}
         title="Are you sure?"
         message={`"${deleteItem?.conversation.name ?? ''}" and all its messages will be deleted from this device.`}
-        actions={[
-          {
-            label: 'Yes, delete',
-            destructive: true,
-            onPress: () => {
-              if (deleteId) chats.deleteChat(deleteId);
-              setDeleteId(null);
-            },
-          },
-        ]}
+        confirmLabel="Yes, delete"
         cancelLabel="Never mind"
-        onClose={() => setDeleteId(null)}
+        destructive
+        onConfirm={() => {
+          if (deleteId) chats.deleteChat(deleteId);
+          setDeleteId(null);
+        }}
+        onCancel={() => setDeleteId(null)}
       />
 
       <ActionSheet

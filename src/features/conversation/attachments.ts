@@ -19,9 +19,9 @@ function fromAsset(asset: ImagePicker.ImagePickerAsset): Attachment {
 }
 
 // Android's system picker: no storage permission needed.
-export async function pickFromLibrary(): Promise<Attachment[]> {
+export async function pickFromLibrary(kind: 'images' | 'videos'): Promise<Attachment[]> {
   const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ['images', 'videos'],
+    mediaTypes: [kind],
     allowsMultipleSelection: true,
     selectionLimit: 10,
     quality: 0.8,

@@ -1,6 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useRef, useState, type ComponentRef } from 'react';
-import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import {
+  Keyboard,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+  type GestureResponderEvent,
+} from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppText } from '../../components/ui/AppText';
@@ -13,7 +20,7 @@ import type { ReplyPreview } from './types';
 
 type Props = {
   onSendText: (text: string) => void;
-  onAttach: () => void;
+  onAttach: (anchorY: number) => void;
   recording: boolean;
   elapsedMs: number;
   onStartRecording: () => void;
@@ -23,7 +30,12 @@ type Props = {
   onCancelReply: () => void;
 };
 
-type RoundButtonProps = { icon: IconName; label: string; onPress: () => void; filled?: boolean };
+type RoundButtonProps = {
+  icon: IconName;
+  label: string;
+  onPress: (event: GestureResponderEvent) => void;
+  filled?: boolean;
+};
 
 function RoundButton({ icon, label, onPress, filled = false }: RoundButtonProps) {
   const colors = useColors();
@@ -124,7 +136,11 @@ export function MessageComposer({
         </View>
       ) : (
         <View style={styles.row}>
-          <RoundButton icon="add" label="Attach" onPress={onAttach} />
+          <RoundButton
+            icon="add"
+            label="Attach"
+            onPress={(event) => onAttach(event.nativeEvent.pageY - event.nativeEvent.locationY)}
+          />
           <View style={pillStyle}>
             <TextInput
               ref={inputRef}
