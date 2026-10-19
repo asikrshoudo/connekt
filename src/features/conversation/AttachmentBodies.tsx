@@ -117,11 +117,9 @@ export function FileBody({ attachment, outgoing }: { attachment: Kind<'file'>; o
         <AppText variant="callout" numberOfLines={2} style={{ color: foreground }}>
           {attachment.name}
         </AppText>
-        {size ? (
-          <AppText variant="footnote" style={{ color: foreground, opacity: 0.75 }}>
-            {size}
-          </AppText>
-        ) : null}
+        <AppText variant="footnote" style={{ color: foreground, opacity: 0.75 }}>
+          {size ? `${size} · Tap to open` : 'Tap to open'}
+        </AppText>
       </View>
     </View>
   );

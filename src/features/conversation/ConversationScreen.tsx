@@ -14,7 +14,14 @@ import { isGroup } from '../../utils/conversation';
 import { messagePreview } from '../../utils/messagePreview';
 import { useChats } from '../chats/ChatsProvider';
 import { SampleDataNotice } from '../chats/SampleDataNotice';
-import { getCurrentLocation, openInMaps, pickFile, pickFromLibrary, takePhoto } from './attachments';
+import {
+  getCurrentLocation,
+  openFile,
+  openInMaps,
+  pickFile,
+  pickFromLibrary,
+  takePhoto,
+} from './attachments';
 import { buildTimeline } from './buildTimeline';
 import { BlockedBar } from './BlockedBar';
 import { ConversationHeader } from './ConversationHeader';
@@ -180,10 +187,13 @@ export function ConversationScreen({ route, navigation }: Props) {
         setNotice({ title: 'No maps app', message: 'Install a maps app to open this location.' }),
       );
     } else if (attachment.kind === 'file') {
-      setNotice({
-        title: attachment.name,
-        message: 'Opening files is not available yet. The file stays on this device.',
-      });
+      openFile(attachment).catch(() =>
+        setNotice({
+          title: attachment.name,
+          message:
+            'This file could not be opened. You may need an app that can open this type of file, or the file is no longer on this device.',
+        }),
+      );
     }
   };
 

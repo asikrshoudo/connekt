@@ -1,5 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
+import { File } from 'expo-file-system';
 import * as Location from 'expo-location';
 import { Linking } from 'react-native';
 import type { Attachment } from '../../types/chat';
@@ -67,4 +68,10 @@ export async function getCurrentLocation(): Promise<Attachment> {
 
 export function openInMaps(latitude: number, longitude: number): Promise<void> {
   return Linking.openURL(`geo:${latitude},${longitude}?q=${latitude},${longitude}`);
+}
+
+// Opens the file with another app on the phone. Throws if nothing can open it.
+export async function openFile(attachment: Extract<Attachment, { kind: 'file' }>): Promise<void> {
+  const file = new File(attachment.uri);
+  await Promise.resolve(file.preview());
 }
