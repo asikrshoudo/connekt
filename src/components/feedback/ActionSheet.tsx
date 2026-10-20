@@ -1,11 +1,9 @@
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { SlideInDown } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { duration } from '../../core/theme/motion';
-import { radius } from '../../core/theme/radius';
+import Animated from 'react-native-reanimated';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { AppText } from '../ui/AppText';
+import { popIn } from './popKeyframe';
 
 export type SheetAction = {
   label: string;
@@ -22,6 +20,8 @@ type Props = {
   onClose: () => void;
 };
 
+// A small card in the middle of the screen with a list of choices.
+// The name stays ActionSheet so every existing confirmation uses it.
 export function ActionSheet({
   visible,
   title,
@@ -31,7 +31,15 @@ export function ActionSheet({
   onClose,
 }: Props) {
   const colors = useColors();
-  const insets = useSafeAreaInsets();
+  const hasHeader = Boolean(title || message);
+
+  const row =
+    (withBorder: boolean) =>
+    ({ pressed }: { pressed: boolean }) => [
+      styles.row,
+      withBorder && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
+      pressed && { backgroundColor: colors.surface },
+    ];
 
   return (
     <Modal
@@ -42,43 +50,33 @@ export function ActionSheet({
       navigationBarTranslucent
       onRequestClose={onClose}
     >
-      <View style={styles.root}>
-        <Pressable
-          accessibilityLabel="Close"
-          onPress={onClose}
-          style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim }]}
-        />
+      <View style={[styles.backdrop, { backgroundColor: colors.scrim }]}>
+        <Pressable accessibilityLabel="Close" onPress={onClose} style={StyleSheet.absoluteFill} />
         <Animated.View
-          entering={SlideInDown.duration(duration.base)}
-          style={[
-            styles.sheet,
-            { backgroundColor: colors.surfaceElevated, paddingBottom: insets.bottom + spacing.md },
-          ]}
+          entering={popIn}
+          style={[styles.card, { backgroundColor: colors.surfaceElevated }]}
         >
-          {title || message ? (
-            <View style={styles.header}>
+          {hasHeader ? (
+            <View style={styles.text}>
               {title ? (
                 <AppText variant="headline" style={styles.center}>
                   {title}
                 </AppText>
               ) : null}
               {message ? (
-                <AppText variant="footnote" tone="secondary" style={styles.center}>
+                <AppText variant="callout" tone="secondary" style={styles.center}>
                   {message}
                 </AppText>
               ) : null}
             </View>
           ) : null}
-          {actions.map((action) => (
+          {actions.map((action, index) => (
             <Pressable
               key={action.label}
               accessibilityRole="button"
+              accessibilityLabel={action.label}
               onPress={action.onPress}
-              style={({ pressed }) => [
-                styles.action,
-                { borderTopColor: colors.border },
-                pressed && { backgroundColor: colors.surface },
-              ]}
+              style={row(hasHeader || index > 0)}
             >
               <AppText
                 variant="headline"
@@ -90,10 +88,13 @@ export function ActionSheet({
           ))}
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel={cancelLabel}
             onPress={onClose}
-            style={[styles.cancel, { backgroundColor: colors.surface }]}
+            style={row(hasHeader || actions.length > 0)}
           >
-            <AppText variant="headline">{cancelLabel}</AppText>
+            <AppText variant="headline" style={{ color: colors.accent }}>
+              {cancelLabel}
+            </AppText>
           </Pressable>
         </Animated.View>
       </View>
@@ -102,26 +103,9 @@ export function ActionSheet({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, justifyContent: 'flex-end' },
-  sheet: {
-    borderTopLeftRadius: radius.xl,
-    borderTopRightRadius: radius.xl,
-    paddingTop: spacing.md,
-    paddingHorizontal: spacing.md,
-  },
-  header: { paddingVertical: spacing.md, gap: spacing.xs },
+  backdrop: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xxl },
+  card: { width: '100%', maxWidth: 320, borderRadius: 20, overflow: 'hidden' },
+  text: { padding: spacing.xl, gap: spacing.sm },
   center: { textAlign: 'center' },
-  action: {
-    height: 52,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  cancel: {
-    marginTop: spacing.md,
-    height: 52,
-    borderRadius: radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  row: { height: 52, alignItems: 'center', justifyContent: 'center' },
 });
