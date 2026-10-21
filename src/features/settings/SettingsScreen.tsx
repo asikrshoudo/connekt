@@ -50,6 +50,11 @@ export function SettingsScreen() {
             onPress={() => navigation.navigate('Notifications')}
           />
           <SettingsRow
+            icon="cloud-outline"
+            label="Storage and backup"
+            onPress={() => navigation.navigate('Storage')}
+          />
+          <SettingsRow
             icon="shield-checkmark-outline"
             label="Permissions"
             onPress={() => navigation.navigate('Permissions')}
@@ -74,7 +79,6 @@ export function SettingsScreen() {
         >
           <SettingsRow icon="person-outline" label="Account" value="Soon" disabled />
           <SettingsRow icon="phone-portrait-outline" label="Devices and sessions" value="Soon" disabled />
-          <SettingsRow icon="cloud-outline" label="Storage and backup" value="Soon" disabled />
         </SettingsSection>
 
         <SettingsSection title="About">

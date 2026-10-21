@@ -52,6 +52,8 @@ type ChatsContextValue = {
   updateGroup: (id: string, name: string, members: Member[]) => void;
   archivedItems: ChatListItem[];
   blockedList: BlockedEntry[];
+  conversations: Conversation[];
+  messagesByChat: Record<string, Message[]>;
   getConversation: (id: string) => Conversation | undefined;
   getMessages: (id: string) => Message[];
 };
@@ -178,6 +180,8 @@ export function ChatsProvider({
       updateGroup,
       archivedItems: selectArchived(state),
       blockedList: selectBlocked(state),
+      conversations: state.conversations,
+      messagesByChat: state.messages,
       getConversation: (id) => state.conversations.find((c) => c.id === id),
       getMessages: (id) => state.messages[id] ?? NO_MESSAGES,
     }),
