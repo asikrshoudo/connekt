@@ -7,6 +7,7 @@ import { AppText } from '../../components/ui/AppText';
 import { PillButton } from '../../components/ui/PillButton';
 import { QrCode } from '../../components/ui/QrCode';
 import type { RootStackParamList } from '../../core/navigation/types';
+import { markExternalActivity } from '../../core/externalActivity';
 import { spacing } from '../../core/theme/spacing';
 import { getOrCreateConnektId } from '../profile/identity';
 import { useProfile } from '../profile/ProfileProvider';
@@ -29,6 +30,7 @@ export function MyQrScreen({ navigation }: Props) {
 
   const share = () => {
     if (!link) return;
+    markExternalActivity();
     Share.share({ message: `Add me on Connekt: ${link}` }).catch(() => undefined);
   };
 

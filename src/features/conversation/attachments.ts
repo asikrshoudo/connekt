@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { File } from 'expo-file-system';
 import * as Location from 'expo-location';
 import { Linking } from 'react-native';
+import { markExternalActivity } from '../../core/externalActivity';
 import type { Attachment } from '../../types/chat';
 
 function fromAsset(asset: ImagePicker.ImagePickerAsset): Attachment {
@@ -20,6 +21,7 @@ function fromAsset(asset: ImagePicker.ImagePickerAsset): Attachment {
 
 // Android's system picker: no storage permission needed.
 export async function pickFromLibrary(kind: 'images' | 'videos'): Promise<Attachment[]> {
+  markExternalActivity();
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: [kind],
     allowsMultipleSelection: true,
@@ -31,6 +33,7 @@ export async function pickFromLibrary(kind: 'images' | 'videos'): Promise<Attach
 
 // Needs the camera permission, which the caller checks first.
 export async function takePhoto(): Promise<Attachment[]> {
+  markExternalActivity();
   const result = await ImagePicker.launchCameraAsync({
     mediaTypes: ['images', 'videos'],
     quality: 0.8,
@@ -39,6 +42,7 @@ export async function takePhoto(): Promise<Attachment[]> {
 }
 
 export async function pickFile(): Promise<Attachment[]> {
+  markExternalActivity();
   const result = await DocumentPicker.getDocumentAsync({
     copyToCacheDirectory: true,
     multiple: false,
@@ -72,6 +76,7 @@ export function openInMaps(latitude: number, longitude: number): Promise<void> {
 
 // Opens the file with another app on the phone. Throws if nothing can open it.
 export async function openFile(attachment: Extract<Attachment, { kind: 'file' }>): Promise<void> {
+  markExternalActivity();
   const file = new File(attachment.uri);
   await Promise.resolve(file.preview());
 }

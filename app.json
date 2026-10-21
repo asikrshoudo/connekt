@@ -56,7 +56,8 @@
             "video"
           ]
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "scheme": "connekt"
   }

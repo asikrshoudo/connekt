@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import { AppState } from 'react-native';
+import { markExternalActivity } from '../externalActivity';
 import { checkPermission, requestPermission } from './androidPermissions';
 import { getNfcStatus, type NfcStatus } from './nfc';
 import { PERMISSION_ORDER, type PermissionId, type PermState } from './types';
@@ -52,6 +53,7 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const request = useCallback(async (id: PermissionId): Promise<PermState> => {
+    markExternalActivity();
     const result = await requestPermission(id);
     if (result === 'blocked') blocked.current.add(id);
     else blocked.current.delete(id);

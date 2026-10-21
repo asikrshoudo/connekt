@@ -1,6 +1,8 @@
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ErrorBoundary } from './src/core/ErrorBoundary';
+import { AppLockGate } from './src/features/security/AppLockGate';
+import { AppLockProvider } from './src/features/security/AppLockProvider';
 import { AppNavigation } from './src/core/navigation/AppNavigation';
 import { PermissionsProvider } from './src/core/permissions/PermissionsProvider';
 import { ThemeProvider } from './src/core/theme/ThemeProvider';
@@ -23,6 +25,7 @@ export default function App() {
         <ThemeProvider>
           <ErrorBoundary>
           <ProfileProvider>
+          <AppLockProvider>
           <PermissionsProvider>
             <ChatsProvider
               initialConversations={sampleConversations}
@@ -35,12 +38,15 @@ export default function App() {
                 <CallsProvider initialCalls={sampleCalls} isSample>
                   <ThemedStatusBar />
                   <ContactCardHost>
-                    <AppNavigation />
+                    <AppLockGate>
+                      <AppNavigation />
+                    </AppLockGate>
                   </ContactCardHost>
                 </CallsProvider>
               </ContactsProvider>
             </ChatsProvider>
           </PermissionsProvider>
+          </AppLockProvider>
           </ProfileProvider>
           </ErrorBoundary>
         </ThemeProvider>
