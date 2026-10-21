@@ -8,6 +8,7 @@ import { ContactProfileScreen } from '../../features/contacts/ContactProfileScre
 import { EditGroupScreen } from '../../features/groups/EditGroupScreen';
 import { GroupInfoScreen } from '../../features/groups/GroupInfoScreen';
 import { MediaViewerScreen } from '../../features/media/MediaViewerScreen';
+import { NotificationsScreen } from '../../features/notifications/NotificationsScreen';
 import { PinFlowScreen } from '../../features/security/PinFlowScreen';
 import { PrivacySecurityScreen } from '../../features/security/PrivacySecurityScreen';
 import { EditProfileScreen } from '../../features/profile/EditProfileScreen';
@@ -50,6 +51,7 @@ export function RootNavigator() {
       <Stack.Screen name="Appearance" component={AppearanceScreen} />
       <Stack.Screen name="MyQr" component={MyQrScreen} />
       <Stack.Screen name="EditGroup" component={EditGroupScreen} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="PrivacySecurity" component={PrivacySecurityScreen} />
       <Stack.Screen name="PinFlow" component={PinFlowScreen} />
     </Stack.Navigator>

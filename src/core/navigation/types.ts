@@ -18,6 +18,7 @@ export type RootStackParamList = {
   Appearance: undefined;
   MyQr: undefined;
   EditGroup: { conversationId: string };
+  Notifications: undefined;
   PrivacySecurity: undefined;
   PinFlow: { mode: 'create' | 'change' | 'disable' };
 };

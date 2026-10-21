@@ -1,6 +1,7 @@
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ErrorBoundary } from './src/core/ErrorBoundary';
+import { NotificationSettingsProvider } from './src/features/notifications/NotificationSettingsProvider';
 import { AppLockGate } from './src/features/security/AppLockGate';
 import { AppLockProvider } from './src/features/security/AppLockProvider';
 import { AppNavigation } from './src/core/navigation/AppNavigation';
@@ -25,6 +26,7 @@ export default function App() {
         <ThemeProvider>
           <ErrorBoundary>
           <ProfileProvider>
+          <NotificationSettingsProvider>
           <AppLockProvider>
           <PermissionsProvider>
             <ChatsProvider
@@ -47,6 +49,7 @@ export default function App() {
             </ChatsProvider>
           </PermissionsProvider>
           </AppLockProvider>
+          </NotificationSettingsProvider>
           </ProfileProvider>
           </ErrorBoundary>
         </ThemeProvider>
