@@ -20,6 +20,7 @@ export type RootStackParamList = {
   EditGroup: { conversationId: string };
   Notifications: undefined;
   Storage: undefined;
+  Devices: undefined;
   PrivacySecurity: undefined;
   PinFlow: { mode: 'create' | 'change' | 'disable' };
 };

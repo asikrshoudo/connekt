@@ -28,3 +28,14 @@ export function getOrCreateConnektId(): Promise<string> {
   }
   return pending;
 }
+
+// The day Connekt was first opened on this phone, kept on this phone only.
+const FIRST_OPENED_KEY = 'connekt.firstOpened.v1';
+
+export async function getFirstOpened(): Promise<number> {
+  const saved = Number(await AsyncStorage.getItem(FIRST_OPENED_KEY));
+  if (Number.isFinite(saved) && saved > 0) return saved;
+  const now = Date.now();
+  await AsyncStorage.setItem(FIRST_OPENED_KEY, String(now));
+  return now;
+}

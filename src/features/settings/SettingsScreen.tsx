@@ -55,6 +55,11 @@ export function SettingsScreen() {
             onPress={() => navigation.navigate('Storage')}
           />
           <SettingsRow
+            icon="phone-portrait-outline"
+            label="Devices and sessions"
+            onPress={() => navigation.navigate('Devices')}
+          />
+          <SettingsRow
             icon="shield-checkmark-outline"
             label="Permissions"
             onPress={() => navigation.navigate('Permissions')}
@@ -78,7 +83,6 @@ export function SettingsScreen() {
           footer="These need an account and a server, which Connekt does not have yet."
         >
           <SettingsRow icon="person-outline" label="Account" value="Soon" disabled />
-          <SettingsRow icon="phone-portrait-outline" label="Devices and sessions" value="Soon" disabled />
         </SettingsSection>
 
         <SettingsSection title="About">

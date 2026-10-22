@@ -5,6 +5,7 @@ import { BlockedContactsScreen } from '../../features/contacts/BlockedContactsSc
 import { MyQrScreen } from '../../features/contacts/MyQrScreen';
 import { ConversationScreen } from '../../features/conversation/ConversationScreen';
 import { ContactProfileScreen } from '../../features/contacts/ContactProfileScreen';
+import { DevicesScreen } from '../../features/devices/DevicesScreen';
 import { EditGroupScreen } from '../../features/groups/EditGroupScreen';
 import { GroupInfoScreen } from '../../features/groups/GroupInfoScreen';
 import { MediaViewerScreen } from '../../features/media/MediaViewerScreen';
@@ -54,6 +55,7 @@ export function RootNavigator() {
       <Stack.Screen name="EditGroup" component={EditGroupScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="Storage" component={StorageScreen} />
+      <Stack.Screen name="Devices" component={DevicesScreen} />
       <Stack.Screen name="PrivacySecurity" component={PrivacySecurityScreen} />
       <Stack.Screen name="PinFlow" component={PinFlowScreen} />
     </Stack.Navigator>
