@@ -28,6 +28,7 @@ export type Message = {
   reaction?: string;
   replyToId?: string;
   attachment?: Attachment;
+  forwarded?: boolean;
   // Name of the sender, used in group chats.
   senderName?: string;
 };

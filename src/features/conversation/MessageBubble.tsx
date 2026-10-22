@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRef, type ComponentRef } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AppText } from '../../components/ui/AppText';
@@ -5,6 +6,7 @@ import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 import type { Message } from '../../types/chat';
 import { formatClockTime } from '../../utils/dates';
+import { messagePreview } from '../../utils/messagePreview';
 import type { ReplyRef } from './buildTimeline';
 import { MessageBody } from './MessageBody';
 import type { MessageMenuTarget, ReplyPreview } from './types';
@@ -63,13 +65,21 @@ export function MessageBubble({
           {message.senderName}
         </AppText>
       ) : null}
+      {message.forwarded ? (
+        <View style={styles.forwarded}>
+          <Ionicons name="arrow-redo" size={12} color={colors.textMuted} />
+          <AppText variant="caption" tone="muted">
+            Forwarded
+          </AppText>
+        </View>
+      ) : null}
       <Pressable
         ref={ref}
         collapsable={false}
         onPress={message.attachment ? () => onOpen(message) : undefined}
         onLongPress={handleLongPress}
         delayLongPress={250}
-        accessibilityLabel={`${outgoing ? 'You' : (message.senderName ?? contactName)}: ${message.text}`}
+        accessibilityLabel={`${message.forwarded ? 'Forwarded. ' : ''}${outgoing ? 'You' : (message.senderName ?? contactName)}: ${messagePreview(message)}`}
         accessibilityHint="Double tap and hold for options"
         style={styles.pressable}
       >
@@ -100,6 +110,13 @@ const styles = StyleSheet.create({
   rowIncoming: { alignItems: 'flex-start' },
   pressable: { maxWidth: '78%' },
   sender: { marginBottom: 2, marginHorizontal: spacing.sm },
+  forwarded: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 2,
+    marginHorizontal: spacing.sm,
+  },
   reaction: {
     marginTop: -8,
     marginHorizontal: spacing.sm,

@@ -8,6 +8,7 @@ import { ConversationScreen } from '../../features/conversation/ConversationScre
 import { ContactProfileScreen } from '../../features/contacts/ContactProfileScreen';
 import { DevicesScreen } from '../../features/devices/DevicesScreen';
 import { EditGroupScreen } from '../../features/groups/EditGroupScreen';
+import { ForwardScreen } from '../../features/forward/ForwardScreen';
 import { GroupInfoScreen } from '../../features/groups/GroupInfoScreen';
 import { MediaViewerScreen } from '../../features/media/MediaViewerScreen';
 import { NotificationsScreen } from '../../features/notifications/NotificationsScreen';
@@ -58,6 +59,7 @@ export function RootNavigator() {
       <Stack.Screen name="Storage" component={StorageScreen} />
       <Stack.Screen name="Devices" component={DevicesScreen} />
       <Stack.Screen name="RestrictedChats" component={RestrictedChatsScreen} />
+      <Stack.Screen name="Forward" component={ForwardScreen} />
       <Stack.Screen name="PrivacySecurity" component={PrivacySecurityScreen} />
       <Stack.Screen name="PinFlow" component={PinFlowScreen} />
     </Stack.Navigator>

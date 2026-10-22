@@ -52,6 +52,7 @@ type ChatsContextValue = {
   deleteChat: (id: string) => void;
   updateGroup: (id: string, name: string, members: Member[]) => void;
   archivedItems: ChatListItem[];
+  forwardMessage: (source: Message, targetIds: string[]) => number;
   restrictedItems: ChatListItem[];
   blockedList: BlockedEntry[];
   conversations: Conversation[];
@@ -151,6 +152,22 @@ export function ChatsProvider({
     [],
   );
 
+  const forwardMessage = useCallback((source: Message, targetIds: string[]): number => {
+    let sent = 0;
+    for (const targetId of targetIds) {
+      counter.current += 1;
+      dispatch({
+        type: 'forward',
+        conversationId: targetId,
+        messageId: `local-${Date.now()}-${counter.current}`,
+        source,
+        sentAt: Date.now(),
+      });
+      sent += 1;
+    }
+    return sent;
+  }, []);
+
   const value = useMemo<ChatsContextValue>(
     () => ({
       items: selectChatList(state),
@@ -182,6 +199,7 @@ export function ChatsProvider({
       updateGroup,
       archivedItems: selectArchived(state),
       restrictedItems: selectRestricted(state),
+      forwardMessage,
       blockedList: selectBlocked(state),
       conversations: state.conversations,
       messagesByChat: state.messages,
@@ -213,6 +231,7 @@ export function ChatsProvider({
       unrestrict,
       deleteChat,
       updateGroup,
+      forwardMessage,
     ],
   );
 

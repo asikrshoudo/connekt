@@ -28,6 +28,7 @@ type Props = {
   onClose: () => void;
   onReact: (emoji: string) => void;
   onReply: () => void;
+  onForward: () => void;
   onCopy: () => void;
   onDelete: () => void;
 };
@@ -38,6 +39,7 @@ export function MessageMenuOverlay({
   onClose,
   onReact,
   onReply,
+  onForward,
   onCopy,
   onDelete,
 }: Props) {
@@ -49,7 +51,10 @@ export function MessageMenuOverlay({
   const alignRight = message.direction === 'outgoing';
 
   const hasText = message.text.length > 0;
-  const menuItems: MenuItem[] = [{ label: 'Reply', icon: 'arrow-undo-outline', onPress: onReply }];
+  const menuItems: MenuItem[] = [
+    { label: 'Reply', icon: 'arrow-undo-outline', onPress: onReply },
+    { label: 'Forward', icon: 'arrow-redo-outline', onPress: onForward },
+  ];
   if (hasText) menuItems.push({ label: 'Copy', icon: 'copy-outline', onPress: onCopy });
   menuItems.push({ label: 'Delete', icon: 'trash-outline', onPress: onDelete, destructive: true });
   const menuHeight = MENU_ROW_HEIGHT * menuItems.length;

@@ -192,3 +192,43 @@ test('a restricted chat is not listed as archived', () => {
   assert.equal(selectArchived(state).length, 0);
   assert.equal(selectRestricted(state).length, 1);
 });
+
+test('forwarding copies the content and marks it forwarded', () => {
+  let state = createInitialState([conversation('a'), conversation('b')], [], { a: [], b: [] });
+  state = chatsReducer(state, { type: 'send', conversationId: 'a', messageId: 'm1', text: 'look', sentAt: 1 });
+  const source = state.messages['a']?.[0];
+  assert.ok(source);
+  state = chatsReducer(state, { type: 'forward', conversationId: 'b', messageId: 'f1', source, sentAt: 2 });
+  const copy = state.messages['b']?.[0];
+  assert.equal(copy?.text, 'look');
+  assert.equal(copy?.forwarded, true);
+  assert.equal(copy?.direction, 'outgoing');
+  assert.equal(state.conversations.find((c) => c.id === 'b')?.lastMessage, 'look');
+});
+
+test('a forwarded photo keeps its attachment and shows Photo in the list', () => {
+  let state = createInitialState([conversation('a'), conversation('b')], [], { a: [], b: [] });
+  state = chatsReducer(state, {
+    type: 'send',
+    conversationId: 'a',
+    messageId: 'm1',
+    text: '',
+    sentAt: 1,
+    attachment: { kind: 'image', uri: 'file:///x.jpg', width: 10, height: 10 },
+  });
+  const source = state.messages['a']?.[0];
+  assert.ok(source);
+  state = chatsReducer(state, { type: 'forward', conversationId: 'b', messageId: 'f1', source, sentAt: 2 });
+  assert.equal(state.messages['b']?.[0]?.attachment?.kind, 'image');
+  assert.equal(state.conversations.find((c) => c.id === 'b')?.lastMessage, 'Photo');
+});
+
+test('nothing is forwarded to a blocked chat', () => {
+  let state = createInitialState([conversation('a'), conversation('b')], [], { a: [], b: [] });
+  state = chatsReducer(state, { type: 'send', conversationId: 'a', messageId: 'm1', text: 'hi', sentAt: 1 });
+  const source = state.messages['a']?.[0];
+  assert.ok(source);
+  state = chatsReducer(state, { type: 'block', id: 'b' });
+  state = chatsReducer(state, { type: 'forward', conversationId: 'b', messageId: 'f1', source, sentAt: 2 });
+  assert.equal(state.messages['b']?.length, 0);
+});

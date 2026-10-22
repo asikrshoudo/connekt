@@ -22,6 +22,7 @@ export type RootStackParamList = {
   Storage: undefined;
   Devices: undefined;
   RestrictedChats: undefined;
+  Forward: { conversationId: string; messageId: string };
   PrivacySecurity: undefined;
   PinFlow: { mode: 'create' | 'change' | 'disable' };
 };

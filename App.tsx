@@ -1,5 +1,6 @@
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ToastProvider } from './src/components/feedback/ToastProvider';
 import { ErrorBoundary } from './src/core/ErrorBoundary';
 import { NotificationSettingsProvider } from './src/features/notifications/NotificationSettingsProvider';
 import { AppLockGate } from './src/features/security/AppLockGate';
@@ -41,7 +42,9 @@ export default function App() {
                   <ThemedStatusBar />
                   <ContactCardHost>
                     <AppLockGate>
-                      <AppNavigation />
+                      <ToastProvider>
+                        <AppNavigation />
+                      </ToastProvider>
                     </AppLockGate>
                   </ContactCardHost>
                 </CallsProvider>

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState, type ComponentRef } from 'react';
 import { BackHandler, StyleSheet, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { ActionSheet } from '../../components/feedback/ActionSheet';
+import { useToast } from '../../components/feedback/ToastProvider';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { Screen } from '../../components/layout/Screen';
 import type { RootStackParamList } from '../../core/navigation/types';
@@ -51,6 +52,7 @@ export function ConversationScreen({ route, navigation }: Props) {
 
   const { ensure, gate } = usePermissionGate();
   const recorder = useVoiceRecorder();
+  const toast = useToast();
 
   const blurTargetRef = useRef<ComponentRef<typeof View>>(null);
   const [menu, setMenu] = useState<MessageMenuTarget | null>(null);
@@ -104,9 +106,17 @@ export function ConversationScreen({ route, navigation }: Props) {
     closeMenu();
   };
 
+  const handleForward = () => {
+    if (!menu) return;
+    const messageId = menu.message.id;
+    closeMenu();
+    navigation.navigate('Forward', { conversationId, messageId });
+  };
+
   const handleCopy = () => {
     if (!menu) return;
     void Clipboard.setStringAsync(menu.message.text);
+    toast.show('Copied');
     closeMenu();
   };
 
@@ -273,6 +283,7 @@ export function ConversationScreen({ route, navigation }: Props) {
           onClose={closeMenu}
           onReact={handleReact}
           onReply={handleReply}
+          onForward={handleForward}
           onCopy={handleCopy}
           onDelete={handleDelete}
         />

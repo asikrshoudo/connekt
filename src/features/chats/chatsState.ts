@@ -41,6 +41,7 @@ export type ChatsAction =
   | { type: 'unblock'; id: string }
   | { type: 'createGroup'; id: string; name: string; members: Member[]; now: number }
   | { type: 'leaveGroup'; id: string }
+  | { type: 'forward'; conversationId: string; messageId: string; source: Message; sentAt: number }
   | { type: 'mute'; id: string; until: number }
   | { type: 'unmute'; id: string }
   | { type: 'archive'; id: string }
@@ -285,6 +286,31 @@ export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState
         conversations: state.conversations.map((c) =>
           c.id === action.id ? { ...c, name, members } : c,
         ),
+      };
+    }
+    case 'forward': {
+      if (!state.conversations.some((c) => c.id === action.conversationId)) return state;
+      if (state.blockedIds.includes(action.conversationId)) return state;
+      const message: Message = {
+        id: action.messageId,
+        conversationId: action.conversationId,
+        text: action.source.text,
+        sentAt: action.sentAt,
+        direction: 'outgoing',
+        forwarded: true,
+        ...(action.source.attachment ? { attachment: action.source.attachment } : {}),
+      };
+      return {
+        ...state,
+        conversations: state.conversations.map((c) =>
+          c.id === action.conversationId
+            ? { ...c, lastMessage: messagePreview(message), lastMessageAt: action.sentAt }
+            : c,
+        ),
+        messages: {
+          ...state.messages,
+          [action.conversationId]: [...(state.messages[action.conversationId] ?? []), message],
+        },
       };
     }
     case 'deleteMessage': {
