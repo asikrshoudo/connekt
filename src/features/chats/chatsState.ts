@@ -249,7 +249,12 @@ export function chatsReducer(state: ChatsState, action: ChatsAction): ChatsState
       return { ...state, archivedIds: state.archivedIds.filter((id) => id !== action.id) };
     case 'restrict':
       if (state.restrictedIds.includes(action.id)) return state;
-      return { ...state, restrictedIds: [...state.restrictedIds, action.id] };
+      return {
+        ...state,
+        restrictedIds: [...state.restrictedIds, action.id],
+        pinnedIds: state.pinnedIds.filter((id) => id !== action.id),
+        archivedIds: state.archivedIds.filter((id) => id !== action.id),
+      };
     case 'unrestrict':
       return { ...state, restrictedIds: state.restrictedIds.filter((id) => id !== action.id) };
     case 'deleteChat':
@@ -314,7 +319,9 @@ function toItem(state: ChatsState, conversation: Conversation, pinned: boolean, 
 }
 
 export function selectChatList(state: ChatsState, now: number = Date.now()): ChatListItem[] {
-  const visible = state.conversations.filter((c) => !state.archivedIds.includes(c.id));
+  const visible = state.conversations.filter(
+    (c) => !state.archivedIds.includes(c.id) && !state.restrictedIds.includes(c.id),
+  );
   const byId = new Map(visible.map((c) => [c.id, c] as const));
 
   const pinned: ChatListItem[] = [];
@@ -333,7 +340,7 @@ export function selectChatList(state: ChatsState, now: number = Date.now()): Cha
 
 export function selectArchived(state: ChatsState, now: number = Date.now()): ChatListItem[] {
   return state.conversations
-    .filter((c) => state.archivedIds.includes(c.id))
+    .filter((c) => state.archivedIds.includes(c.id) && !state.restrictedIds.includes(c.id))
     .sort((a, b) => b.lastMessageAt - a.lastMessageAt)
     .map((conversation) => toItem(state, conversation, false, now));
 }
@@ -342,4 +349,11 @@ export type BlockedEntry = { id: string; name: string };
 
 export function selectBlocked(state: ChatsState): BlockedEntry[] {
   return state.blockedIds.map((id) => ({ id, name: state.blockedNames[id] ?? 'Unknown' }));
+}
+
+export function selectRestricted(state: ChatsState, now: number = Date.now()): ChatListItem[] {
+  return state.conversations
+    .filter((c) => state.restrictedIds.includes(c.id))
+    .sort((a, b) => b.lastMessageAt - a.lastMessageAt)
+    .map((conversation) => toItem(state, conversation, false, now));
 }

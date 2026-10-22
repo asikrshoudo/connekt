@@ -16,7 +16,7 @@ import { useThemeSettings } from '../../core/theme/ThemeProvider';
 
 export function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { archivedItems, blockedList } = useChats();
+  const { archivedItems, restrictedItems, blockedList } = useChats();
   const { settings } = useThemeSettings();
   const appLock = useAppLock();
   const version = Constants.expoConfig?.version ?? 'Unknown';
@@ -69,6 +69,12 @@ export function SettingsScreen() {
             label="Archived chats"
             value={archivedItems.length > 0 ? String(archivedItems.length) : undefined}
             onPress={() => navigation.navigate('ArchivedChats')}
+          />
+          <SettingsRow
+            icon="eye-off-outline"
+            label="Restricted chats"
+            value={restrictedItems.length > 0 ? String(restrictedItems.length) : undefined}
+            onPress={() => navigation.navigate('RestrictedChats')}
           />
           <SettingsRow
             icon="ban-outline"

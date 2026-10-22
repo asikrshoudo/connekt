@@ -36,6 +36,7 @@ export function ChatsScreen() {
   const [muteId, setMuteId] = useState<string | null>(null);
   const [blockId, setBlockId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [restrictId, setRestrictId] = useState<string | null>(null);
 
   const find = (id: string | null): ChatListItem | undefined =>
     id ? items.find((item) => item.conversation.id === id) : undefined;
@@ -44,6 +45,7 @@ export function ChatsScreen() {
   const muteItem = find(muteId);
   const blockItem = find(blockId);
   const deleteItem = find(deleteId);
+  const restrictItem = find(restrictId);
 
   const togglePin = (id: string, pinned: boolean) => {
     if (pinned) chats.unpin(id);
@@ -63,7 +65,7 @@ export function ChatsScreen() {
       mute: run(() => setMuteId(id)),
       unmute: run(() => chats.unmute(id)),
       archive: run(() => chats.archive(id)),
-      toggleRestrict: run(() => (item.restricted ? chats.unrestrict(id) : chats.restrict(id))),
+      toggleRestrict: run(() => (item.restricted ? chats.unrestrict(id) : setRestrictId(id))),
       askBlock: run(() => setBlockId(id)),
       unblock: run(() => chats.unblock(id)),
       askDelete: run(() => setDeleteId(id)),
@@ -198,6 +200,22 @@ export function ChatsScreen() {
           },
         ]}
         onClose={() => setBlockId(null)}
+      />
+
+      <ActionSheet
+        visible={restrictItem !== undefined}
+        title={`Restrict ${restrictItem?.conversation.name ?? ''}?`}
+        message="This chat moves out of your Chats list. Find it again in Settings, Restricted chats. It will not notify you. Saved on this device only for now."
+        actions={[
+          {
+            label: 'Restrict',
+            onPress: () => {
+              if (restrictId) chats.restrict(restrictId);
+              setRestrictId(null);
+            },
+          },
+        ]}
+        onClose={() => setRestrictId(null)}
       />
 
       <ConfirmDialog

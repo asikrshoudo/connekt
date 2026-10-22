@@ -21,6 +21,7 @@ export type RootStackParamList = {
   Notifications: undefined;
   Storage: undefined;
   Devices: undefined;
+  RestrictedChats: undefined;
   PrivacySecurity: undefined;
   PinFlow: { mode: 'create' | 'change' | 'disable' };
 };

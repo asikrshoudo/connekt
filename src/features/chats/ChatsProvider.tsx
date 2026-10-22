@@ -16,6 +16,7 @@ import {
   selectArchived,
   selectBlocked,
   selectChatList,
+  selectRestricted,
   type BlockedEntry,
   type ChatListItem,
 } from './chatsState';
@@ -51,6 +52,7 @@ type ChatsContextValue = {
   deleteChat: (id: string) => void;
   updateGroup: (id: string, name: string, members: Member[]) => void;
   archivedItems: ChatListItem[];
+  restrictedItems: ChatListItem[];
   blockedList: BlockedEntry[];
   conversations: Conversation[];
   messagesByChat: Record<string, Message[]>;
@@ -179,6 +181,7 @@ export function ChatsProvider({
       deleteChat,
       updateGroup,
       archivedItems: selectArchived(state),
+      restrictedItems: selectRestricted(state),
       blockedList: selectBlocked(state),
       conversations: state.conversations,
       messagesByChat: state.messages,

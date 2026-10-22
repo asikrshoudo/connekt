@@ -7,6 +7,7 @@ import {
   MAX_PINNED,
   selectArchived,
   selectBlocked,
+  selectRestricted,
   selectChatList,
 } from './chatsState';
 
@@ -171,4 +172,23 @@ test('updating a one-to-one chat does nothing', () => {
     members: memberList(['a', 'b']),
   });
   assert.equal(next.conversations[0]?.name, 'solo');
+});
+
+test('a restricted chat is hidden from the list and found in the restricted list', () => {
+  let state = createInitialState(four, ['a'], {});
+  state = chatsReducer(state, { type: 'restrict', id: 'a' });
+  assert.equal(selectChatList(state).some((item) => item.conversation.id === 'a'), false);
+  assert.equal(selectRestricted(state).length, 1);
+  assert.equal(state.pinnedIds.length, 0);
+  state = chatsReducer(state, { type: 'unrestrict', id: 'a' });
+  assert.equal(selectChatList(state).some((item) => item.conversation.id === 'a'), true);
+  assert.equal(selectRestricted(state).length, 0);
+});
+
+test('a restricted chat is not listed as archived', () => {
+  let state = createInitialState(four, [], {});
+  state = chatsReducer(state, { type: 'archive', id: 'b' });
+  state = chatsReducer(state, { type: 'restrict', id: 'b' });
+  assert.equal(selectArchived(state).length, 0);
+  assert.equal(selectRestricted(state).length, 1);
 });

@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AppearanceScreen } from '../../features/appearance/AppearanceScreen';
 import { ArchivedChatsScreen } from '../../features/chats/ArchivedChatsScreen';
+import { RestrictedChatsScreen } from '../../features/chats/RestrictedChatsScreen';
 import { BlockedContactsScreen } from '../../features/contacts/BlockedContactsScreen';
 import { MyQrScreen } from '../../features/contacts/MyQrScreen';
 import { ConversationScreen } from '../../features/conversation/ConversationScreen';
@@ -56,6 +57,7 @@ export function RootNavigator() {
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="Storage" component={StorageScreen} />
       <Stack.Screen name="Devices" component={DevicesScreen} />
+      <Stack.Screen name="RestrictedChats" component={RestrictedChatsScreen} />
       <Stack.Screen name="PrivacySecurity" component={PrivacySecurityScreen} />
       <Stack.Screen name="PinFlow" component={PinFlowScreen} />
     </Stack.Navigator>
