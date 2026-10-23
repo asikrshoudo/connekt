@@ -9,7 +9,7 @@ import { formatClockTime } from '../../utils/dates';
 import { messagePreview } from '../../utils/messagePreview';
 import type { ReplyRef } from './buildTimeline';
 import { MessageBody } from './MessageBody';
-import type { MessageMenuTarget, ReplyPreview } from './types';
+import type { MessageMenuTarget, Rect, ReplyPreview } from './types';
 
 type Props = {
   message: Message;
@@ -19,8 +19,8 @@ type Props = {
   groupedWithPrevious: boolean;
   showTime: boolean;
   onLongPress: (target: MessageMenuTarget) => void;
-  onOpen: (message: Message) => void;
-  onOpenMedia: (message: Message, index: number) => void;
+  onOpen: (message: Message, rect: Rect) => void;
+  onOpenMedia: (message: Message, index: number, rect: Rect) => void;
 };
 
 function toPreview(reply: ReplyRef | null, contactName: string): ReplyPreview | null {
@@ -54,6 +54,13 @@ export function MessageBubble({
     });
   };
 
+  // A single photo or video opens from where it sits in the chat.
+  const handleOpen = () => {
+    ref.current?.measureInWindow((x, y, width, height) => {
+      onOpen(message, { x, y, width, height });
+    });
+  };
+
   return (
     <View
       style={[
@@ -79,9 +86,7 @@ export function MessageBubble({
         ref={ref}
         collapsable={false}
         onPress={
-          message.attachment && message.attachment.kind !== 'album'
-            ? () => onOpen(message)
-            : undefined
+          message.attachment && message.attachment.kind !== 'album' ? handleOpen : undefined
         }
         onLongPress={handleLongPress}
         delayLongPress={250}
@@ -92,7 +97,7 @@ export function MessageBubble({
         <MessageBody
           message={message}
           reply={preview}
-          onOpenMedia={(index) => onOpenMedia(message, index)}
+          onOpenMedia={(index, rect) => onOpenMedia(message, index, rect)}
           onLongPress={handleLongPress}
         />
       </Pressable>

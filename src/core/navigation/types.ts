@@ -1,3 +1,6 @@
+import type { Rect } from '../../features/conversation/types';
+import type { MediaItem } from '../../types/chat';
+
 export type RootStackParamList = {
   Tabs: undefined;
   Conversation: { conversationId: string };
@@ -5,7 +8,7 @@ export type RootStackParamList = {
   Scan: undefined;
   NewChat: undefined;
   AddContact: undefined;
-  MediaViewer: { uri: string; kind: 'image' | 'video' };
+  MediaViewer: { items: MediaItem[]; index: number; origin: Rect | null };
   ContactProfile: { conversationId: string };
   Requests: undefined;
   RequestDetail: { requestId: string };

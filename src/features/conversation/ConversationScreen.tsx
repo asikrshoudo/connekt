@@ -31,7 +31,7 @@ import { ConversationHeader } from './ConversationHeader';
 import { MessageComposer } from './MessageComposer';
 import { MessageList } from './MessageList';
 import { MessageMenuOverlay } from './MessageMenuOverlay';
-import type { MessageMenuTarget } from './types';
+import type { MessageMenuTarget, Rect } from './types';
 import { useVoiceRecorder } from './useVoiceRecorder';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Conversation'>;
@@ -206,11 +206,11 @@ export function ConversationScreen({ route, navigation }: Props) {
     void recorder.stop();
   };
 
-  const handleOpen = (message: Message) => {
+  const handleOpen = (message: Message, rect: Rect) => {
     const attachment = message.attachment;
     if (!attachment) return;
     if (attachment.kind === 'image' || attachment.kind === 'video') {
-      navigation.navigate('MediaViewer', { uri: attachment.uri, kind: attachment.kind });
+      navigation.navigate('MediaViewer', { items: [attachment], index: 0, origin: rect });
     } else if (attachment.kind === 'location') {
       openInMaps(attachment.latitude, attachment.longitude).catch(() =>
         setNotice({ title: 'No maps app', message: 'Install a maps app to open this location.' }),
@@ -226,11 +226,10 @@ export function ConversationScreen({ route, navigation }: Props) {
     }
   };
 
-  const handleOpenAlbumItem = (message: Message, index: number) => {
+  const handleOpenAlbumItem = (message: Message, index: number, rect: Rect) => {
     const attachment = message.attachment;
     if (attachment?.kind !== 'album') return;
-    const item = attachment.items[index];
-    if (item) navigation.navigate('MediaViewer', { uri: item.uri, kind: item.kind });
+    navigation.navigate('MediaViewer', { items: attachment.items, index, origin: rect });
   };
 
   const handleSendText = (text: string) => {

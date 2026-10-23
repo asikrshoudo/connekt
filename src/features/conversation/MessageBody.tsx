@@ -6,7 +6,7 @@ import type { Message } from '../../types/chat';
 import { countEmoji } from '../../utils/emoji';
 import { AlbumBody } from './AlbumBody';
 import { FileBody, LocationBody, MediaThumb, VoiceBody } from './AttachmentBodies';
-import type { ReplyPreview } from './types';
+import type { Rect, ReplyPreview } from './types';
 
 const MAX_BIG_EMOJI = 3;
 const EMOJI_SIZE: Record<number, number> = { 1: 56, 2: 44, 3: 36 };
@@ -14,7 +14,7 @@ const EMOJI_SIZE: Record<number, number> = { 1: 56, 2: 44, 3: 36 };
 type Props = {
   message: Message;
   reply: ReplyPreview | null;
-  onOpenMedia?: (index: number) => void;
+  onOpenMedia?: (index: number, rect: Rect) => void;
   onLongPress?: () => void;
 };
 

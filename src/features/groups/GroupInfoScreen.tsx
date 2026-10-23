@@ -12,7 +12,7 @@ import { SettingsRow } from '../../components/ui/SettingsRow';
 import { SettingsSection } from '../../components/ui/SettingsSection';
 import type { RootStackParamList } from '../../core/navigation/types';
 import { spacing } from '../../core/theme/spacing';
-import type { MediaItem } from '../../types/chat';
+import type { Rect } from '../conversation/types';
 import { useChats } from '../chats/ChatsProvider';
 import { collectShared } from '../contacts/sharedMedia';
 import { SharedMediaGrid } from '../contacts/SharedMediaGrid';
@@ -39,8 +39,12 @@ export function GroupInfoScreen({ route, navigation }: Props) {
 
   const members = conversation.members ?? [];
 
-  const openMedia = (item: MediaItem) => {
-    navigation.navigate('MediaViewer', { uri: item.uri, kind: item.kind });
+  const openMedia = (index: number, rect: Rect) => {
+    navigation.navigate('MediaViewer', {
+      items: shared.media.map((entry) => entry.item),
+      index,
+      origin: rect,
+    });
   };
 
   const leave = () => {

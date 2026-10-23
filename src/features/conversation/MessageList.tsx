@@ -6,7 +6,7 @@ import type { TimelineRow } from './buildTimeline';
 import { DateSeparator } from './DateSeparator';
 import { MessageBubble } from './MessageBubble';
 import { SwipeToReply } from './SwipeToReply';
-import type { MessageMenuTarget } from './types';
+import type { MessageMenuTarget, Rect } from './types';
 
 type Props = {
   rows: TimelineRow[];
@@ -14,8 +14,8 @@ type Props = {
   showSenders: boolean;
   canReply: boolean;
   onMessageLongPress: (target: MessageMenuTarget) => void;
-  onMessageOpen: (message: Message) => void;
-  onMessageOpenMedia: (message: Message, index: number) => void;
+  onMessageOpen: (message: Message, rect: Rect) => void;
+  onMessageOpenMedia: (message: Message, index: number, rect: Rect) => void;
   onMessageReply: (message: Message) => void;
   footer?: ReactElement;
 };

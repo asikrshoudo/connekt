@@ -42,7 +42,15 @@ export function RootNavigator() {
       <Stack.Screen name="Scan" component={ScanScreen} />
       <Stack.Screen name="NewChat" component={NewChatScreen} />
       <Stack.Screen name="AddContact" component={AddContactScreen} />
-      <Stack.Screen name="MediaViewer" component={MediaViewerScreen} />
+      <Stack.Screen
+        name="MediaViewer"
+        component={MediaViewerScreen}
+        options={{
+          presentation: 'transparentModal',
+          animation: 'none',
+          contentStyle: { backgroundColor: 'transparent' },
+        }}
+      />
       <Stack.Screen name="ContactProfile" component={ContactProfileScreen} />
       <Stack.Screen name="Requests" component={RequestsScreen} />
       <Stack.Screen name="RequestDetail" component={RequestDetailScreen} />
