@@ -95,14 +95,17 @@ export function ConversationScreen({ route, navigation }: Props) {
     closeMenu();
   };
 
-  const handleReply = () => {
-    if (!menu) return;
-    const { message } = menu;
+  const startReply = (message: Message) => {
     setReplyTo({
       id: message.id,
       author: message.direction === 'outgoing' ? 'You' : (message.senderName ?? contactName),
       text: messagePreview(message),
     });
+  };
+
+  const handleReply = () => {
+    if (!menu) return;
+    startReply(menu.message);
     closeMenu();
   };
 
@@ -250,6 +253,8 @@ export function ConversationScreen({ route, navigation }: Props) {
                 showSenders={group}
                 onMessageLongPress={setMenu}
                 onMessageOpen={handleOpen}
+                onMessageReply={startReply}
+                canReply={!blocked}
                 footer={
                   isSample ? (
                     <SampleDataNotice message="Sample conversation. Messages you type stay on this device and are not sent." />

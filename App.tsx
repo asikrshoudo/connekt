@@ -1,3 +1,4 @@
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastProvider } from './src/components/feedback/ToastProvider';
@@ -22,6 +23,7 @@ import { ContactsProvider } from './src/features/contacts/ContactsProvider';
 
 export default function App() {
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
       <KeyboardProvider>
         <ThemeProvider>
@@ -58,5 +60,6 @@ export default function App() {
         </ThemeProvider>
       </KeyboardProvider>
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
