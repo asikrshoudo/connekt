@@ -20,6 +20,7 @@ type Props = {
   showTime: boolean;
   onLongPress: (target: MessageMenuTarget) => void;
   onOpen: (message: Message) => void;
+  onOpenMedia: (message: Message, index: number) => void;
 };
 
 function toPreview(reply: ReplyRef | null, contactName: string): ReplyPreview | null {
@@ -40,6 +41,7 @@ export function MessageBubble({
   showTime,
   onLongPress,
   onOpen,
+  onOpenMedia,
 }: Props) {
   const colors = useColors();
   const ref = useRef<ComponentRef<typeof View>>(null);
@@ -76,14 +78,23 @@ export function MessageBubble({
       <Pressable
         ref={ref}
         collapsable={false}
-        onPress={message.attachment ? () => onOpen(message) : undefined}
+        onPress={
+          message.attachment && message.attachment.kind !== 'album'
+            ? () => onOpen(message)
+            : undefined
+        }
         onLongPress={handleLongPress}
         delayLongPress={250}
         accessibilityLabel={`${message.forwarded ? 'Forwarded. ' : ''}${outgoing ? 'You' : (message.senderName ?? contactName)}: ${messagePreview(message)}`}
         accessibilityHint="Double tap and hold for options"
         style={styles.pressable}
       >
-        <MessageBody message={message} reply={preview} />
+        <MessageBody
+          message={message}
+          reply={preview}
+          onOpenMedia={(index) => onOpenMedia(message, index)}
+          onLongPress={handleLongPress}
+        />
       </Pressable>
       {message.reaction ? (
         <View

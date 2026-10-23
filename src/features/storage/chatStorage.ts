@@ -34,11 +34,14 @@ export function summarizeChatStorage(
     for (const message of messagesByChat[conversation.id] ?? []) {
       const attachment = message.attachment;
       if (!attachment || attachment.kind === 'location') continue;
-      if (attachment.kind === 'image') row.photos += 1;
-      else if (attachment.kind === 'video') row.videos += 1;
-      else if (attachment.kind === 'file') row.files += 1;
-      else row.voice += 1;
-      if (isAppFile(attachment.uri)) row.bytes += sizeOf(attachment.uri);
+      const parts = attachment.kind === 'album' ? attachment.items : [attachment];
+      for (const part of parts) {
+        if (part.kind === 'image') row.photos += 1;
+        else if (part.kind === 'video') row.videos += 1;
+        else if (part.kind === 'file') row.files += 1;
+        else row.voice += 1;
+        if (isAppFile(part.uri)) row.bytes += sizeOf(part.uri);
+      }
     }
 
     if (row.photos + row.videos + row.files + row.voice > 0) rows.push(row);

@@ -4,13 +4,19 @@ import { AppText } from '../../components/ui/AppText';
 import { useColors } from '../../core/theme/ThemeProvider';
 import type { Message } from '../../types/chat';
 import { countEmoji } from '../../utils/emoji';
+import { AlbumBody } from './AlbumBody';
 import { FileBody, LocationBody, MediaThumb, VoiceBody } from './AttachmentBodies';
 import type { ReplyPreview } from './types';
 
 const MAX_BIG_EMOJI = 3;
 const EMOJI_SIZE: Record<number, number> = { 1: 56, 2: 44, 3: 36 };
 
-type Props = { message: Message; reply: ReplyPreview | null };
+type Props = {
+  message: Message;
+  reply: ReplyPreview | null;
+  onOpenMedia?: (index: number) => void;
+  onLongPress?: () => void;
+};
 
 type BubbleProps = { outgoing: boolean; reply: ReplyPreview | null; children: ReactNode };
 
@@ -45,13 +51,17 @@ function Bubble({ outgoing, reply, children }: BubbleProps) {
 }
 
 // The visual part of a message. Also used for the long-press menu preview.
-export function MessageBody({ message, reply }: Props) {
+export function MessageBody({ message, reply, onOpenMedia, onLongPress }: Props) {
   const colors = useColors();
   const outgoing = message.direction === 'outgoing';
   const attachment = message.attachment;
 
   if (attachment?.kind === 'image' || attachment?.kind === 'video') {
     return <MediaThumb attachment={attachment} />;
+  }
+
+  if (attachment?.kind === 'album') {
+    return <AlbumBody items={attachment.items} onOpen={onOpenMedia} onLongPress={onLongPress} />;
   }
 
   if (attachment) {

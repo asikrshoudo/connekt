@@ -15,5 +15,12 @@ export function messagePreview(message: Message): string {
       return 'Voice message';
     case 'location':
       return 'Location';
+    case 'album': {
+      const total = attachment.items.length;
+      const videos = attachment.items.filter((item) => item.kind === 'video').length;
+      if (videos === 0) return `${total} photos`;
+      if (videos === total) return `${total} videos`;
+      return `${total} photos and videos`;
+    }
   }
 }

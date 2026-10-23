@@ -24,6 +24,7 @@ import {
   takePhoto,
 } from './attachments';
 import { AttachPanel, type AttachAction } from './AttachPanel';
+import { groupMedia } from './albums';
 import { buildTimeline } from './buildTimeline';
 import { BlockedBar } from './BlockedBar';
 import { ConversationHeader } from './ConversationHeader';
@@ -136,7 +137,8 @@ export function ConversationScreen({ route, navigation }: Props) {
     setDeleteTarget(null);
   };
 
-  const sendAttachments = (items: Attachment[]) => {
+  const sendAttachments = (picked: Attachment[]) => {
+    const items = groupMedia(picked);
     items.forEach((attachment, index) => {
       send(conversationId, { text: '', attachment }, index === 0 ? replyTo?.id : undefined);
     });
@@ -224,6 +226,13 @@ export function ConversationScreen({ route, navigation }: Props) {
     }
   };
 
+  const handleOpenAlbumItem = (message: Message, index: number) => {
+    const attachment = message.attachment;
+    if (attachment?.kind !== 'album') return;
+    const item = attachment.items[index];
+    if (item) navigation.navigate('MediaViewer', { uri: item.uri, kind: item.kind });
+  };
+
   const handleSendText = (text: string) => {
     send(conversationId, { text }, replyTo?.id);
     setReplyTo(null);
@@ -253,6 +262,7 @@ export function ConversationScreen({ route, navigation }: Props) {
                 showSenders={group}
                 onMessageLongPress={setMenu}
                 onMessageOpen={handleOpen}
+                onMessageOpenMedia={handleOpenAlbumItem}
                 onMessageReply={startReply}
                 canReply={!blocked}
                 footer={

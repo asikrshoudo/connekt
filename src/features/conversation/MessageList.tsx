@@ -15,6 +15,7 @@ type Props = {
   canReply: boolean;
   onMessageLongPress: (target: MessageMenuTarget) => void;
   onMessageOpen: (message: Message) => void;
+  onMessageOpenMedia: (message: Message, index: number) => void;
   onMessageReply: (message: Message) => void;
   footer?: ReactElement;
 };
@@ -27,6 +28,7 @@ export function MessageList({
   canReply,
   onMessageLongPress,
   onMessageOpen,
+  onMessageOpenMedia,
   onMessageReply,
   footer,
 }: Props) {
@@ -52,6 +54,7 @@ export function MessageList({
               showTime={item.showTime}
               onLongPress={onMessageLongPress}
               onOpen={onMessageOpen}
+              onOpenMedia={onMessageOpenMedia}
             />
           </SwipeToReply>
         )

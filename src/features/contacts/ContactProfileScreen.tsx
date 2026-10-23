@@ -12,7 +12,7 @@ import { SettingsRow } from '../../components/ui/SettingsRow';
 import { SettingsSection } from '../../components/ui/SettingsSection';
 import type { RootStackParamList } from '../../core/navigation/types';
 import { spacing } from '../../core/theme/spacing';
-import type { Message } from '../../types/chat';
+import type { MediaItem } from '../../types/chat';
 import { formatFileSize } from '../../utils/format';
 import { useChats } from '../chats/ChatsProvider';
 import { collectShared } from './sharedMedia';
@@ -39,11 +39,8 @@ export function ContactProfileScreen({ route, navigation }: Props) {
 
   const blocked = isBlocked(conversation.id);
 
-  const openMedia = (message: Message) => {
-    const attachment = message.attachment;
-    if (attachment && (attachment.kind === 'image' || attachment.kind === 'video')) {
-      navigation.navigate('MediaViewer', { uri: attachment.uri, kind: attachment.kind });
-    }
+  const openMedia = (item: MediaItem) => {
+    navigation.navigate('MediaViewer', { uri: item.uri, kind: item.kind });
   };
 
   return (
