@@ -279,6 +279,7 @@ export function ConversationScreen({ route, navigation }: Props) {
               onAttach={(anchorY) => setAttachAnchor(anchorY)}
               recording={recorder.recording}
               elapsedMs={recorder.elapsedMs}
+              level={recorder.level}
               onStartRecording={() => void startRecording()}
               onCancelRecording={cancelRecording}
               onSendRecording={() => void finishRecording()}

@@ -17,12 +17,14 @@ import { useColors } from '../../core/theme/ThemeProvider';
 import { typography } from '../../core/theme/typography';
 import { formatDuration } from '../../utils/format';
 import type { ReplyPreview } from './types';
+import { VoiceWaveform } from './VoiceWaveform';
 
 type Props = {
   onSendText: (text: string) => void;
   onAttach: (anchorY: number) => void;
   recording: boolean;
   elapsedMs: number;
+  level?: number;
   onStartRecording: () => void;
   onCancelRecording: () => void;
   onSendRecording: () => void;
@@ -61,6 +63,7 @@ export function MessageComposer({
   onAttach,
   recording,
   elapsedMs,
+  level = 0,
   onStartRecording,
   onCancelRecording,
   onSendRecording,
@@ -131,6 +134,7 @@ export function MessageComposer({
           <View style={[...pillStyle, styles.recordingPill]}>
             <View style={[styles.dot, { backgroundColor: colors.destructive }]} />
             <AppText>{formatDuration(elapsedMs)}</AppText>
+            <VoiceWaveform level={level} color={colors.accent} />
           </View>
           <RoundButton icon="arrow-up" label="Send voice message" onPress={onSendRecording} filled />
         </View>

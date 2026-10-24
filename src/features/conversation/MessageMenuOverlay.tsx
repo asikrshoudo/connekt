@@ -1,5 +1,5 @@
 import { BlurView } from 'expo-blur';
-import type { ComponentRef, RefObject } from 'react';
+import { useState, type ComponentRef, type RefObject } from 'react';
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,6 +11,7 @@ import {
 } from '../../components/feedback/MenuCard';
 import { popIn } from '../../components/feedback/popKeyframe';
 import { useColors, useThemeSettings } from '../../core/theme/ThemeProvider';
+import { EmojiPickerSheet } from './EmojiPickerSheet';
 import { MessageBody } from './MessageBody';
 import { REACTION_BAR_HEIGHT, REACTION_BAR_WIDTH, ReactionBar } from './ReactionBar';
 import type { MessageMenuTarget } from './types';
@@ -47,6 +48,7 @@ export function MessageMenuOverlay({
   const { isDark } = useThemeSettings();
   const insets = useSafeAreaInsets();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const [picking, setPicking] = useState(false);
   const { message, rect, reply } = target;
   const alignRight = message.direction === 'outgoing';
 
@@ -104,7 +106,11 @@ export function MessageMenuOverlay({
           },
         ]}
       >
-        <ReactionBar selected={message.reaction} onSelect={onReact} />
+        <ReactionBar
+          selected={message.reaction}
+          onSelect={onReact}
+          onMore={() => setPicking(true)}
+        />
       </Animated.View>
 
       <View
@@ -130,6 +136,10 @@ export function MessageMenuOverlay({
       >
         <MenuCard items={menuItems} />
       </Animated.View>
+
+      {picking ? (
+        <EmojiPickerSheet onPick={onReact} onClose={() => setPicking(false)} />
+      ) : null}
     </Animated.View>
   );
 }
