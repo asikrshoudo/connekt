@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   play: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.25)',
