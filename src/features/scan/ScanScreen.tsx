@@ -37,7 +37,7 @@ function ScanCamera({ onBack }: { onBack: () => void }) {
       />
       <View pointerEvents="none" style={styles.frameWrap}>
         <View style={[styles.frame, { borderColor: colors.textPrimary }]} />
-        <AppText style={styles.hint}>Point the camera at a Connekt QR code</AppText>
+        <AppText style={styles.hint}>Point the camera at a Myth contact code</AppText>
       </View>
       <Pressable
         accessibilityRole="button"
@@ -64,7 +64,7 @@ export function ScanScreen({ navigation }: Props) {
           <Ionicons name="scan-outline" size={56} color={colors.textMuted} />
           <AppText variant="heading">Camera access</AppText>
           <AppText tone="secondary" style={styles.center}>
-            Connekt uses the camera only to scan QR codes. Nothing is recorded or uploaded.
+            Myth uses the camera only to scan QR codes. Nothing is recorded or uploaded.
           </AppText>
           <PillButton
             size="large"

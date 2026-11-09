@@ -10,7 +10,7 @@ export type ChatStorageRow = {
   bytes: number;
 };
 
-// Counts the media in each chat. Bytes only count files Connekt keeps in its own folders;
+// Counts the media in each chat. Bytes only count files Myth keeps in its own folders;
 // photos and videos picked from the gallery are not copied, so they add nothing.
 export function summarizeChatStorage(
   conversations: Conversation[],

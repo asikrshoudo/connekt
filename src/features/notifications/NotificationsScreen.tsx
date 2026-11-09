@@ -18,7 +18,7 @@ import { useNotificationSettings } from './NotificationSettingsProvider';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Notifications'>;
 
-const PACKAGE_NAME = 'com.thekami.connekt';
+const PACKAGE_NAME = 'com.myth.thekami';
 
 function openAndroidNotificationSettings() {
   markExternalActivity();
@@ -49,7 +49,7 @@ export function NotificationsScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={{ paddingBottom: spacing.xxl, gap: spacing.lg }}>
         <SettingsSection
           title="Permission"
-          footer="Connekt cannot send notifications yet, because it has no server. Your choices below are saved on this device and will apply once messages can arrive."
+          footer="Myth cannot send notifications yet because it has no server. Your choices below are saved on this device and will apply once messages can arrive."
         >
           <PermissionRow
             icon={info.icon}
@@ -119,7 +119,7 @@ export function NotificationsScreen({ navigation }: Props) {
           />
         </SettingsSection>
 
-        <SettingsSection footer="Opens Android's own notification settings for Connekt.">
+        <SettingsSection footer="Opens Android's own notification settings for Myth.">
           <SettingsRow
             icon="settings-outline"
             label="Android notification settings"

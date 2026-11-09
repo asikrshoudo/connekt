@@ -37,7 +37,7 @@ export function ProfileScreen({ navigation }: Props) {
           />
         </View>
         <AppText variant="footnote" tone="muted" style={styles.note}>
-          Your profile is saved on this device only. No one else can see it yet, because Connekt
+          Your profile is saved on this device only. No one else can see it yet, because Myth
           has no server.
         </AppText>
       </ScrollView>

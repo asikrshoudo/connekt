@@ -10,7 +10,7 @@ export type TabItemConfig = {
 };
 
 export const tabConfig: Record<string, TabItemConfig> = {
-  Chats: { label: 'Chats', icon: 'chatbubble-outline', iconFocused: 'chatbubble' },
+  Chats: { label: 'Inbox', icon: 'chatbubbles-outline', iconFocused: 'chatbubbles' },
   Search: { label: 'Search', icon: 'search-outline', iconFocused: 'search' },
   Calls: { label: 'Calls', icon: 'call-outline', iconFocused: 'call' },
   Settings: { label: 'Settings', icon: 'settings-outline', iconFocused: 'settings' },

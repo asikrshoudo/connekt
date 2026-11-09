@@ -41,7 +41,7 @@ export function PermissionsScreen({ navigation }: Props) {
       <ScreenHeader title="Permissions" onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.content}>
         <AppText tone="secondary" style={styles.intro}>
-          Connekt asks only for what a feature needs, and only when you choose. There is no server
+          Myth asks only for what a feature needs, and only when you choose. There is no server
           yet, so nothing leaves your phone.
         </AppText>
 

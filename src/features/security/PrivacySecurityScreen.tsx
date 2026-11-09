@@ -35,7 +35,7 @@ export function PrivacySecurityScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={{ paddingBottom: spacing.xxl, gap: spacing.lg }}>
         <SettingsSection
           title="App lock"
-          footer="App lock hides Connekt behind your PIN. It does not encrypt your chats. Your PIN is kept as a hash in Android's secure storage, and wrong tries make you wait."
+          footer="App lock hides Myth behind your PIN. It does not encrypt your chats. Your PIN is kept as a hash in Android's secure storage, and wrong tries make you wait."
         >
           <SettingsRow
             icon="lock-closed-outline"
@@ -75,7 +75,7 @@ export function PrivacySecurityScreen({ navigation }: Props) {
           <ToggleRow
             icon="eye-off-outline"
             label="Hide in recents and block screenshots"
-            description="Connekt shows blank in the recent apps list, and screenshots and screen recording are blocked."
+            description="Myth shows blank in the recent apps list, and screenshots and screen recording are blocked."
             value={settings.blockScreenshots}
             onChange={lock.setBlockScreenshots}
           />
@@ -85,7 +85,7 @@ export function PrivacySecurityScreen({ navigation }: Props) {
       <ActionSheet
         visible={timeoutOpen}
         title="Lock after"
-        message="How long Connekt can stay in the background before it asks for your PIN."
+        message="How long Myth can stay in the background before it asks for your PIN."
         actions={TIMEOUT_OPTIONS.map((ms) => ({
           label: `${formatTimeout(ms)}${ms === settings.timeoutMs ? '  ✓' : ''}`,
           onPress: () => {

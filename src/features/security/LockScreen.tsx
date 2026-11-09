@@ -61,7 +61,7 @@ export function LockScreen() {
     >
       <View style={styles.header}>
         <Ionicons name="lock-closed" size={36} color={colors.textPrimary} />
-        <AppText variant="heading">Connekt is locked</AppText>
+        <AppText variant="heading">Myth is locked</AppText>
         <AppText
           accessibilityLiveRegion="polite"
           tone={error || lockedOut ? 'primary' : 'secondary'}

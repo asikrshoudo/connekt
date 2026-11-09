@@ -24,7 +24,7 @@ export function readStorage(): StorageSnapshot {
   };
 }
 
-// True for files Connekt itself keeps (copied picks, recordings, camera shots).
+// True for files Myth itself keeps (copied picks, recordings, camera shots).
 export function isAppFile(uri: string): boolean {
   return uri.startsWith(Paths.cache.uri) || uri.startsWith(Paths.document.uri);
 }

@@ -71,13 +71,13 @@ export function DevicesScreen({ navigation }: Props) {
           />
           <SettingsRow
             icon="information-circle-outline"
-            label="Connekt version"
+            label="Myth version"
             value={Constants.expoConfig?.version ?? 'Unknown'}
           />
-          <SettingsRow icon="calendar-outline" label="Using Connekt since" value={sinceText} />
+          <SettingsRow icon="calendar-outline" label="Using Myth since" value={sinceText} />
           <SettingsRow
             icon="finger-print-outline"
-            label="Connekt ID"
+            label="Myth ID"
             value={connektId ? shortId(connektId) : '...'}
           />
           <SettingsRow icon="person-outline" label="Signed in as" value="No account yet" />
@@ -85,7 +85,7 @@ export function DevicesScreen({ navigation }: Props) {
 
         <SettingsSection
           title="Security"
-          footer="App lock keeps other people on this phone out of Connekt."
+          footer="App lock keeps other people on this phone out of Myth."
         >
           <SettingsRow
             icon="lock-closed-outline"
@@ -99,7 +99,7 @@ export function DevicesScreen({ navigation }: Props) {
           <SectionHeader title="Linked devices" />
           <AppText tone="secondary" style={styles.text}>
             No other devices are linked. Linking a phone, tablet or computer needs an account and
-            a server, which Connekt does not have yet.
+            a server, which Myth does not have yet.
           </AppText>
         </View>
         <SettingsSection footer="When linking is available, every device that can read your chats will be listed here, and you will be able to remove any of them.">

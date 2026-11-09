@@ -30,7 +30,7 @@ export function SettingsScreen() {
 
         <SettingsSection
           title="General"
-          footer="Review and allow what Connekt can access on your phone."
+          footer="Review and allow what Myth can access on your phone."
         >
           <SettingsRow
             icon="color-palette-outline"
@@ -86,7 +86,7 @@ export function SettingsScreen() {
 
         <SettingsSection
           title="Coming soon"
-          footer="These need an account and a server, which Connekt does not have yet."
+          footer="These need an account and a server, which Myth does not have yet."
         >
           <SettingsRow icon="person-outline" label="Account" value="Soon" disabled />
         </SettingsSection>

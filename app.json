@@ -1,23 +1,25 @@
 {
   "expo": {
-    "name": "Connekt",
-    "slug": "connekt",
+    "name": "Myth",
+    "slug": "myth",
+    "description": "Built for teams. Designed for work.",
     "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "ios": {
+      "bundleIdentifier": "com.myth.thekami",
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#0A0A0C",
+        "backgroundColor": "#101522",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.thekami.connekt",
+      "package": "com.myth.thekami",
       "versionCode": 1,
       "permissions": [
         "android.permission.CAMERA",
@@ -43,7 +45,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#0A0A0C",
+          "backgroundColor": "#101522",
           "image": "./assets/splash-icon.png",
           "imageWidth": 200
         }
@@ -57,8 +59,10 @@
           ]
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-asset",
+      "expo-status-bar"
     ],
-    "scheme": "connekt"
+    "scheme": ["myth", "connekt"]
   }
 }

@@ -17,7 +17,7 @@ export function AddContactScreen({ navigation }: Props) {
     <Screen>
       <ScreenHeader title="Add contact" onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={{ paddingTop: spacing.sm, gap: spacing.lg }}>
-        <SettingsSection footer="Adding people by username, code or NFC needs an account and a server, which Connekt does not have yet.">
+        <SettingsSection footer="Adding people by username, code or NFC needs an account and a server, which Myth does not have yet. NFC is deferred until a development build is available.">
           <SettingsRow
             icon="scan-outline"
             label="Scan QR code"

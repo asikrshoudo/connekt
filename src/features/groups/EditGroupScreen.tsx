@@ -106,7 +106,7 @@ export function EditGroupScreen({ route, navigation }: Props) {
           </View>
 
           <AppText variant="footnote" tone="muted" style={styles.note}>
-            Changes are saved on this device only. No one is notified, because Connekt has no
+            Changes are saved on this device only. No one is notified, because Myth has no
             server yet.
           </AppText>
         </ScrollView>

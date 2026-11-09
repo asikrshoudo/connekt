@@ -31,7 +31,7 @@ export function MyQrScreen({ navigation }: Props) {
   const share = () => {
     if (!link) return;
     markExternalActivity();
-    Share.share({ message: `Add me on Connekt: ${link}` }).catch(() => undefined);
+    Share.share({ message: `Add me on Myth: ${link}` }).catch(() => undefined);
   };
 
   return (
@@ -49,7 +49,7 @@ export function MyQrScreen({ navigation }: Props) {
         )}
 
         <AppText variant="footnote" tone="muted" style={styles.note}>
-          Anyone who scans this gets your name and a random Connekt ID. It has no phone number or
+          Anyone who scans this gets your name and a random Myth ID. It has no phone number or
           email, and it does not prove who you are.
         </AppText>
 

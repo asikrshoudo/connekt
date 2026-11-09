@@ -75,7 +75,9 @@ export function ContactCardHost({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const open = (url: string | null | undefined) => {
-      if (url && url.startsWith('connekt://')) handleRef.current(url);
+      if (url && (url.startsWith('myth://') || url.startsWith('connekt://'))) {
+        handleRef.current(url);
+      }
     };
     Linking.getInitialURL()
       .then(open)
@@ -98,7 +100,7 @@ export function ContactCardHost({ children }: { children: ReactNode }) {
         return {
           title: `Add ${value.card.name}?`,
           message:
-            'They will be saved on this device. Messages cannot be sent yet, because Connekt has no server.',
+            'They will be saved on this device. Messages cannot be sent yet, because Myth has no server.',
           actions: [
             {
               label: 'Add contact',
@@ -129,8 +131,8 @@ export function ContactCardHost({ children }: { children: ReactNode }) {
         };
       case 'invalid':
         return {
-          title: 'Not a Connekt code',
-          message: `This is not a Connekt contact. Nothing was opened.${value.preview ? `\n\n${value.preview}` : ''}`,
+          title: 'Not a Myth code',
+          message: `This is not a Myth contact. Nothing was opened.${value.preview ? `\n\n${value.preview}` : ''}`,
           actions: [],
           cancelLabel: 'OK',
         };

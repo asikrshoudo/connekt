@@ -85,7 +85,7 @@ export function StorageScreen({ navigation }: Props) {
                   { value: other, color: colors.textMuted },
                 ]}
               />
-              <Legend color={colors.accent} label="Connekt" value={formatFileSize(app)} />
+              <Legend color={colors.accent} label="Myth" value={formatFileSize(app)} />
               <Legend
                 color={colors.textMuted}
                 label="Other apps and files"
@@ -103,7 +103,7 @@ export function StorageScreen({ navigation }: Props) {
         </View>
 
         <SettingsSection
-          title="Connekt on this phone"
+          title="Myth on this phone"
           footer="Files you send and voice messages you record are kept in the cache. Clearing it removes them from your chats. Messages and contacts stay."
         >
           <SettingsRow
@@ -131,7 +131,7 @@ export function StorageScreen({ navigation }: Props) {
               No photos, videos, files or voice messages in your chats yet.
             </AppText>
           ) : (
-            <SettingsSection footer="Photos and videos from your gallery are not copied by Connekt, so they use no extra space here.">
+            <SettingsSection footer="Photos and videos from your gallery are not copied by Myth, so they use no extra space here.">
               {rows.map((row) => (
                 <PermissionRow
                   key={row.id}
@@ -151,7 +151,7 @@ export function StorageScreen({ navigation }: Props) {
 
         <SettingsSection
           title="Cloud and backup"
-          footer="Cloud storage and backup need an account and a server, which Connekt does not have yet. Your space and limits will show here once they exist."
+          footer="Cloud storage and backup need an account and a server, which Myth does not have yet. Your space and limits will show here once they exist."
         >
           <SettingsRow icon="cloud-outline" label="Cloud storage" value="Not available" disabled />
           <SettingsRow
@@ -164,14 +164,14 @@ export function StorageScreen({ navigation }: Props) {
 
         <AppText variant="footnote" tone="muted" style={styles.note}>
           Saved on this phone: your profile, contacts you added, theme and settings. Chats are not
-          saved yet and start fresh when Connekt restarts.
+          saved yet and start fresh when Myth restarts.
         </AppText>
       </ScrollView>
 
       <ActionSheet
         visible={confirmClear}
         title="Clear cache?"
-        message={`This frees ${formatFileSize(snapshot?.cache ?? 0)}. Files and voice messages Connekt kept in your chats will stop opening. Messages stay.`}
+        message={`This frees ${formatFileSize(snapshot?.cache ?? 0)}. Files and voice messages Myth kept in your chats will stop opening. Messages stay.`}
         actions={[{ label: 'Clear cache', destructive: true, onPress: clear }]}
         onClose={() => setConfirmClear(false)}
       />

@@ -1,15 +1,21 @@
-// Generates the Connekt app icon and splash images. No dependencies.
+// Generates the Myth app icon and splash images. No dependencies.
 const fs = require('fs');
 const zlib = require('zlib');
 
 const SIZE = 1024;
 const CENTER = 512;
-const BUBBLE_Y = 500;
 const SAMPLES = 3;
 
-const DARK = [10, 10, 12, 255];
+const DARK = [16, 21, 34, 255];
 const WHITE = [255, 255, 255, 255];
 const NONE = [0, 0, 0, 0];
+const MARK = [
+  [[352, 650], [352, 360]],
+  [[352, 360], [512, 520]],
+  [[512, 520], [672, 360]],
+  [[672, 360], [672, 650]],
+];
+const MARK_WIDTH = 72;
 
 const crcTable = new Uint32Array(256).map((_, n) => {
   let c = n;
@@ -51,50 +57,19 @@ function encodePng(rgba) {
   ]);
 }
 
-// Chat bubble: a circle with a tail at the bottom left.
-const TAIL = [[330, 640], [262, 800], [470, 750]];
-
-function side(p, a, b) {
-  return (p[0] - b[0]) * (a[1] - b[1]) - (a[0] - b[0]) * (p[1] - b[1]);
+function distanceToSegment(x, y, [ax, ay], [bx, by]) {
+  const dx = bx - ax;
+  const dy = by - ay;
+  const lengthSquared = dx * dx + dy * dy;
+  const position = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / lengthSquared));
+  return Math.hypot(x - (ax + position * dx), y - (ay + position * dy));
 }
 
-function inTriangle(p, [a, b, c]) {
-  const d1 = side(p, a, b);
-  const d2 = side(p, b, c);
-  const d3 = side(p, c, a);
-  return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
+function inMark(x, y) {
+  return MARK.some(([start, end]) => distanceToSegment(x, y, start, end) <= MARK_WIDTH / 2);
 }
 
-function inBubble(x, y) {
-  const dx = x - CENTER;
-  const dy = y - BUBBLE_Y;
-  return dx * dx + dy * dy <= 270 * 270 || inTriangle([x, y], TAIL);
-}
-
-// The letter C: a ring with an opening on the right and rounded ends.
-const GAP = 0.78;
-
-function inLetter(x, y) {
-  const dx = x - CENTER;
-  const dy = y - BUBBLE_Y;
-  const dist = Math.hypot(dx, dy);
-  if (dist >= 92 && dist <= 150 && Math.abs(Math.atan2(dy, dx)) > GAP) return true;
-  for (const end of [-1, 1]) {
-    const ex = CENTER + 121 * Math.cos(end * GAP);
-    const ey = BUBBLE_Y + 121 * Math.sin(end * GAP);
-    if (Math.hypot(x - ex, y - ey) <= 29) return true;
-  }
-  return false;
-}
-
-function gradient(y) {
-  const t = Math.min(1, Math.max(0, (y - 230) / 540));
-  const top = [47, 140, 255];
-  const bottom = [10, 108, 219];
-  return [0, 1, 2].map((i) => Math.round(top[i] + (bottom[i] - top[i]) * t)).concat(255);
-}
-
-function render({ scale, background, bubble, letter }) {
+function render({ scale, background, letter }) {
   const rgba = Buffer.alloc(SIZE * SIZE * 4);
   const total = SAMPLES * SAMPLES;
   for (let y = 0; y < SIZE; y += 1) {
@@ -107,8 +82,7 @@ function render({ scale, background, bubble, letter }) {
         for (let sx = 0; sx < SAMPLES; sx += 1) {
           const px = CENTER + (x + (sx + 0.5) / SAMPLES - CENTER) / scale;
           const py = CENTER + (y + (sy + 0.5) / SAMPLES - CENTER) / scale;
-          let color = background;
-          if (inBubble(px, py)) color = inLetter(px, py) ? letter(py) : bubble(py);
+          const color = inMark(px, py) ? letter(py) : background;
           const alpha = color[3] / 255;
           r += color[0] * alpha;
           g += color[1] * alpha;
@@ -140,16 +114,11 @@ function solid(color) {
 }
 
 const white = () => WHITE;
-const cutout = () => NONE;
-
 // Adaptive icons are cropped by a mask, so the glyph is drawn smaller there.
 const files = {
-  'assets/icon.png': () =>
-    render({ scale: 1, background: DARK, bubble: gradient, letter: white }),
-  'assets/android-icon-foreground.png': () =>
-    render({ scale: 0.8, background: NONE, bubble: gradient, letter: white }),
-  'assets/android-icon-monochrome.png': () =>
-    render({ scale: 0.8, background: NONE, bubble: white, letter: cutout }),
+  'assets/icon.png': () => render({ scale: 1, background: DARK, letter: white }),
+  'assets/android-icon-foreground.png': () => render({ scale: 0.8, background: NONE, letter: white }),
+  'assets/android-icon-monochrome.png': () => render({ scale: 0.8, background: NONE, letter: white }),
   'assets/android-icon-background.png': () => solid(DARK),
 };
 
@@ -162,3 +131,5 @@ for (const [file, make] of Object.entries(files)) {
 }
 fs.writeFileSync('assets/splash-icon.png', foreground);
 console.log('wrote assets/splash-icon.png');
+fs.writeFileSync('assets/favicon.png', files['assets/icon.png']());
+console.log('wrote assets/favicon.png');

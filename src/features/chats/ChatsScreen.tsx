@@ -106,7 +106,7 @@ export function ChatsScreen() {
 
   return (
     <TabScreen
-      title="Chats"
+      title="Inbox"
       padForTabBar={false}
       headerRight={
         <View style={styles.actions}>
@@ -144,7 +144,12 @@ export function ChatsScreen() {
           </>
         }
         ListEmptyComponent={
-          <EmptyState title="No conversations yet" message="Your conversations will appear here." />
+          <EmptyState
+            title="No conversations yet"
+            message="Add a contact to start a conversation. Your inbox is ready when you are."
+            actionLabel="Add a contact"
+            onAction={() => navigation.navigate('AddContact')}
+          />
         }
         renderItem={({ item }) => (
           <ConversationRow

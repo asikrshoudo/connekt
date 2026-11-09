@@ -70,7 +70,7 @@ export function RequestDetailScreen({ route, navigation }: Props) {
 
         <AppText variant="footnote" tone="muted" style={styles.note}>
           Accepting moves this chat to your Chats. Nothing is sent to {request.name}, because
-          Connekt has no server yet.
+          Myth has no server yet.
         </AppText>
 
         <View style={styles.actions}>

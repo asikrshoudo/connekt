@@ -51,7 +51,7 @@ export type NotificationEvent = {
 };
 
 // Decides if an event should make a notification. Nothing calls this yet, because
-// Connekt has no server to deliver messages. It is ready for when that exists.
+// Myth has no server to deliver messages. It is ready for when that exists.
 export function shouldNotify(settings: NotificationSettings, event: NotificationEvent): boolean {
   if (event.blocked || event.restricted || event.muted) return false;
   switch (event.kind) {

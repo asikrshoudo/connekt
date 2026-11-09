@@ -1,29 +1,28 @@
 import { darkColors, type ColorTokens } from './colors';
 import type { ThemeId } from './themeSettings';
 
-// TheKami's Core: lime accent and neutral greys, from thekami.com and the blog.
-// Chat bubbles and badges use a darker lime so white text stays readable.
+// Myth's cool indigo accent with quiet neutral surfaces.
 const coreLight: ColorTokens = {
   background: '#ffffff',
-  surface: '#f4f4f5',
+  surface: '#f5f6fa',
   surfaceElevated: '#ffffff',
-  border: '#e5e5e5',
-  textPrimary: '#0a0a0a',
-  textSecondary: '#525252',
-  textMuted: '#737373',
-  accent: '#497d00',
-  onAccent: '#f7fee7',
-  destructive: '#dc2626',
-  success: '#16a34a',
-  warning: '#d97706',
-  bubbleOutgoing: '#497d00',
-  bubbleIncoming: '#f4f4f5',
-  unread: '#497d00',
-  disabled: '#d4d4d4',
+  border: '#e4e7ef',
+  textPrimary: '#171c2a',
+  textSecondary: '#525c70',
+  textMuted: '#69758a',
+  accent: '#435fc2',
+  onAccent: '#ffffff',
+  destructive: '#c83e49',
+  success: '#197c56',
+  warning: '#986200',
+  bubbleOutgoing: '#435fc2',
+  bubbleIncoming: '#f0f2f7',
+  unread: '#435fc2',
+  disabled: '#d5d9e3',
   tabBar: '#ffffff',
-  tabIndicator: 'rgba(0,0,0,0.08)',
-  scrim: 'rgba(0,0,0,0.35)',
-  inputBorder: 'rgba(0,0,0,0.15)',
+  tabIndicator: 'rgba(67,95,194,0.10)',
+  scrim: 'rgba(12,17,29,0.42)',
+  inputBorder: '#cbd1de',
 };
 
 // Material 3 baseline palette.
@@ -79,6 +78,6 @@ export const palettes: Record<ThemeId, { light: ColorTokens; dark: ColorTokens }
 };
 
 export const themeNames: Record<ThemeId, string> = {
-  core: "TheKami's Core",
+  core: 'Myth',
   material: 'Material',
 };

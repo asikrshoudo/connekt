@@ -94,7 +94,7 @@ export function GroupInfoScreen({ route, navigation }: Props) {
           />
         </SettingsSection>
 
-        <SettingsSection footer="Leaving removes this group from this device. No one is notified, because Connekt has no server yet.">
+        <SettingsSection footer="Leaving removes this group from this device. No one is notified, because Myth has no server yet.">
           <SettingsRow
             icon="exit-outline"
             label="Leave group"

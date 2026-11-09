@@ -159,7 +159,7 @@ export function AppLockProvider({ children }: { children: ReactNode }) {
     markExternalActivity(30_000);
     try {
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Unlock Connekt',
+        promptMessage: 'Unlock Myth',
         cancelLabel: 'Use PIN',
         disableDeviceFallback: true,
       });
