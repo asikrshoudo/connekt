@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { useAppLock } from './AppLockProvider';
@@ -9,11 +9,15 @@ import { LockScreen } from './LockScreen';
 export function AppLockGate({ children }: { children: ReactNode }) {
   const colors = useColors();
   const { ready, locked } = useAppLock();
+  const [prevLocked, setPrevLocked] = useState(locked);
   const [epoch, setEpoch] = useState(0);
 
-  useEffect(() => {
-    if (locked) setEpoch((value) => value + 1);
-  }, [locked]);
+  if (locked !== prevLocked) {
+    setPrevLocked(locked);
+    if (locked) {
+      setEpoch((value) => value + 1);
+    }
+  }
 
   return (
     <View style={styles.flex}>

@@ -1,16 +1,20 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { ActionSheet } from '../../components/feedback/ActionSheet';
 import { ConfirmDialog } from '../../components/feedback/ConfirmDialog';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import type { MenuItem } from '../../components/feedback/MenuCard';
 import { TabScreen } from '../../components/layout/TabScreen';
 import { TAB_BAR_CLEARANCE } from '../../components/navigation/tabBarMetrics';
+import { AppText } from '../../components/ui/AppText';
 import { HeaderIconButton } from '../../components/ui/HeaderIconButton';
 import type { RootStackParamList } from '../../core/navigation/types';
+import { radius } from '../../core/theme/radius';
 import { spacing } from '../../core/theme/spacing';
+import { useColors } from '../../core/theme/ThemeProvider';
+import { isGroup } from '../../utils/conversation';
 import { RequestsRow } from '../requests/RequestsRow';
 import { buildChatMenu } from './chatMenuItems';
 import { ChatPopover } from './ChatPopover';
@@ -21,6 +25,7 @@ import { SampleDataNotice } from './SampleDataNotice';
 
 type Point = { x: number; y: number };
 type MenuState = { id: string; point: Point };
+type FilterType = 'all' | 'direct' | 'groups' | 'unread';
 
 const HOUR = 60 * 60 * 1000;
 const WEEK = 7 * 24 * HOUR;
@@ -28,8 +33,10 @@ const WEEK = 7 * 24 * HOUR;
 export function ChatsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const chats = useChats();
+  const colors = useColors();
   const { items, isSample, requests, isBlocked } = chats;
 
+  const [filter, setFilter] = useState<FilterType>('all');
   const [menu, setMenu] = useState<MenuState | null>(null);
   const [plusPoint, setPlusPoint] = useState<Point | null>(null);
   const [showLimit, setShowLimit] = useState(false);
@@ -37,6 +44,24 @@ export function ChatsScreen() {
   const [blockId, setBlockId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [restrictId, setRestrictId] = useState<string | null>(null);
+
+  const filteredItems = useMemo(() => {
+    if (filter === 'unread') {
+      return items.filter((item) => item.conversation.unreadCount > 0);
+    }
+    if (filter === 'groups') {
+      return items.filter((item) => isGroup(item.conversation));
+    }
+    if (filter === 'direct') {
+      return items.filter((item) => !isGroup(item.conversation));
+    }
+    return items;
+  }, [items, filter]);
+
+  const unreadCount = useMemo(
+    () => items.filter((item) => item.conversation.unreadCount > 0).length,
+    [items],
+  );
 
   const find = (id: string | null): ChatListItem | undefined =>
     id ? items.find((item) => item.conversation.id === id) : undefined;
@@ -87,7 +112,7 @@ export function ChatsScreen() {
       },
     },
     {
-      label: 'New group',
+      label: 'New team group',
       icon: 'people-outline',
       onPress: () => {
         setPlusPoint(null);
@@ -106,7 +131,7 @@ export function ChatsScreen() {
 
   return (
     <TabScreen
-      title="Inbox"
+      title="Messages"
       padForTabBar={false}
       headerRight={
         <View style={styles.actions}>
@@ -117,7 +142,7 @@ export function ChatsScreen() {
           />
           <HeaderIconButton
             icon="add"
-            label="New chat or contact"
+            label="New conversation"
             onPress={(event) =>
               setPlusPoint({
                 x: event.nativeEvent.pageX,
@@ -128,8 +153,51 @@ export function ChatsScreen() {
         </View>
       }
     >
+      <View style={styles.filterBar}>
+        {(
+          [
+            { key: 'all', label: 'All' },
+            { key: 'direct', label: 'Direct' },
+            { key: 'groups', label: 'Teams' },
+            { key: 'unread', label: unreadCount > 0 ? `Unread (${unreadCount})` : 'Unread' },
+          ] as const
+        ).map((chip) => {
+          const active = filter === chip.key;
+          return (
+            <Pressable
+              key={chip.key}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: active }}
+              onPress={() => setFilter(chip.key)}
+              style={[
+                styles.chip,
+                {
+                  backgroundColor: active
+                    ? colors.chipActiveBackground
+                    : colors.chipBackground,
+                  borderColor: active ? colors.accent : colors.cardBorder,
+                },
+              ]}
+            >
+              <AppText
+                variant="caption"
+                style={[
+                  styles.chipText,
+                  {
+                    color: active ? colors.accent : colors.textSecondary,
+                    fontWeight: active ? '700' : '500',
+                  },
+                ]}
+              >
+                {chip.label}
+              </AppText>
+            </Pressable>
+          );
+        })}
+      </View>
+
       <FlatList
-        data={items}
+        data={filteredItems}
         keyExtractor={(item) => item.conversation.id}
         contentContainerStyle={{ paddingBottom: TAB_BAR_CLEARANCE, flexGrow: 1 }}
         ListHeaderComponent={
@@ -145,10 +213,18 @@ export function ChatsScreen() {
         }
         ListEmptyComponent={
           <EmptyState
-            title="No conversations yet"
-            message="Add a contact to start a conversation. Your inbox is ready when you are."
-            actionLabel="Add a contact"
-            onAction={() => navigation.navigate('AddContact')}
+            icon="chatbubbles-outline"
+            title={filter === 'all' ? 'No conversations yet' : `No ${filter} conversations`}
+            message={
+              filter === 'all'
+                ? 'Connect with team members or create a team group to get started.'
+                : 'Switch filters or start a new conversation.'
+            }
+            actionLabel={filter === 'all' ? 'Start a conversation' : 'View all messages'}
+            onAction={() => {
+              if (filter === 'all') navigation.navigate('NewChat');
+              else setFilter('all');
+            }}
           />
         }
         renderItem={({ item }) => (
@@ -180,8 +256,8 @@ export function ChatsScreen() {
 
       <ActionSheet
         visible={muteItem !== undefined}
-        title="Mute chat"
-        message="Notifications are not active yet. A muted chat shows a muted icon."
+        title="Mute conversation"
+        message="Choose how long to pause notifications for this conversation."
         actions={[
           { label: '8 hours', onPress: () => applyMute(8 * HOUR) },
           { label: '1 week', onPress: () => applyMute(WEEK) },
@@ -193,7 +269,7 @@ export function ChatsScreen() {
       <ActionSheet
         visible={blockItem !== undefined}
         title={`Block ${blockItem?.conversation.name ?? ''}?`}
-        message="Blocking is saved on this device only for now."
+        message="Blocking is saved on this device. You will no longer receive messages from this contact."
         actions={[
           {
             label: 'Block',
@@ -210,10 +286,10 @@ export function ChatsScreen() {
       <ActionSheet
         visible={restrictItem !== undefined}
         title={`Restrict ${restrictItem?.conversation.name ?? ''}?`}
-        message="This chat moves out of your Chats list. Find it again in Settings, Restricted chats. It will not notify you. Saved on this device only for now."
+        message="This chat will move out of your main inbox into Settings > Restricted chats."
         actions={[
           {
-            label: 'Restrict',
+            label: 'Restrict chat',
             onPress: () => {
               if (restrictId) chats.restrict(restrictId);
               setRestrictId(null);
@@ -225,10 +301,10 @@ export function ChatsScreen() {
 
       <ConfirmDialog
         visible={deleteItem !== undefined}
-        title="Are you sure?"
-        message={`"${deleteItem?.conversation.name ?? ''}" and all its messages will be deleted from this device.`}
-        confirmLabel="Yes, delete"
-        cancelLabel="Never mind"
+        title="Delete conversation?"
+        message={`"${deleteItem?.conversation.name ?? ''}" and all its messages will be removed permanently from this device.`}
+        confirmLabel="Delete"
+        cancelLabel="Keep chat"
         destructive
         onConfirm={() => {
           if (deleteId) chats.deleteChat(deleteId);
@@ -240,9 +316,9 @@ export function ChatsScreen() {
       <ActionSheet
         visible={showLimit}
         title="Pin limit reached"
-        message={`You can pin up to ${MAX_PINNED} chats. Unpin one to pin another.`}
+        message={`You can pin up to ${MAX_PINNED} priority chats. Unpin one to pin another.`}
         actions={[]}
-        cancelLabel="OK"
+        cancelLabel="Understood"
         onClose={() => setShowLimit(false)}
       />
     </TabScreen>
@@ -250,5 +326,23 @@ export function ChatsScreen() {
 }
 
 const styles = StyleSheet.create({
-  actions: { flexDirection: 'row', gap: spacing.sm },
+  actions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  filterBar: {
+    flexDirection: 'row',
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.sm,
+    gap: spacing.xs,
+  },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+  },
+  chipText: {
+    letterSpacing: 0.2,
+  },
 });

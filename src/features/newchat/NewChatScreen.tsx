@@ -49,7 +49,13 @@ export function NewChatScreen({ navigation }: Props) {
           contentContainerStyle={styles.list}
           ListHeaderComponent={<NewGroupRow onPress={() => navigation.navigate('NewGroup')} />}
           ListEmptyComponent={
-            <EmptyState title="No contacts found" message="Try a different name." />
+            <EmptyState
+              icon="people-outline"
+              title="No contacts found"
+              message="Add contacts to begin conversations."
+              actionLabel="Add a contact"
+              onAction={() => navigation.navigate('AddContact')}
+            />
           }
           renderItem={({ item }) => (
             <Pressable

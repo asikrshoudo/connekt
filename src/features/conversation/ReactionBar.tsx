@@ -5,10 +5,10 @@ import { useColors } from '../../core/theme/ThemeProvider';
 
 const EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 const ITEM_WIDTH = 44;
-const PADDING = 8;
+const PADDING = 6;
 const SLOTS = EMOJIS.length + 1; // + the "more" button
 
-export const REACTION_BAR_HEIGHT = 52;
+export const REACTION_BAR_HEIGHT = 48;
 export const REACTION_BAR_WIDTH = SLOTS * ITEM_WIDTH + PADDING * 2;
 
 type Props = {
@@ -19,12 +19,19 @@ type Props = {
 
 export function ReactionBar({ selected, onSelect, onMore }: Props) {
   const colors = useColors();
-  // If the chosen emoji is not one of the quick ones, show it in the last quick slot.
   const quick =
     selected && !EMOJIS.includes(selected) ? [...EMOJIS.slice(0, -1), selected] : EMOJIS;
 
   return (
-    <View style={[styles.bar, { backgroundColor: colors.surfaceElevated }]}>
+    <View
+      style={[
+        styles.bar,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.cardBorder,
+        },
+      ]}
+    >
       {quick.map((emoji) => (
         <Pressable
           key={emoji}
@@ -32,9 +39,10 @@ export function ReactionBar({ selected, onSelect, onMore }: Props) {
           accessibilityLabel={`React with ${emoji}`}
           accessibilityState={{ selected: selected === emoji }}
           onPress={() => onSelect(emoji)}
-          style={[
+          style={({ pressed }) => [
             styles.item,
-            selected === emoji && { backgroundColor: colors.tabIndicator },
+            selected === emoji && { backgroundColor: colors.chipActiveBackground },
+            pressed && { transform: [{ scale: 1.15 }] },
           ]}
         >
           <Text style={styles.emoji}>{emoji}</Text>
@@ -44,10 +52,10 @@ export function ReactionBar({ selected, onSelect, onMore }: Props) {
         accessibilityRole="button"
         accessibilityLabel="More emojis"
         onPress={onMore}
-        style={styles.item}
+        style={({ pressed }) => [styles.item, pressed && styles.pressed]}
       >
-        <View style={[styles.more, { backgroundColor: colors.surface }]}>
-          <Ionicons name="add" size={22} color={colors.textPrimary} />
+        <View style={[styles.more, { backgroundColor: colors.surfaceContainer }]}>
+          <Ionicons name="add" size={18} color={colors.textPrimary} />
         </View>
       </Pressable>
     </View>
@@ -62,9 +70,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: PADDING,
     borderRadius: radius.pill,
-    elevation: 12,
+    borderWidth: 1,
+    elevation: 14,
     shadowColor: '#000000',
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.28,
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 8 },
   },
@@ -76,11 +85,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   more: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  emoji: { fontSize: 24, lineHeight: 30, includeFontPadding: false },
+  emoji: { fontSize: 22, lineHeight: 28, includeFontPadding: false },
+  pressed: {
+    opacity: 0.75,
+  },
 });

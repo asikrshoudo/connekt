@@ -18,19 +18,22 @@ export function SearchResultRow({ name, subtitle, time, onPress }: Props) {
       accessibilityRole="button"
       accessibilityLabel={`${name}, ${subtitle}, ${time}`}
       onPress={onPress}
-      style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surface }]}
+      style={({ pressed }) => [
+        styles.row,
+        pressed && { backgroundColor: colors.surfaceContainerHigh },
+      ]}
     >
-      <Avatar name={name} size={44} />
+      <Avatar name={name} size={46} />
       <View style={[styles.body, { borderBottomColor: colors.border }]}>
         <View style={styles.top}>
           <AppText variant="headline" numberOfLines={1} style={styles.name}>
             {name}
           </AppText>
-          <AppText variant="footnote" tone="muted">
+          <AppText variant="captionSmall" tone="muted">
             {time}
           </AppText>
         </View>
-        <AppText variant="callout" tone="secondary" numberOfLines={2}>
+        <AppText variant="callout" tone="secondary" numberOfLines={2} style={styles.subtitle}>
           {subtitle}
         </AppText>
       </View>
@@ -39,7 +42,12 @@ export function SearchResultRow({ name, subtitle, time, onPress }: Props) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', paddingLeft: spacing.lg },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: spacing.lg,
+    minHeight: 68,
+  },
   body: {
     flex: 1,
     marginLeft: spacing.md,
@@ -48,6 +56,18 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  top: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  name: { flex: 1 },
+  top: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+  },
+  name: {
+    flex: 1,
+    fontWeight: '600',
+  },
+  subtitle: {
+    fontSize: 13.5,
+    lineHeight: 18,
+  },
 });

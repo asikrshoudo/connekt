@@ -28,21 +28,43 @@ export function SettingsRow({
 
   const content = (
     <>
-      <View style={[styles.iconBox, { backgroundColor: colors.surfaceElevated }]}>
-        <Ionicons name={icon} size={18} color={disabled ? colors.textMuted : colors.textPrimary} />
+      <View
+        style={[
+          styles.iconBox,
+          {
+            backgroundColor: destructive
+              ? `${colors.destructive}18`
+              : colors.surfaceContainerHigh,
+          },
+        ]}
+      >
+        <Ionicons
+          name={icon}
+          size={18}
+          color={
+            destructive
+              ? colors.destructive
+              : disabled
+              ? colors.textMuted
+              : colors.accent
+          }
+        />
       </View>
       <AppText
+        variant="callout"
         tone={disabled ? 'muted' : 'primary'}
         style={[styles.label, destructive ? { color: colors.destructive } : null]}
       >
         {label}
       </AppText>
       {value ? (
-        <AppText variant="callout" tone="muted">
+        <AppText variant="footnote" tone="secondary" style={styles.value}>
           {value}
         </AppText>
       ) : null}
-      {interactive ? <Ionicons name="chevron-forward" size={18} color={colors.textMuted} /> : null}
+      {interactive ? (
+        <Ionicons name="chevron-forward" size={16} color={colors.textMuted} style={styles.chevron} />
+      ) : null}
     </>
   );
 
@@ -63,7 +85,7 @@ export function SettingsRow({
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
-      style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surfaceElevated }]}
+      style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surfaceContainer }]}
     >
       {content}
     </Pressable>
@@ -75,16 +97,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    minHeight: 52,
+    minHeight: 50,
     paddingHorizontal: spacing.lg,
     paddingVertical: 10,
   },
   iconBox: {
-    width: 30,
-    height: 30,
+    width: 32,
+    height: 32,
     borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  label: { flex: 1 },
+  label: {
+    flex: 1,
+    fontWeight: '500',
+  },
+  value: {
+    fontWeight: '500',
+  },
+  chevron: {
+    opacity: 0.7,
+  },
 });

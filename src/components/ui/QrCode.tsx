@@ -1,4 +1,4 @@
-import qrcode from 'qrcode-generator';
+import qrcodeGenerator from 'qrcode-generator';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 
@@ -10,7 +10,7 @@ const LIGHT = '#FFFFFF';
 type Run = { row: number; start: number; length: number };
 
 function buildRuns(value: string): { count: number; runs: Run[] } {
-  const qr = qrcode(0, 'M');
+  const qr = qrcodeGenerator(0, 'M');
   qr.addData(value);
   qr.make();
   const count = qr.getModuleCount();

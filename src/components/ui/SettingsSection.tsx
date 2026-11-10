@@ -17,9 +17,17 @@ export function SettingsSection({ title, footer, children }: Props) {
   const rows = Children.toArray(children);
 
   return (
-    <View>
+    <View style={styles.container}>
       {title ? <SectionHeader title={title} /> : null}
-      <View style={[styles.card, { backgroundColor: colors.surface }]}>
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.cardBorder,
+          },
+        ]}
+      >
         {rows.map((row, index) => (
           <View key={index}>
             {index > 0 ? (
@@ -39,7 +47,22 @@ export function SettingsSection({ title, footer, children }: Props) {
 }
 
 const styles = StyleSheet.create({
-  card: { marginHorizontal: spacing.lg, borderRadius: radius.lg, overflow: 'hidden' },
-  separator: { height: StyleSheet.hairlineWidth, marginLeft: 58 },
-  footer: { paddingHorizontal: spacing.xl, paddingTop: spacing.sm },
+  container: {
+    marginBottom: spacing.md,
+  },
+  card: {
+    marginHorizontal: spacing.lg,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: 56,
+  },
+  footer: {
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xs,
+    lineHeight: 18,
+  },
 });

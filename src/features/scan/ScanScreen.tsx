@@ -10,6 +10,7 @@ import { AppText } from '../../components/ui/AppText';
 import { PillButton } from '../../components/ui/PillButton';
 import type { RootStackParamList } from '../../core/navigation/types';
 import { usePermissions } from '../../core/permissions/PermissionsProvider';
+import { radius } from '../../core/theme/radius';
 import { spacing } from '../../core/theme/spacing';
 import { DarkScope, useColors } from '../../core/theme/ThemeProvider';
 import { useContactCardHost } from '../contacts/ContactCardHost';
@@ -36,8 +37,17 @@ function ScanCamera({ onBack }: { onBack: () => void }) {
         onBarcodeScanned={paused ? undefined : (result) => onScanned(result.data)}
       />
       <View pointerEvents="none" style={styles.frameWrap}>
-        <View style={[styles.frame, { borderColor: colors.textPrimary }]} />
-        <AppText style={styles.hint}>Point the camera at a Myth contact code</AppText>
+        <View style={[styles.frame, { borderColor: colors.accent }]}>
+          <View style={[styles.corner, styles.cornerTL, { borderColor: colors.accent }]} />
+          <View style={[styles.corner, styles.cornerTR, { borderColor: colors.accent }]} />
+          <View style={[styles.corner, styles.cornerBL, { borderColor: colors.accent }]} />
+          <View style={[styles.corner, styles.cornerBR, { borderColor: colors.accent }]} />
+        </View>
+        <View style={[styles.hintPill, { backgroundColor: colors.scrim }]}>
+          <AppText variant="footnote" style={{ color: '#ffffff', fontWeight: '600' }}>
+            Scan a Myth contact QR code
+          </AppText>
+        </View>
       </View>
       <Pressable
         accessibilityRole="button"
@@ -45,7 +55,7 @@ function ScanCamera({ onBack }: { onBack: () => void }) {
         onPress={onBack}
         style={[styles.back, { top: insets.top + spacing.sm, backgroundColor: colors.scrim }]}
       >
-        <Ionicons name="chevron-back" size={26} color={colors.textPrimary} />
+        <Ionicons name="chevron-back" size={22} color="#ffffff" />
       </Pressable>
     </View>
   );
@@ -59,16 +69,18 @@ export function ScanScreen({ navigation }: Props) {
     const blocked = statuses.camera === 'blocked';
     return (
       <Screen>
-        <ScreenHeader title="Scan QR code" onBack={() => navigation.goBack()} />
+        <ScreenHeader title="Scan QR Code" onBack={() => navigation.goBack()} />
         <View style={styles.explainer}>
-          <Ionicons name="scan-outline" size={56} color={colors.textMuted} />
-          <AppText variant="heading">Camera access</AppText>
+          <View style={[styles.iconBox, { backgroundColor: colors.primaryContainer }]}>
+            <Ionicons name="scan-outline" size={36} color={colors.accent} />
+          </View>
+          <AppText variant="heading">Camera Permission</AppText>
           <AppText tone="secondary" style={styles.center}>
-            Myth uses the camera only to scan QR codes. Nothing is recorded or uploaded.
+            Myth uses camera access strictly for scanning contact QR codes. No media is stored or transmitted externally.
           </AppText>
           <PillButton
             size="large"
-            label={blocked ? 'Open settings' : 'Allow camera'}
+            label={blocked ? 'Open phone settings' : 'Grant camera access'}
             onPress={() => (blocked ? void Linking.openSettings() : void request('camera'))}
           />
         </View>
@@ -92,21 +104,73 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.xl,
   },
-  center: { textAlign: 'center' },
-  frameWrap: {
-    ...StyleSheet.absoluteFill,
+  iconBox: {
+    width: 72,
+    height: 72,
+    borderRadius: radius.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.lg,
+    marginBottom: spacing.xs,
   },
-  frame: { width: 240, height: 240, borderWidth: 3, borderRadius: 24 },
-  hint: { textAlign: 'center' },
+  center: { textAlign: 'center', maxWidth: 300, lineHeight: 20 },
+  frameWrap: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xl,
+  },
+  frame: {
+    width: 240,
+    height: 240,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    position: 'relative',
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+  },
+  corner: {
+    position: 'absolute',
+    width: 24,
+    height: 24,
+  },
+  cornerTL: {
+    top: -2,
+    left: -2,
+    borderTopWidth: 4,
+    borderLeftWidth: 4,
+    borderTopLeftRadius: radius.md,
+  },
+  cornerTR: {
+    top: -2,
+    right: -2,
+    borderTopWidth: 4,
+    borderRightWidth: 4,
+    borderTopRightRadius: radius.md,
+  },
+  cornerBL: {
+    bottom: -2,
+    left: -2,
+    borderBottomWidth: 4,
+    borderLeftWidth: 4,
+    borderBottomLeftRadius: radius.md,
+  },
+  cornerBR: {
+    bottom: -2,
+    right: -2,
+    borderBottomWidth: 4,
+    borderRightWidth: 4,
+    borderBottomRightRadius: radius.md,
+  },
+  hintPill: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: radius.pill,
+  },
   back: {
     position: 'absolute',
     left: spacing.lg,
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },

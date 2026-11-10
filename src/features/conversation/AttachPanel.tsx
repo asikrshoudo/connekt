@@ -15,6 +15,7 @@ import { AppText } from '../../components/ui/AppText';
 import type { IconName } from '../../components/ui/iconTypes';
 import { PillButton } from '../../components/ui/PillButton';
 import { usePermissions } from '../../core/permissions/PermissionsProvider';
+import { radius } from '../../core/theme/radius';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 import type { Attachment } from '../../types/chat';
@@ -37,7 +38,6 @@ const TILE = 84;
 
 type Props = {
   visible: boolean;
-  // Top edge of the + button. The panel opens just above it.
   anchorY: number;
   onChoose: (action: AttachAction) => void;
   onSendMedia: (items: Attachment[]) => void;
@@ -91,7 +91,7 @@ export function AttachPanel({
   };
 
   const panelWidth = Math.min(width - MARGIN * 2, 400);
-  const bottom = Math.max(MARGIN, height - anchorY + 12);
+  const bottom = Math.max(MARGIN, height - anchorY + 10);
 
   return (
     <Modal
@@ -115,7 +115,8 @@ export function AttachPanel({
             left: MARGIN,
             bottom,
             width: panelWidth,
-            backgroundColor: colors.surfaceElevated,
+            backgroundColor: colors.surface,
+            borderColor: colors.cardBorder,
             transformOrigin: 'left bottom',
           },
         ]}
@@ -138,7 +139,7 @@ export function AttachPanel({
                       item.kind === 'video' ? `Video, ${formatDuration(item.durationMs)}` : 'Photo'
                     }
                     onPress={() => toggle(item.id)}
-                    style={[styles.tile, { backgroundColor: colors.surface }]}
+                    style={[styles.tile, { backgroundColor: colors.surfaceContainer }]}
                   >
                     <Image
                       source={{ uri: item.uri }}
@@ -149,14 +150,14 @@ export function AttachPanel({
                     {item.kind === 'video' ? (
                       <View style={[styles.badge, { backgroundColor: colors.scrim }]}>
                         <Ionicons name="play" size={10} color={colors.onAccent} />
-                        <AppText variant="caption" style={{ color: colors.onAccent }}>
+                        <AppText variant="captionSmall" style={{ color: colors.onAccent }}>
                           {formatDuration(item.durationMs)}
                         </AppText>
                       </View>
                     ) : null}
                     {checked ? (
-                      <View style={[styles.check, { backgroundColor: colors.bubbleOutgoing }]}>
-                        <Ionicons name="checkmark" size={14} color={colors.onAccent} />
+                      <View style={[styles.check, { backgroundColor: colors.accent }]}>
+                        <Ionicons name="checkmark" size={13} color={colors.onAccent} />
                       </View>
                     ) : null}
                   </Pressable>
@@ -171,15 +172,15 @@ export function AttachPanel({
         ) : (
           <View style={styles.allow}>
             <AppText variant="callout" tone="secondary" style={styles.center}>
-              Allow access to see your recent photos and videos here.
+              Allow photo access to preview and attach media directly.
             </AppText>
-            <PillButton label="Allow access" variant="subtle" onPress={onNeedMedia} />
+            <PillButton label="Allow access" variant="subtle" size="small" onPress={onNeedMedia} />
           </View>
         )}
 
         {selected.length > 0 ? (
           <View style={styles.sendRow}>
-            <PillButton size="large" label={`Send ${selected.length}`} onPress={send} />
+            <PillButton size="medium" label={`Send ${selected.length} items`} onPress={send} />
           </View>
         ) : null}
 
@@ -192,10 +193,18 @@ export function AttachPanel({
               onPress={() => onChoose(option.action)}
               style={styles.option}
             >
-              <View style={[styles.circle, { backgroundColor: colors.surface }]}>
-                <Ionicons name={option.icon} size={24} color={colors.textPrimary} />
+              <View
+                style={[
+                  styles.optionIconBox,
+                  {
+                    backgroundColor: colors.surfaceContainer,
+                    borderColor: colors.cardBorder,
+                  },
+                ]}
+              >
+                <Ionicons name={option.icon} size={22} color={colors.accent} />
               </View>
-              <AppText variant="caption" tone="secondary" numberOfLines={1}>
+              <AppText variant="captionSmall" tone="secondary" numberOfLines={1}>
                 {option.label}
               </AppText>
             </Pressable>
@@ -209,16 +218,17 @@ export function AttachPanel({
 const styles = StyleSheet.create({
   panel: {
     position: 'absolute',
-    borderRadius: 22,
+    borderRadius: radius.xl,
+    borderWidth: 1,
     paddingTop: spacing.md,
-    elevation: 14,
+    elevation: 16,
     shadowColor: '#000000',
-    shadowOpacity: 0.35,
-    shadowRadius: 18,
+    shadowOpacity: 0.28,
+    shadowRadius: 20,
     shadowOffset: { width: 0, height: 8 },
   },
   strip: { gap: 6, paddingHorizontal: spacing.md },
-  tile: { width: TILE, height: TILE, borderRadius: 12, overflow: 'hidden' },
+  tile: { width: TILE, height: TILE, borderRadius: radius.md, overflow: 'hidden' },
   badge: {
     position: 'absolute',
     left: 4,
@@ -228,7 +238,7 @@ const styles = StyleSheet.create({
     gap: 3,
     paddingHorizontal: 5,
     paddingVertical: 1,
-    borderRadius: 8,
+    borderRadius: radius.xs,
   },
   check: {
     position: 'absolute',
@@ -240,16 +250,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  empty: { paddingHorizontal: spacing.lg, paddingVertical: spacing.lg },
-  allow: { alignItems: 'center', gap: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm },
-  center: { textAlign: 'center' },
-  sendRow: { paddingHorizontal: spacing.md, paddingTop: spacing.md },
+  empty: { paddingHorizontal: spacing.lg, paddingVertical: spacing.md, textAlign: 'center' },
+  allow: { alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm },
+  center: { textAlign: 'center', lineHeight: 18 },
+  sendRow: { paddingHorizontal: spacing.md, paddingTop: spacing.sm },
   options: {
     flexDirection: 'row',
-    marginTop: spacing.md,
+    marginTop: spacing.sm,
     paddingVertical: spacing.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopWidth: 1,
   },
   option: { flex: 1, alignItems: 'center', gap: 6 },
-  circle: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
+  optionIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

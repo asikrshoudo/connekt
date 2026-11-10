@@ -29,7 +29,7 @@ const STEP_TITLES: Record<Step, string> = {
 };
 
 function useNow(until: number): number {
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     if (until <= Date.now()) return undefined;
     const timer = setInterval(() => setNow(Date.now()), 500);

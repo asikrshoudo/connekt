@@ -49,8 +49,9 @@ export function CallsScreen() {
         }
         ListEmptyComponent={
           <EmptyState
-            title={filter === 'missed' ? 'No missed calls' : 'No calls yet'}
-            message="Calling is not available in this version."
+            icon="call-outline"
+            title={filter === 'missed' ? 'No missed calls' : 'No call history'}
+            message="Voice and video huddle history will appear here."
           />
         }
         renderItem={({ item }) => (

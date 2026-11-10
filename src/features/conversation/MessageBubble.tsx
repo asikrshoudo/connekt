@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRef, type ComponentRef } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AppText } from '../../components/ui/AppText';
+import { radius } from '../../core/theme/radius';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 import type { Message } from '../../types/chat';
@@ -54,7 +55,6 @@ export function MessageBubble({
     });
   };
 
-  // A single photo or video opens from where it sits in the chat.
   const handleOpen = () => {
     ref.current?.measureInWindow((x, y, width, height) => {
       onOpen(message, { x, y, width, height });
@@ -66,22 +66,27 @@ export function MessageBubble({
       style={[
         styles.row,
         outgoing ? styles.rowOutgoing : styles.rowIncoming,
-        { marginTop: groupedWithPrevious ? 2 : spacing.md },
+        { marginTop: groupedWithPrevious ? 3 : spacing.sm + 2 },
       ]}
     >
       {showSender && !outgoing && message.senderName ? (
-        <AppText variant="footnote" tone="secondary" style={styles.sender}>
+        <AppText
+          variant="captionSmall"
+          style={[styles.sender, { color: colors.accent }]}
+        >
           {message.senderName}
         </AppText>
       ) : null}
+
       {message.forwarded ? (
         <View style={styles.forwarded}>
-          <Ionicons name="arrow-redo" size={12} color={colors.textMuted} />
-          <AppText variant="caption" tone="muted">
+          <Ionicons name="arrow-redo" size={11} color={colors.textMuted} />
+          <AppText variant="captionSmall" tone="muted">
             Forwarded
           </AppText>
         </View>
       ) : null}
+
       <Pressable
         ref={ref}
         collapsable={false}
@@ -97,35 +102,63 @@ export function MessageBubble({
         <MessageBody
           message={message}
           reply={preview}
+          groupedWithPrevious={groupedWithPrevious}
           onOpenMedia={(index, rect) => onOpenMedia(message, index, rect)}
           onLongPress={handleLongPress}
         />
       </Pressable>
+
       {message.reaction ? (
         <View
           style={[
             styles.reaction,
-            { backgroundColor: colors.surfaceElevated, borderColor: colors.background },
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.cardBorder,
+            },
           ]}
         >
           <Text style={styles.reactionEmoji}>{message.reaction}</Text>
         </View>
       ) : null}
+
       {showTime ? (
-        <AppText variant="caption" tone="muted" style={styles.time}>
-          {formatClockTime(message.sentAt)}
-        </AppText>
+        <View style={[styles.timeRow, outgoing ? styles.timeRowOutgoing : styles.timeRowIncoming]}>
+          <AppText variant="captionSmall" tone="muted" style={styles.timeText}>
+            {formatClockTime(message.sentAt)}
+          </AppText>
+          {outgoing ? (
+            <Ionicons
+              name="checkmark-done"
+              size={13}
+              color={colors.accent}
+              style={styles.statusIcon}
+            />
+          ) : null}
+        </View>
       ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { paddingHorizontal: spacing.lg },
-  rowOutgoing: { alignItems: 'flex-end' },
-  rowIncoming: { alignItems: 'flex-start' },
-  pressable: { maxWidth: '78%' },
-  sender: { marginBottom: 2, marginHorizontal: spacing.sm },
+  row: {
+    paddingHorizontal: spacing.md,
+  },
+  rowOutgoing: {
+    alignItems: 'flex-end',
+  },
+  rowIncoming: {
+    alignItems: 'flex-start',
+  },
+  pressable: {
+    maxWidth: '82%',
+  },
+  sender: {
+    marginBottom: 3,
+    marginHorizontal: spacing.sm,
+    fontWeight: '700',
+  },
   forwarded: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -134,15 +167,42 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.sm,
   },
   reaction: {
-    marginTop: -8,
+    marginTop: -10,
     marginHorizontal: spacing.sm,
     height: 24,
-    paddingHorizontal: 6,
-    borderRadius: 12,
-    borderWidth: 2,
+    paddingHorizontal: 8,
+    borderRadius: radius.pill,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    elevation: 4,
+    shadowColor: '#000000',
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
   },
-  reactionEmoji: { fontSize: 13, lineHeight: 16, includeFontPadding: false },
-  time: { marginTop: spacing.xs, marginHorizontal: spacing.xs },
+  reactionEmoji: {
+    fontSize: 13,
+    lineHeight: 16,
+    includeFontPadding: false,
+  },
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    marginTop: 3,
+    marginHorizontal: spacing.xs,
+  },
+  timeRowOutgoing: {
+    justifyContent: 'flex-end',
+  },
+  timeRowIncoming: {
+    justifyContent: 'flex-start',
+  },
+  timeText: {
+    letterSpacing: 0.2,
+  },
+  statusIcon: {
+    marginLeft: 1,
+  },
 });

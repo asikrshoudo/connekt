@@ -36,9 +36,12 @@ export function SearchScreen() {
         {isSample ? <SampleDataNotice message="Searching sample data only." /> : null}
         {rows.length === 0 ? (
           <EmptyState
-            title={hasQuery ? 'No results' : 'Search'}
+            icon="search-outline"
+            title={hasQuery ? 'No results found' : 'Search workspace'}
             message={
-              hasQuery ? `Nothing found for "${query.trim()}".` : 'Find people and messages.'
+              hasQuery
+                ? `Nothing found matching "${query.trim()}". Try searching for people, teams, or message keywords.`
+                : 'Find colleagues, channels, and conversation history.'
             }
           />
         ) : (

@@ -71,7 +71,9 @@ export function ContactCardHost({ children }: { children: ReactNode }) {
   );
 
   const handleRef = useRef(handle);
-  handleRef.current = handle;
+  useEffect(() => {
+    handleRef.current = handle;
+  }, [handle]);
 
   useEffect(() => {
     const open = (url: string | null | undefined) => {

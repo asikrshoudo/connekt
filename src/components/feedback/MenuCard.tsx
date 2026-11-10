@@ -1,12 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { radius } from '../../core/theme/radius';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { AppText } from '../ui/AppText';
 import type { IconName } from '../ui/iconTypes';
 
-export const MENU_ROW_HEIGHT = 48;
-export const MENU_WIDTH = 220;
+export const MENU_ROW_HEIGHT = 46;
+export const MENU_WIDTH = 210;
 
 export type MenuItem = {
   label: string;
@@ -18,7 +19,15 @@ export type MenuItem = {
 export function MenuCard({ items }: { items: MenuItem[] }) {
   const colors = useColors();
   return (
-    <View style={[styles.card, { backgroundColor: colors.surfaceElevated }]}>
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.cardBorder,
+        },
+      ]}
+    >
       {items.map((item, index) => {
         const color = item.destructive ? colors.destructive : colors.textPrimary;
         return (
@@ -29,12 +38,17 @@ export function MenuCard({ items }: { items: MenuItem[] }) {
             onPress={item.onPress}
             style={({ pressed }) => [
               styles.row,
-              index > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
-              pressed && { backgroundColor: colors.surface },
+              index > 0 && {
+                borderTopWidth: StyleSheet.hairlineWidth,
+                borderTopColor: colors.border,
+              },
+              pressed && { backgroundColor: colors.surfaceContainerHigh },
             ]}
           >
-            <AppText style={{ color }}>{item.label}</AppText>
-            <Ionicons name={item.icon} size={20} color={color} />
+            <AppText variant="callout" style={[styles.label, { color }]}>
+              {item.label}
+            </AppText>
+            <Ionicons name={item.icon} size={18} color={color} />
           </Pressable>
         );
       })}
@@ -45,12 +59,13 @@ export function MenuCard({ items }: { items: MenuItem[] }) {
 const styles = StyleSheet.create({
   card: {
     width: MENU_WIDTH,
-    borderRadius: 14,
+    borderRadius: radius.md,
+    borderWidth: 1,
     overflow: 'hidden',
-    elevation: 12,
+    elevation: 16,
     shadowColor: '#000000',
-    shadowOpacity: 0.4,
-    shadowRadius: 18,
+    shadowOpacity: 0.28,
+    shadowRadius: 20,
     shadowOffset: { width: 0, height: 8 },
   },
   row: {
@@ -58,6 +73,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
+  },
+  label: {
+    fontWeight: '500',
   },
 });

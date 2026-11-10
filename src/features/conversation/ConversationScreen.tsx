@@ -245,6 +245,7 @@ export function ConversationScreen({ route, navigation }: Props) {
             name={conversation.name}
             onBack={() => navigation.goBack()}
             group={group}
+            presence={group ? null : 'online'}
             subtitle={group ? `${memberCount} members` : undefined}
             onProfile={() => {
               if (group) navigation.navigate('GroupInfo', { conversationId });
@@ -253,7 +254,11 @@ export function ConversationScreen({ route, navigation }: Props) {
           />
           <KeyboardAvoidingView behavior="padding" style={styles.flex}>
             {rows.length === 0 ? (
-              <EmptyState title="No messages yet" message="Say hello to start the conversation." />
+              <EmptyState
+                icon="chatbubble-ellipses-outline"
+                title="No messages yet"
+                message="Say hello to start the conversation."
+              />
             ) : (
               <MessageList
                 rows={rows}

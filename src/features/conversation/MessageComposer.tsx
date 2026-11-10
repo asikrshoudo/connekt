@@ -12,6 +12,7 @@ import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppText } from '../../components/ui/AppText';
 import type { IconName } from '../../components/ui/iconTypes';
+import { radius } from '../../core/theme/radius';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { typography } from '../../core/theme/typography';
@@ -32,28 +33,33 @@ type Props = {
   onCancelReply: () => void;
 };
 
-type RoundButtonProps = {
+type ActionButtonProps = {
   icon: IconName;
   label: string;
   onPress: (event: GestureResponderEvent) => void;
   filled?: boolean;
 };
 
-function RoundButton({ icon, label, onPress, filled = false }: RoundButtonProps) {
+function ActionButton({ icon, label, onPress, filled = false }: ActionButtonProps) {
   const colors = useColors();
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
-      style={[
-        styles.round,
+      style={({ pressed }) => [
+        styles.actionBtn,
         filled
-          ? { backgroundColor: colors.bubbleOutgoing }
-          : { backgroundColor: colors.surface, borderColor: colors.inputBorder, borderWidth: 1 },
+          ? { backgroundColor: colors.accent }
+          : {
+              backgroundColor: pressed ? colors.surfaceContainerHigh : colors.surfaceContainer,
+              borderColor: colors.cardBorder,
+              borderWidth: 1,
+            },
+        pressed && styles.pressed,
       ]}
     >
-      <Ionicons name={icon} size={24} color={filled ? colors.onAccent : colors.textPrimary} />
+      <Ionicons name={icon} size={20} color={filled ? colors.onAccent : colors.textPrimary} />
     </Pressable>
   );
 }
@@ -97,20 +103,30 @@ export function MessageComposer({
     setText('');
   };
 
-  const pillStyle = [styles.pill, { backgroundColor: colors.surface, borderColor: colors.inputBorder }];
-
   return (
     <View
       style={[
-        styles.bar,
-        { paddingBottom: keyboardOpen ? spacing.sm : insets.bottom + spacing.sm },
+        styles.wrapper,
+        {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          paddingBottom: keyboardOpen ? spacing.sm : Math.max(insets.bottom, 12),
+        },
       ]}
     >
       {replyPreview && !recording ? (
-        <View style={[styles.replyBar, { backgroundColor: colors.surface }]}>
+        <View
+          style={[
+            styles.replyBar,
+            {
+              backgroundColor: colors.surfaceContainer,
+              borderColor: colors.cardBorder,
+            },
+          ]}
+        >
           <View style={[styles.replyAccent, { backgroundColor: colors.accent }]} />
           <View style={styles.replyText}>
-            <AppText variant="footnote" style={[styles.replyAuthor, { color: colors.accent }]}>
+            <AppText variant="captionSmall" style={[styles.replyAuthor, { color: colors.accent }]}>
               {`Replying to ${replyPreview.author || 'message'}`}
             </AppText>
             <AppText variant="footnote" tone="secondary" numberOfLines={1}>
@@ -122,35 +138,55 @@ export function MessageComposer({
             accessibilityLabel="Cancel reply"
             hitSlop={10}
             onPress={onCancelReply}
+            style={styles.cancelReplyBtn}
           >
-            <Ionicons name="close" size={20} color={colors.textMuted} />
+            <Ionicons name="close" size={18} color={colors.textMuted} />
           </Pressable>
         </View>
       ) : null}
 
       {recording ? (
         <View style={styles.row}>
-          <RoundButton icon="trash-outline" label="Cancel recording" onPress={onCancelRecording} />
-          <View style={[...pillStyle, styles.recordingPill]}>
-            <View style={[styles.dot, { backgroundColor: colors.destructive }]} />
-            <AppText>{formatDuration(elapsedMs)}</AppText>
+          <ActionButton icon="trash-outline" label="Cancel recording" onPress={onCancelRecording} />
+          <View
+            style={[
+              styles.inputBox,
+              styles.recordingPill,
+              {
+                backgroundColor: colors.surfaceContainer,
+                borderColor: colors.destructive,
+              },
+            ]}
+          >
+            <View style={[styles.recordingDot, { backgroundColor: colors.destructive }]} />
+            <AppText variant="subhead" style={{ color: colors.textPrimary }}>
+              {formatDuration(elapsedMs)}
+            </AppText>
             <VoiceWaveform level={level} color={colors.accent} />
           </View>
-          <RoundButton icon="arrow-up" label="Send voice message" onPress={onSendRecording} filled />
+          <ActionButton icon="arrow-up" label="Send voice message" onPress={onSendRecording} filled />
         </View>
       ) : (
         <View style={styles.row}>
-          <RoundButton
+          <ActionButton
             icon="add"
-            label="Attach"
+            label="Attach file or media"
             onPress={(event) => onAttach(event.nativeEvent.pageY - event.nativeEvent.locationY)}
           />
-          <View style={pillStyle}>
+          <View
+            style={[
+              styles.inputBox,
+              {
+                backgroundColor: colors.surfaceContainer,
+                borderColor: colors.cardBorder,
+              },
+            ]}
+          >
             <TextInput
               ref={inputRef}
               value={text}
               onChangeText={setText}
-              placeholder="Message"
+              placeholder="Write a message..."
               placeholderTextColor={colors.textMuted}
               accessibilityLabel="Message"
               multiline
@@ -158,18 +194,18 @@ export function MessageComposer({
             />
             {canSend ? (
               <Animated.View
-                entering={ZoomIn.duration(160)}
-                exiting={ZoomOut.duration(120)}
-                style={styles.innerButton}
+                entering={ZoomIn.duration(150)}
+                exiting={ZoomOut.duration(100)}
+                style={styles.innerBtnBox}
               >
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel="Send"
                   hitSlop={8}
                   onPress={send}
-                  style={[styles.send, { backgroundColor: colors.bubbleOutgoing }]}
+                  style={[styles.sendBtn, { backgroundColor: colors.accent }]}
                 >
-                  <Ionicons name="arrow-up" size={20} color={colors.onAccent} />
+                  <Ionicons name="arrow-up" size={18} color={colors.onAccent} />
                 </Pressable>
               </Animated.View>
             ) : (
@@ -178,9 +214,9 @@ export function MessageComposer({
                 accessibilityLabel="Record voice message"
                 hitSlop={8}
                 onPress={onStartRecording}
-                style={[styles.innerButton, styles.mic]}
+                style={[styles.innerBtnBox, styles.micBtn]}
               >
-                <Ionicons name="mic-outline" size={22} color={colors.textPrimary} />
+                <Ionicons name="mic-outline" size={20} color={colors.textSecondary} />
               </Pressable>
             )}
           </View>
@@ -191,41 +227,94 @@ export function MessageComposer({
 }
 
 const styles = StyleSheet.create({
-  bar: { paddingHorizontal: spacing.md, paddingTop: spacing.sm },
-  row: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm },
-  round: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  wrapper: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.xs,
+    borderTopWidth: 1,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: spacing.sm,
+  },
+  actionBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed: {
+    opacity: 0.8,
+  },
   replyBar: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    marginBottom: spacing.sm,
-    paddingVertical: spacing.sm,
+    marginBottom: spacing.xs,
+    paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
-    borderRadius: 12,
+    borderRadius: radius.md,
+    borderWidth: 1,
   },
-  replyAccent: { width: 3, alignSelf: 'stretch', borderRadius: 2 },
-  replyText: { flex: 1, gap: 1 },
-  replyAuthor: { fontWeight: '600' },
-  pill: {
+  replyAccent: {
+    width: 3,
+    alignSelf: 'stretch',
+    borderRadius: radius.pill,
+  },
+  replyText: {
+    flex: 1,
+    gap: 1,
+  },
+  replyAuthor: {
+    fontWeight: '700',
+  },
+  cancelReplyBtn: {
+    padding: 4,
+  },
+  inputBox: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-end',
-    minHeight: 44,
-    borderRadius: 22,
+    minHeight: 40,
+    borderRadius: radius.md,
     borderWidth: 1,
   },
-  recordingPill: { alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.lg },
-  dot: { width: 10, height: 10, borderRadius: 5 },
+  recordingPill: {
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    minHeight: 40,
+  },
+  recordingDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
   input: {
     flex: 1,
-    minHeight: 42,
+    minHeight: 38,
     maxHeight: 120,
-    paddingLeft: 16,
-    paddingRight: 8,
-    paddingVertical: 10,
+    paddingLeft: 12,
+    paddingRight: 6,
+    paddingVertical: 8,
     textAlignVertical: 'center',
+    fontSize: 14.5,
   },
-  innerButton: { margin: 5 },
-  mic: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
-  send: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  innerBtnBox: {
+    margin: 3,
+  },
+  micBtn: {
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sendBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

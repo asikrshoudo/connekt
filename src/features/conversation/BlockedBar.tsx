@@ -14,18 +14,28 @@ export function BlockedBar({ name, onUnblock }: Props) {
     <View
       style={[
         styles.bar,
-        { backgroundColor: colors.surface, paddingBottom: insets.bottom + spacing.md },
+        {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          paddingBottom: Math.max(insets.bottom, 16) + spacing.sm,
+        },
       ]}
     >
-      <AppText tone="secondary" style={styles.text}>
-        {`You blocked ${name}. This is saved on this device only for now.`}
+      <AppText variant="footnote" tone="secondary" style={styles.text}>
+        {`You blocked ${name}. You will not receive new messages from this contact.`}
       </AppText>
-      <PillButton label="Unblock" variant="subtle" onPress={onUnblock} />
+      <PillButton label="Unblock contact" variant="subtle" size="small" onPress={onUnblock} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  bar: { alignItems: 'center', gap: spacing.md, paddingTop: spacing.lg, paddingHorizontal: spacing.lg },
-  text: { textAlign: 'center' },
+  bar: {
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingTop: spacing.md,
+    paddingHorizontal: spacing.xl,
+    borderTopWidth: 1,
+  },
+  text: { textAlign: 'center', lineHeight: 18 },
 });

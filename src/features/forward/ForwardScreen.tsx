@@ -64,8 +64,13 @@ export function ForwardScreen({ route, navigation }: Props) {
     <Screen>
       <ScreenHeader title="Forward" onBack={() => navigation.goBack()} />
       <KeyboardAvoidingView behavior="padding" style={styles.flex}>
-        <View style={[styles.preview, { backgroundColor: colors.surface }]}>
-          <Ionicons name="arrow-redo-outline" size={20} color={colors.textMuted} />
+        <View
+          style={[
+            styles.preview,
+            { backgroundColor: colors.surfaceContainer, borderColor: colors.cardBorder, borderWidth: 1 },
+          ]}
+        >
+          <Ionicons name="arrow-redo-outline" size={20} color={colors.accent} />
           <AppText variant="callout" tone="secondary" numberOfLines={3} style={styles.previewText}>
             {messagePreview(source)}
           </AppText>
@@ -82,7 +87,13 @@ export function ForwardScreen({ route, navigation }: Props) {
           keyExtractor={(chat) => chat.id}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
-          ListEmptyComponent={<EmptyState title="No chats found" message="Try a different name." />}
+          ListEmptyComponent={
+            <EmptyState
+              icon="search-outline"
+              title="No chats found"
+              message="No conversations match your search query."
+            />
+          }
           renderItem={({ item }) => {
             const checked = selected.includes(item.id);
             return (

@@ -10,6 +10,7 @@ import { useProfile } from './ProfileProvider';
 export function ProfileCard({ onPress }: { onPress: () => void }) {
   const colors = useColors();
   const { profile } = useProfile();
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -17,16 +18,32 @@ export function ProfileCard({ onPress }: { onPress: () => void }) {
       onPress={onPress}
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: pressed ? colors.surfaceElevated : colors.surface },
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.cardBorder,
+        },
+        pressed && { backgroundColor: colors.surfaceContainerHigh },
       ]}
     >
-      <Avatar name={profile.displayName} size={60} uri={profile.photoUri} />
+      <Avatar
+        name={profile.displayName}
+        size={54}
+        uri={profile.photoUri}
+        presence="online"
+      />
       <View style={styles.text}>
-        <AppText variant="heading" numberOfLines={1}>
-          {profile.displayName}
-        </AppText>
+        <View style={styles.nameRow}>
+          <AppText variant="headline" numberOfLines={1} style={styles.name}>
+            {profile.displayName}
+          </AppText>
+          <View style={[styles.statusChip, { backgroundColor: colors.primaryContainer }]}>
+            <AppText variant="captionSmall" style={{ color: colors.accent, fontWeight: '700' }}>
+              YOU
+            </AppText>
+          </View>
+        </View>
         <AppText variant="callout" tone="secondary" numberOfLines={1}>
-          {profile.about || 'Add a short bio'}
+          {profile.about || 'Set your status or bio'}
         </AppText>
       </View>
       <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
@@ -40,9 +57,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     marginHorizontal: spacing.lg,
-    marginBottom: spacing.sm,
-    padding: spacing.lg,
-    borderRadius: radius.lg,
+    marginBottom: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    borderWidth: 1,
   },
-  text: { flex: 1, gap: 2 },
+  text: {
+    flex: 1,
+    gap: 3,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  name: {
+    fontWeight: '700',
+  },
+  statusChip: {
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: radius.xs,
+  },
 });

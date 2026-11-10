@@ -18,13 +18,15 @@ export function ToggleRow({ icon, label, description, value, onChange }: Props) 
   const colors = useColors();
   return (
     <View style={styles.row}>
-      <View style={[styles.iconBox, { backgroundColor: colors.surfaceElevated }]}>
-        <Ionicons name={icon} size={18} color={colors.textPrimary} />
+      <View style={[styles.iconBox, { backgroundColor: colors.surfaceContainerHigh }]}>
+        <Ionicons name={icon} size={18} color={colors.accent} />
       </View>
       <View style={styles.text}>
-        <AppText>{label}</AppText>
+        <AppText variant="callout" style={styles.label}>
+          {label}
+        </AppText>
         {description ? (
-          <AppText variant="footnote" tone="muted">
+          <AppText variant="footnote" tone="secondary" style={styles.description}>
             {description}
           </AppText>
         ) : null}
@@ -45,16 +47,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    minHeight: 56,
+    minHeight: 52,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
   },
   iconBox: {
-    width: 30,
-    height: 30,
+    width: 32,
+    height: 32,
     borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
   text: { flex: 1, gap: 2 },
+  label: { fontWeight: '500' },
+  description: { lineHeight: 16 },
 });

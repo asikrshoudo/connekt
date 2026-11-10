@@ -11,6 +11,7 @@ import { SectionHeader } from '../../components/ui/SectionHeader';
 import { SettingsRow } from '../../components/ui/SettingsRow';
 import { SettingsSection } from '../../components/ui/SettingsSection';
 import type { RootStackParamList } from '../../core/navigation/types';
+import { radius } from '../../core/theme/radius';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { formatFileSize } from '../../utils/format';
@@ -25,10 +26,10 @@ function Legend({ color, label, value }: { color: string; label: string; value: 
   return (
     <View style={styles.legend}>
       <View style={[styles.swatch, { backgroundColor: color }]} />
-      <AppText variant="footnote" tone="secondary" style={styles.legendLabel}>
+      <AppText variant="captionSmall" tone="secondary" style={styles.legendLabel}>
         {label}
       </AppText>
-      <AppText variant="footnote" tone="secondary">
+      <AppText variant="captionSmall" style={styles.legendValue}>
         {value}
       </AppText>
     </View>
@@ -39,28 +40,28 @@ export function StorageScreen({ navigation }: Props) {
   const colors = useColors();
   const { conversations, messagesByChat } = useChats();
   const [snapshot, setSnapshot] = useState<StorageSnapshot | null>(null);
-  const [version, setVersion] = useState(0);
   const [confirmClear, setConfirmClear] = useState(false);
   const [freed, setFreed] = useState<number | null>(null);
 
+  const refreshStorage = useCallback(() => {
+    setSnapshot(readStorage());
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
-      const timer = setTimeout(() => setSnapshot(readStorage()), 0);
-      return () => clearTimeout(timer);
-    }, [version]),
+      refreshStorage();
+    }, [refreshStorage]),
   );
 
   const rows = useMemo(
     () => summarizeChatStorage(conversations, messagesByChat, isAppFile, fileSize),
-    // The sizes can change when the snapshot is refreshed.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [conversations, messagesByChat, snapshot],
+    [conversations, messagesByChat],
   );
 
   const clear = () => {
     setConfirmClear(false);
     setFreed(clearCache());
-    setVersion((value) => value + 1);
+    refreshStorage();
   };
 
   const app = snapshot ? snapshot.cache + snapshot.documents : 0;
@@ -71,11 +72,21 @@ export function StorageScreen({ navigation }: Props) {
     <Screen>
       <ScreenHeader title="Storage and backup" onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.card}>
-          <AppText variant="heading">Phone storage</AppText>
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.cardBorder,
+            },
+          ]}
+        >
+          <AppText variant="headline" style={styles.cardTitle}>
+            Local Device Storage
+          </AppText>
           {snapshot ? (
             <>
-              <AppText tone="secondary">
+              <AppText variant="callout" tone="secondary">
                 {`${formatFileSize(used)} used of ${formatFileSize(snapshot.total)}`}
               </AppText>
               <StorageBar
@@ -85,35 +96,37 @@ export function StorageScreen({ navigation }: Props) {
                   { value: other, color: colors.textMuted },
                 ]}
               />
-              <Legend color={colors.accent} label="Myth" value={formatFileSize(app)} />
-              <Legend
-                color={colors.textMuted}
-                label="Other apps and files"
-                value={formatFileSize(other)}
-              />
-              <Legend
-                color={colors.surfaceElevated}
-                label="Free"
-                value={formatFileSize(snapshot.free)}
-              />
+              <View style={styles.legendContainer}>
+                <Legend color={colors.accent} label="Myth App & Media" value={formatFileSize(app)} />
+                <Legend
+                  color={colors.textMuted}
+                  label="Other Apps & System"
+                  value={formatFileSize(other)}
+                />
+                <Legend
+                  color={colors.surfaceContainerHighest}
+                  label="Available Free Space"
+                  value={formatFileSize(snapshot.free)}
+                />
+              </View>
             </>
           ) : (
-            <AppText tone="muted">Measuring...</AppText>
+            <AppText tone="muted">Calculating storage breakdown...</AppText>
           )}
         </View>
 
         <SettingsSection
           title="Myth on this phone"
-          footer="Files you send and voice messages you record are kept in the cache. Clearing it removes them from your chats. Messages and contacts stay."
+          footer="Files and recorded media are cached locally. Clearing the cache removes temporary files while preserving your conversations and contacts."
         >
           <SettingsRow
             icon="albums-outline"
-            label="Cache"
+            label="Media cache"
             value={snapshot ? formatFileSize(snapshot.cache) : '...'}
           />
           <SettingsRow
             icon="folder-outline"
-            label="Saved files"
+            label="Saved documents"
             value={snapshot ? formatFileSize(snapshot.documents) : '...'}
           />
           <SettingsRow
@@ -125,13 +138,23 @@ export function StorageScreen({ navigation }: Props) {
         </SettingsSection>
 
         <View>
-          <SectionHeader title="In your chats" />
+          <SectionHeader title="Chat Storage Breakdown" />
           {rows.length === 0 ? (
-            <AppText tone="muted" style={styles.empty}>
-              No photos, videos, files or voice messages in your chats yet.
-            </AppText>
+            <View
+              style={[
+                styles.emptyCard,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.cardBorder,
+                },
+              ]}
+            >
+              <AppText variant="footnote" tone="secondary">
+                No media or attachments in your local conversations.
+              </AppText>
+            </View>
           ) : (
-            <SettingsSection footer="Photos and videos from your gallery are not copied by Myth, so they use no extra space here.">
+            <SettingsSection footer="Photos and videos from your phone gallery are not duplicated, saving device storage.">
               {rows.map((row) => (
                 <PermissionRow
                   key={row.id}
@@ -151,27 +174,22 @@ export function StorageScreen({ navigation }: Props) {
 
         <SettingsSection
           title="Cloud and backup"
-          footer="Cloud storage and backup need an account and a server, which Myth does not have yet. Your space and limits will show here once they exist."
+          footer="Cloud backups will be available with team workspace cloud sync."
         >
-          <SettingsRow icon="cloud-outline" label="Cloud storage" value="Not available" disabled />
+          <SettingsRow icon="cloud-outline" label="Cloud storage" value="Coming soon" disabled />
           <SettingsRow
             icon="cloud-upload-outline"
-            label="Cloud backup"
-            value="Not available"
+            label="Automated backup"
+            value="Coming soon"
             disabled
           />
         </SettingsSection>
-
-        <AppText variant="footnote" tone="muted" style={styles.note}>
-          Saved on this phone: your profile, contacts you added, theme and settings. Chats are not
-          saved yet and start fresh when Myth restarts.
-        </AppText>
       </ScrollView>
 
       <ActionSheet
         visible={confirmClear}
-        title="Clear cache?"
-        message={`This frees ${formatFileSize(snapshot?.cache ?? 0)}. Files and voice messages Myth kept in your chats will stop opening. Messages stay.`}
+        title="Clear media cache?"
+        message={`This will remove ${formatFileSize(snapshot?.cache ?? 0)} of cached files. Text messages and contacts will remain intact.`}
         actions={[{ label: 'Clear cache', destructive: true, onPress: clear }]}
         onClose={() => setConfirmClear(false)}
       />
@@ -179,9 +197,9 @@ export function StorageScreen({ navigation }: Props) {
       <ActionSheet
         visible={freed !== null}
         title="Cache cleared"
-        message={`${formatFileSize(freed ?? 0)} freed.`}
+        message={`Successfully freed ${formatFileSize(freed ?? 0)}.`}
         actions={[]}
-        cancelLabel="OK"
+        cancelLabel="Done"
         onClose={() => setFreed(null)}
       />
     </Screen>
@@ -189,11 +207,46 @@ export function StorageScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  content: { paddingBottom: spacing.xxl, gap: spacing.lg },
-  card: { marginHorizontal: spacing.lg, gap: spacing.sm },
-  legend: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  swatch: { width: 10, height: 10, borderRadius: 5 },
-  legendLabel: { flex: 1 },
-  empty: { paddingHorizontal: spacing.lg, paddingTop: spacing.sm },
-  note: { paddingHorizontal: spacing.xl },
+  content: {
+    paddingBottom: spacing.xxxl,
+    gap: spacing.lg,
+  },
+  card: {
+    marginHorizontal: spacing.lg,
+    padding: spacing.lg,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    gap: spacing.sm,
+  },
+  cardTitle: {
+    fontWeight: '700',
+  },
+  legendContainer: {
+    gap: spacing.xs,
+    paddingTop: spacing.xs,
+  },
+  legend: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  swatch: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  legendLabel: {
+    flex: 1,
+  },
+  legendValue: {
+    fontWeight: '600',
+  },
+  emptyCard: {
+    marginHorizontal: spacing.lg,
+    padding: spacing.lg,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

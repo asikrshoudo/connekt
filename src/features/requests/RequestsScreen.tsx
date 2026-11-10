@@ -28,8 +28,9 @@ export function RequestsScreen({ navigation }: Props) {
         }
         ListEmptyComponent={
           <EmptyState
+            icon="mail-unread-outline"
             title="No message requests"
-            message="Messages from people you do not know will appear here."
+            message="Messages from external contacts will appear here for your review."
           />
         }
         renderItem={({ item }) => (

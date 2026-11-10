@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import { AndroidImportance } from 'expo-notifications';
 import { PermissionsAndroid, Platform, type Permission } from 'react-native';
 import type { PermissionId } from './types';
 
@@ -42,7 +43,7 @@ export async function requestPermission(id: PermissionId): Promise<'granted' | '
     // Android 13+ needs a notification channel before the prompt can appear.
     await Notifications.setNotificationChannelAsync('messages', {
       name: 'Messages',
-      importance: Notifications.AndroidImportance.DEFAULT,
+      importance: AndroidImportance.DEFAULT,
     });
     const result = await Notifications.requestPermissionsAsync();
     if (result.granted) return 'granted';

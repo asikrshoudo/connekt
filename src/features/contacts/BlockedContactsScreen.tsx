@@ -32,7 +32,11 @@ export function BlockedContactsScreen({ navigation }: Props) {
           ) : undefined
         }
         ListEmptyComponent={
-          <EmptyState title="No blocked contacts" message="People you block will appear here." />
+          <EmptyState
+            icon="ban-outline"
+            title="No blocked contacts"
+            message="Contacts you block will appear here."
+          />
         }
         renderItem={({ item }) => (
           <View style={styles.row}>

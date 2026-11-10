@@ -54,8 +54,9 @@ export function ArchivedChatsScreen({ navigation }: Props) {
         contentContainerStyle={{ flexGrow: 1 }}
         ListEmptyComponent={
           <EmptyState
-            title="No archived chats"
-            message="Archive a chat from the Chats list to keep it out of the way."
+            icon="archive-outline"
+            title="No archived conversations"
+            message="Chats you archive will be kept here out of your main inbox."
           />
         }
         renderItem={({ item }) => (

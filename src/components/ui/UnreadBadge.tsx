@@ -6,8 +6,20 @@ import { AppText } from './AppText';
 export function UnreadBadge({ count, muted = false }: { count: number; muted?: boolean }) {
   const colors = useColors();
   return (
-    <View style={[styles.badge, { backgroundColor: muted ? colors.disabled : colors.unread }]}>
-      <AppText variant="caption" style={[styles.text, { color: colors.onAccent }]}>
+    <View
+      style={[
+        styles.badge,
+        {
+          backgroundColor: muted ? colors.surfaceContainerHighest : colors.unread,
+          borderColor: muted ? colors.border : 'transparent',
+          borderWidth: muted ? StyleSheet.hairlineWidth : 0,
+        },
+      ]}
+    >
+      <AppText
+        variant="captionSmall"
+        style={[styles.text, { color: muted ? colors.textSecondary : colors.onAccent }]}
+      >
         {count > 99 ? '99+' : String(count)}
       </AppText>
     </View>
@@ -16,12 +28,15 @@ export function UnreadBadge({ count, muted = false }: { count: number; muted?: b
 
 const styles = StyleSheet.create({
   badge: {
-    minWidth: 22,
-    height: 22,
+    minWidth: 20,
+    height: 20,
     paddingHorizontal: 6,
     borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  text: { fontWeight: '600' },
+  text: {
+    fontWeight: '700',
+    includeFontPadding: false,
+  },
 });

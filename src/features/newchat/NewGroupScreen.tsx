@@ -50,13 +50,13 @@ export function NewGroupScreen({ navigation }: Props) {
         <View
           style={[
             styles.nameField,
-            { backgroundColor: colors.surface, borderColor: colors.inputBorder },
+            { backgroundColor: colors.surfaceContainer, borderColor: colors.cardBorder },
           ]}
         >
           <TextInput
             value={name}
             onChangeText={setName}
-            placeholder="Group name"
+            placeholder="Team channel or group name"
             placeholderTextColor={colors.textMuted}
             accessibilityLabel="Group name"
             maxLength={40}

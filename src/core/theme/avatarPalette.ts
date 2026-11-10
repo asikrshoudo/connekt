@@ -1,10 +1,13 @@
+// Refined, high-contrast, accessible avatar hues tuned for dark & light surfaces
 export const avatarPalette = [
-  '#5856D6',
-  '#AF52DE',
-  '#D6336C',
-  '#C9760B',
-  '#1C8EA5',
-  '#2E9E4F',
-  '#3B6FD4',
-  '#8E6F4E',
+  '#4f46e5', // Indigo
+  '#0284c7', // Sky
+  '#0d9488', // Teal
+  '#16a34a', // Emerald
+  '#d97706', // Amber
+  '#ea580c', // Orange
+  '#e11d48', // Rose
+  '#9333ea', // Purple
+  '#2563eb', // Blue
+  '#059669', // Mint
 ] as const;

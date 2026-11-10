@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AppText } from '../../components/ui/AppText';
 import { Avatar } from '../../components/ui/Avatar';
+import { radius } from '../../core/theme/radius';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 import type { CallRecord } from '../../types/call';
@@ -27,30 +28,47 @@ export function CallRow({ call, name, onPress }: Props) {
       accessibilityRole="button"
       accessibilityLabel={`${name}, ${status} ${kind} call, ${time}`}
       onPress={onPress}
-      style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surface }]}
+      style={({ pressed }) => [
+        styles.row,
+        pressed && { backgroundColor: colors.surfaceContainerHigh },
+      ]}
     >
-      <Avatar name={name} size={44} />
+      <Avatar name={name} size={46} />
       <View style={[styles.body, { borderBottomColor: colors.border }]}>
         <View style={styles.text}>
           <AppText
             variant="headline"
             numberOfLines={1}
-            style={call.missed ? { color: colors.destructive } : undefined}
+            style={[
+              styles.name,
+              call.missed ? { color: colors.destructive } : undefined,
+            ]}
           >
             {name}
           </AppText>
           <View style={styles.meta}>
-            <Ionicons
-              name={call.kind === 'video' ? 'videocam-outline' : 'call-outline'}
-              size={14}
-              color={accent}
-            />
-            <AppText variant="footnote" tone="muted">
-              {status}
+            <View
+              style={[
+                styles.iconTag,
+                {
+                  backgroundColor: call.missed
+                    ? `${colors.destructive}14`
+                    : colors.surfaceContainer,
+                },
+              ]}
+            >
+              <Ionicons
+                name={call.kind === 'video' ? 'videocam' : 'call'}
+                size={12}
+                color={accent}
+              />
+            </View>
+            <AppText variant="captionSmall" tone="secondary">
+              {status} · {call.kind === 'video' ? 'Video huddle' : 'Voice call'}
             </AppText>
           </View>
         </View>
-        <AppText variant="footnote" tone="muted">
+        <AppText variant="captionSmall" tone="muted">
           {time}
         </AppText>
       </View>
@@ -59,7 +77,12 @@ export function CallRow({ call, name, onPress }: Props) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', paddingLeft: spacing.lg },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: spacing.lg,
+    minHeight: 68,
+  },
   body: {
     flex: 1,
     flexDirection: 'row',
@@ -70,6 +93,20 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  text: { flex: 1, gap: 2 },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  text: {
+    flex: 1,
+    gap: 3,
+  },
+  name: {
+    fontWeight: '600',
+  },
+  meta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  iconTag: {
+    padding: 3,
+    borderRadius: radius.xs,
+  },
 });

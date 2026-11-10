@@ -61,9 +61,14 @@ export function RequestDetailScreen({ route, navigation }: Props) {
           </AppText>
         </View>
 
-        <View style={[styles.message, { backgroundColor: colors.surface }]}>
-          <AppText>{request.firstMessage}</AppText>
-          <AppText variant="footnote" tone="muted">
+        <View
+          style={[
+            styles.message,
+            { backgroundColor: colors.surface, borderColor: colors.cardBorder, borderWidth: 1 },
+          ]}
+        >
+          <AppText variant="body">{request.firstMessage}</AppText>
+          <AppText variant="captionSmall" tone="muted">
             {formatChatTime(request.receivedAt)}
           </AppText>
         </View>

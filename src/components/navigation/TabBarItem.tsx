@@ -1,12 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Pressable, StyleSheet } from 'react-native';
-import Animated, {
-  ReduceMotion,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
-import { spring } from '../../core/theme/motion';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { radius } from '../../core/theme/radius';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { AppText } from '../ui/AppText';
 import type { TabItemConfig } from './tabConfig';
@@ -20,14 +14,7 @@ type Props = {
 
 export function TabBarItem({ config, focused, onPress, onLongPress }: Props) {
   const colors = useColors();
-  const scale = useSharedValue(1);
-  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
-
-  const animateTo = (value: number) => {
-    scale.value = withSpring(value, { ...spring.snappy, reduceMotion: ReduceMotion.System });
-  };
-
-  const color = focused ? colors.textPrimary : colors.textMuted;
+  const color = focused ? colors.accent : colors.textMuted;
 
   return (
     <Pressable
@@ -36,21 +23,66 @@ export function TabBarItem({ config, focused, onPress, onLongPress }: Props) {
       accessibilityState={{ selected: focused }}
       onPress={onPress}
       onLongPress={onLongPress}
-      onPressIn={() => animateTo(0.92)}
-      onPressOut={() => animateTo(1)}
       style={styles.item}
     >
-      <Animated.View style={[styles.content, animatedStyle]}>
-        <Ionicons name={focused ? config.iconFocused : config.icon} size={22} color={color} />
-        <AppText variant="caption" numberOfLines={1} style={{ color }}>
-          {config.label}
-        </AppText>
-      </Animated.View>
+      {({ pressed }) => (
+        <View style={[styles.content, pressed && styles.pressed]}>
+          <View
+            style={[
+              styles.iconWrapper,
+              focused && {
+                backgroundColor: colors.tabIndicator,
+              },
+            ]}
+          >
+            <Ionicons
+              name={focused ? config.iconFocused : config.icon}
+              size={21}
+              color={color}
+            />
+          </View>
+          <AppText
+            variant="captionSmall"
+            numberOfLines={1}
+            style={[
+              styles.label,
+              {
+                color,
+                fontWeight: focused ? '700' : '500',
+              },
+            ]}
+          >
+            {config.label}
+          </AppText>
+        </View>
+      )}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  item: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  content: { alignItems: 'center', gap: 2 },
+  item: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 2,
+  },
+  content: {
+    alignItems: 'center',
+    gap: 3,
+  },
+  iconWrapper: {
+    width: 44,
+    height: 28,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  label: {
+    letterSpacing: 0.2,
+  },
+  pressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.95 }],
+  },
 });

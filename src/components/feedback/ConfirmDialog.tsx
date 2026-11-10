@@ -1,9 +1,9 @@
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { ZoomIn } from 'react-native-reanimated';
+import { radius } from '../../core/theme/radius';
 import { spacing } from '../../core/theme/spacing';
 import { useColors } from '../../core/theme/ThemeProvider';
 import { AppText } from '../ui/AppText';
-import { popIn } from './popKeyframe';
 
 type Props = {
   visible: boolean;
@@ -16,7 +16,6 @@ type Props = {
   onCancel: () => void;
 };
 
-// A small card in the middle of the screen with two choices.
 export function ConfirmDialog({
   visible,
   title,
@@ -41,50 +40,64 @@ export function ConfirmDialog({
       <View style={[styles.backdrop, { backgroundColor: colors.scrim }]}>
         <Pressable accessibilityLabel="Close" onPress={onCancel} style={StyleSheet.absoluteFill} />
         <Animated.View
-          entering={popIn}
-          style={[styles.card, { backgroundColor: colors.surfaceElevated }]}
+          entering={ZoomIn.duration(200)}
+          style={[
+            styles.card,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.cardBorder,
+            },
+          ]}
         >
-          <View style={styles.text}>
-            <AppText variant="headline" style={styles.center}>
+          <View style={styles.content}>
+            <AppText variant="heading" style={styles.title}>
               {title}
             </AppText>
             {message ? (
-              <AppText variant="callout" tone="secondary" style={styles.center}>
+              <AppText variant="body" tone="secondary" style={styles.message}>
                 {message}
               </AppText>
             ) : null}
           </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={confirmLabel}
-            onPress={onConfirm}
-            style={({ pressed }) => [
-              styles.button,
-              { borderTopColor: colors.border },
-              pressed && { backgroundColor: colors.surface },
-            ]}
-          >
-            <AppText
-              variant="headline"
-              style={{ color: destructive ? colors.destructive : colors.accent }}
+
+          <View style={styles.actions}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={cancelLabel}
+              onPress={onCancel}
+              style={({ pressed }) => [
+                styles.button,
+                styles.cancelButton,
+                {
+                  borderColor: colors.border,
+                  backgroundColor: pressed ? colors.surfaceContainer : 'transparent',
+                },
+              ]}
             >
-              {confirmLabel}
-            </AppText>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={cancelLabel}
-            onPress={onCancel}
-            style={({ pressed }) => [
-              styles.button,
-              { borderTopColor: colors.border },
-              pressed && { backgroundColor: colors.surface },
-            ]}
-          >
-            <AppText variant="headline" style={{ color: colors.accent }}>
-              {cancelLabel}
-            </AppText>
-          </Pressable>
+              <AppText variant="headline" style={{ color: colors.textSecondary }}>
+                {cancelLabel}
+              </AppText>
+            </Pressable>
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={confirmLabel}
+              onPress={onConfirm}
+              style={({ pressed }) => [
+                styles.button,
+                {
+                  backgroundColor: destructive
+                    ? colors.destructive
+                    : colors.accent,
+                  opacity: pressed ? 0.85 : 1,
+                },
+              ]}
+            >
+              <AppText variant="headline" style={{ color: colors.onAccent }}>
+                {confirmLabel}
+              </AppText>
+            </Pressable>
+          </View>
         </Animated.View>
       </View>
     </Modal>
@@ -92,14 +105,48 @@ export function ConfirmDialog({
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xxl },
-  card: { width: '100%', maxWidth: 320, borderRadius: 20, overflow: 'hidden' },
-  text: { padding: spacing.xl, gap: spacing.sm },
-  center: { textAlign: 'center' },
-  button: {
-    height: 52,
+  backdrop: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderTopWidth: StyleSheet.hairlineWidth,
+    padding: spacing.xl,
+  },
+  card: {
+    width: '100%',
+    maxWidth: 340,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    padding: spacing.xl,
+    gap: spacing.lg,
+    elevation: 20,
+    shadowColor: '#000000',
+    shadowOpacity: 0.25,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 12 },
+  },
+  content: {
+    gap: spacing.xs,
+  },
+  title: {
+    fontWeight: '700',
+  },
+  message: {
+    lineHeight: 20,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    justifyContent: 'flex-end',
+  },
+  button: {
+    flex: 1,
+    height: 46,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.md,
+  },
+  cancelButton: {
+    borderWidth: 1,
   },
 });

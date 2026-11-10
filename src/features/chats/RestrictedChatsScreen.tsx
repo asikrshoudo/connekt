@@ -62,8 +62,9 @@ export function RestrictedChatsScreen({ navigation }: Props) {
         }
         ListEmptyComponent={
           <EmptyState
-            title="No restricted chats"
-            message="Restrict a chat from the Chats list to move it here."
+            icon="eye-off-outline"
+            title="No restricted conversations"
+            message="Restricted chats are hidden from your main inbox."
           />
         }
         renderItem={({ item }) => (
